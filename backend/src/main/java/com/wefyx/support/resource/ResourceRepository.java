@@ -1,0 +1,1 @@
+package com.wefyx.support.resource;import org.springframework.data.jpa.repository.JpaRepository;import java.util.List;public interface ResourceRepository extends JpaRepository<ResourceRecord,Long>{List<ResourceRecord> findByModuleKeyOrderByCreatedAtDesc(String moduleKey);boolean existsByModuleKey(String moduleKey);}
