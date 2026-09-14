@@ -1,0 +1,37 @@
+# Dependencies and generated builds
+**/node_modules/
+**/build/
+**/dist/
+**/target/
+**/.gradle/
+**/.cxx/
+**/.kotlin/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+**/local.properties
+**/keystore.properties
+**/*.keystore
+**/*.jks
+**/*KEYSTORE*CREDENTIALS*.txt
+
+# IDE and OS files
+.idea/
+*.iml
+.DS_Store
+
+# Android and React Native generated artifacts
+**/*.aab
+**/*.apk
+**/*.jsbundle
+**/coverage/
+
+# Local runtime data, reports, crash dumps, and copied deployment bundles
+**/data/
+**/*.log
+**/hs_err_pid*.log
+**/replay_pid*.log
+**/dist-*/
+backend/src/main/resources/static/

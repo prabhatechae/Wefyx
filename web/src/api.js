@@ -1,0 +1,6 @@
+const BASE = import.meta.env.VITE_API_URL || "/api";
+function headers(json=false){const token=localStorage.getItem("wefyx-token");return {...(json?{"Content-Type":"application/json"}:{}),...(token?{Authorization:`Bearer ${token}`}:{})}}
+async function response(request){if(request.status===401){localStorage.removeItem("wefyx-token");localStorage.removeItem("wefyx-auth");window.dispatchEvent(new Event("wefyx-unauthorized"))}if(!request.ok){const body=await request.json().catch(()=>({}));throw new Error(body.message||`Request failed: ${request.status}`)}return request.status===204?null:request.json()}
+export async function login(email,password){return response(await fetch(`${BASE}/auth/login`,{method:"POST",headers:headers(true),body:JSON.stringify({email,password})}))}
+export async function get(path){const organization=localStorage.getItem("wefyx-organization")||"ALL";const scoped=path==="/users"&&organization!=="ALL"?`${path}?organization=${encodeURIComponent(organization)}`:path;const data=await response(await fetch(`${BASE}${scoped}`,{headers:headers()}));if(path==="/tickets"&&organization!=="ALL"&&Array.isArray(data))return data.filter(item=>item.customer===organization);return data}
+export async function send(path,method,body){return response(await fetch(`${BASE}${path}`,{method,headers:headers(true),body:body?JSON.stringify(body):undefined}))}
