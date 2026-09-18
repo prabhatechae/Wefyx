@@ -78,7 +78,11 @@ import PrivacyPolicyPage from "./PrivacyPolicyPage";
 import EmployeePortal from "./EmployeePortal";
 import EmployeeApprovals from './EmployeeApprovals';
 import VendorPortal from "./VendorPortal";
+import CustomerPortal from "./CustomerPortal";
 import RequirementsPage from "./RequirementsPage";
+import ServiceWebsite from "./ServiceWebsite";
+import { CartPage, RentalCatalog, RentalDetail } from "./RentalPages";
+import InfoPage from "./InfoPages";
 const sections = [
   ["MAIN NAVIGATION", [["Dashboard", LayoutDashboard]]],
   [
@@ -724,7 +728,7 @@ function UsersPage() {
       try {
         const saved = await send(`/users/${editing.id}`, "PUT", optimistic);
         setUsers((v) => v.map((u) => (u.id === saved.id ? saved : u)));
-      } catch {}
+      } catch { }
     } else {
       const optimistic = {
         ...form,
@@ -737,7 +741,7 @@ function UsersPage() {
       try {
         const saved = await send("/users", "POST", form);
         setUsers((v) => v.map((u) => (u.id === optimistic.id ? saved : u)));
-      } catch {}
+      } catch { }
     }
   }
   async function remove(u) {
@@ -745,7 +749,7 @@ function UsersPage() {
     setUsers((v) => v.filter((x) => x.id !== u.id));
     try {
       await send(`/users/${u.id}`, "DELETE");
-    } catch {}
+    } catch { }
   }
   const shown = users.filter(
     (u) =>
@@ -1027,23 +1031,26 @@ function ProviderIcon({ provider }) {
   );
 }
 
-function Login({ onLogin }) {
-  const [email, setEmail] = useState("admin@wefyx.pro"),
+function Login({ onLogin, onRegister, initialEmail = "" }) {
+  const [email, setEmail] = useState(initialEmail || "admin@wefyx.pro"),
     [password, setPassword] = useState("admin123"),
     [show, setShow] = useState(false),
     [loading, setLoading] = useState(false),
     [error, setError] = useState(""),
     [accountType, setAccountType] = useState("vendor");
+  useEffect(() => {
+    if (initialEmail) setEmail(initialEmail);
+  }, [initialEmail]);
   async function submit(e) {
     e.preventDefault();
     setError("");
-    if (!email.includes("@") || password.length < 6) {
-      setError("Enter a valid email and a password of at least 6 characters.");
+    if (!/^\S+@\S+\.\S+$/.test(email.trim()) || password.length < 8) {
+      setError("Enter a valid email and a password of at least 8 characters.");
       return;
     }
     setLoading(true);
     try {
-      const result = await login(email.trim(), password.trim());
+      const result = await login(email.trim(), password);
       localStorage.setItem("wefyx-token", result.token);
       localStorage.setItem("wefyx-auth", "true");
       localStorage.setItem("wefyx-user", JSON.stringify(result.user));
@@ -1134,10 +1141,10 @@ function Login({ onLogin }) {
           </div>
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
-            <h2 className="text-3xl font-bold tracking-tight">Welcome Back</h2>
-            <p className="mt-1.5 text-sm text-slate-500">
-              Sign in to continue to your <b className="text-violet-600">Wefyx.pro</b> account
-            </p>
+              <h2 className="text-3xl font-bold tracking-tight">Welcome Back</h2>
+              <p className="mt-1.5 text-sm text-slate-500">
+                Sign in to continue to your <b className="text-violet-600">Wefyx.pro</b> account
+              </p>
             </div>
             <button type="button" className="flex h-9 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 transition hover:border-violet-300 hover:bg-violet-50">
               <Globe2 size={15} strokeWidth={1.8} />
@@ -1152,7 +1159,7 @@ function Login({ onLogin }) {
               onClick={() => setAccountType("vendor")}
               className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
             >
-              <Users size={16}/> Vendor / Partner
+              <Users size={16} /> Vendor / Partner
             </button>
             <button
               type="button"
@@ -1160,7 +1167,7 @@ function Login({ onLogin }) {
               onClick={() => setAccountType("customer")}
               className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
             >
-              <CircleUserRound size={16}/> Customer / Client
+              <CircleUserRound size={16} /> Customer / Client
             </button>
           </div>
           <form onSubmit={submit} className="space-y-3">
@@ -1168,7 +1175,8 @@ function Login({ onLogin }) {
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                type="email"
+                  type="email"
+                  autoComplete="email"
                 className="w-full bg-transparent text-sm outline-none"
                 placeholder="you@company.com"
               />
@@ -1189,6 +1197,7 @@ function Login({ onLogin }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type={show ? "text" : "password"}
+                  autoComplete="current-password"
                   className="w-full bg-transparent text-sm outline-none"
                 />
                 <button
@@ -1218,7 +1227,7 @@ function Login({ onLogin }) {
             </div>
             <button
               disabled={loading}
-                className="flex h-12 w-full items-center justify-center rounded-xl bg-[#5b4cf0] text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-[#4d3ee3] disabled:opacity-70"
+              className="flex h-12 w-full items-center justify-center rounded-xl bg-[#5b4cf0] text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-[#4d3ee3] disabled:opacity-70"
             >
               {loading ? (
                 <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -1227,15 +1236,21 @@ function Login({ onLogin }) {
               )}
             </button>
           </form>
-          <div className="my-4 flex items-center gap-4 text-[11px] text-slate-400"><span className="h-px flex-1 bg-slate-200"/>or continue with<span className="h-px flex-1 bg-slate-200"/></div>
+          <div className="my-4 flex items-center gap-4 text-[11px] text-slate-400"><span className="h-px flex-1 bg-slate-200" />or continue with<span className="h-px flex-1 bg-slate-200" /></div>
           <div className="grid grid-cols-3 gap-3">
-            {["Google","Microsoft","Apple"].map(provider=><button type="button" key={provider} className="flex h-11 items-center justify-center gap-2 rounded-xl border text-xs font-semibold text-slate-700 transition hover:border-violet-300 hover:bg-violet-50"><ProviderIcon provider={provider}/>{provider}</button>)}
+            {["Google", "Microsoft", "Apple"].map(provider => <button type="button" key={provider} className="flex h-11 items-center justify-center gap-2 rounded-xl border text-xs font-semibold text-slate-700 transition hover:border-violet-300 hover:bg-violet-50"><ProviderIcon provider={provider} />{provider}</button>)}
           </div>
           <div className="mt-5 text-center text-[11px] text-slate-400">
             By using Wefyx, you agree to our{" "}
             <a href="/privacy-policy" className="font-semibold text-violet-600 hover:text-violet-700 hover:underline">
               Privacy Policy
             </a>
+          </div>
+          <div className="mt-4 text-center text-xs text-slate-500">
+            New to Wefyx?{" "}
+            <button type="button" onClick={onRegister} className="font-semibold text-violet-600 hover:text-violet-700 hover:underline">
+              Create an account
+            </button>
           </div>
         </div>
       </section>
@@ -1255,18 +1270,18 @@ function Login({ onLogin }) {
         </div>
       </footer>
       <div className="col-span-2 hidden rounded-xl border border-white/10 bg-[#09083d]/90 px-5 py-2 text-center text-[11px] tracking-wide text-blue-100/70 lg:block">
-          Crafted and built by{" "}
-          <a href="https://prabhatech.com" target="_blank" rel="noreferrer" className="font-semibold text-violet-400 transition hover:text-violet-300">
-            Prabha Technologies
-          </a>
-          <span className="mx-2 text-white/30">|</span>
-          <a href="https://prabhatech.com" target="_blank" rel="noreferrer" className="text-violet-300 transition hover:text-violet-200">
-            prabhatech.com
-          </a>
-          <span className="mx-2 text-white/30">|</span>
-          <a href="/privacy-policy" className="text-violet-300 transition hover:text-violet-200">
-            Privacy Policy
-          </a>
+        Crafted and built by{" "}
+        <a href="https://prabhatech.com" target="_blank" rel="noreferrer" className="font-semibold text-violet-400 transition hover:text-violet-300">
+          Prabha Technologies
+        </a>
+        <span className="mx-2 text-white/30">|</span>
+        <a href="https://prabhatech.com" target="_blank" rel="noreferrer" className="text-violet-300 transition hover:text-violet-200">
+          prabhatech.com
+        </a>
+        <span className="mx-2 text-white/30">|</span>
+        <a href="/privacy-policy" className="text-violet-300 transition hover:text-violet-200">
+          Privacy Policy
+        </a>
       </div>
     </div>
   );
@@ -1279,6 +1294,88 @@ function LoginField({ label, icon: Icon, children }) {
         <Icon size={18} className="text-slate-400" />
         {children}
       </div>
+    </div>
+  );
+}
+function Registration({ onBack }) {
+  const [accountType, setAccountType] = useState("vendor"),
+    [name, setName] = useState(""),
+    [organization, setOrganization] = useState(""),
+    [email, setEmail] = useState(""),
+    [password, setPassword] = useState(""),
+    [confirmPassword, setConfirmPassword] = useState(""),
+    [consent, setConsent] = useState(false),
+    [showPassword, setShowPassword] = useState(false),
+    [showConfirmPassword, setShowConfirmPassword] = useState(false),
+    [loading, setLoading] = useState(false),
+    [error, setError] = useState(""),
+    [success, setSuccess] = useState("");
+  async function submit(event) {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+    if (!name.trim() || !organization.trim() || !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      setError("Enter your full name, organization, and a valid email address.");
+      return;
+    }
+    if (password.length < 8 || password.length > 72) {
+      setError("Use a password between 8 and 72 characters.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (!consent) {
+      setError("Please acknowledge the Privacy Policy to continue.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await send("/auth/register", "POST", {
+        name: name.trim(),
+        organization: organization.trim(),
+        email: email.trim(),
+        password,
+        role: accountType === "vendor" ? "VENDOR" : "CUSTOMER",
+      });
+      setSuccess(result.message || "Account created. You can now sign in.");
+      setPassword("");
+      setConfirmPassword("");
+    } catch (requestError) {
+      setError(requestError.message || "Unable to create your account.");
+    } finally {
+      setLoading(false);
+    }
+  }
+  return (
+    <div className="min-h-screen bg-[#07052d] p-3 lg:grid lg:grid-cols-[1.02fr_.98fr] lg:grid-rows-[minmax(0,1fr)_auto] lg:gap-x-4 lg:gap-y-3 lg:p-5">
+      <section className="relative hidden min-h-0 overflow-hidden bg-[#07052d] px-10 pb-10 pt-6 text-white lg:flex lg:flex-col xl:px-14 xl:pb-14 xl:pt-7">
+        <div className="absolute inset-0 bg-no-repeat" style={{ backgroundImage: "url('/images/wefyx-login-platform-v6.png')", backgroundPosition: "calc(50% + 200px) calc(100% + 42px)", backgroundSize: "100% auto", WebkitMaskImage: "radial-gradient(ellipse 58% 38% at 65% 82%, #000 48%, rgba(0,0,0,.88) 68%, transparent 100%)", maskImage: "radial-gradient(ellipse 58% 38% at 65% 82%, #000 48%, rgba(0,0,0,.88) 68%, transparent 100%)" }} />
+        <div className="pointer-events-none absolute inset-0" style={{ background: "linear-gradient(90deg, #07052d 0%, transparent 12%, transparent 82%, #07052d 100%), linear-gradient(180deg, transparent 84%, #07052d 100%)" }} />
+        <div className="relative flex items-center gap-3"><WefyxMark /><div><div className="text-3xl font-bold tracking-tight">Wefyx<span className="text-violet-400">.</span>pro</div><div className="mt-1 text-xs text-blue-100/70">IT Support & Rental Platform</div></div></div>
+        <div className="relative mb-auto mt-7 max-w-2xl"><div className="mb-4 inline-flex items-center rounded-full border border-violet-400/30 bg-violet-500/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[.2em] text-violet-200 backdrop-blur-md">Multivendor AI Platform ✦</div><h1 className="space-y-1 text-3xl font-bold leading-[1.15] xl:text-4xl"><span className="block">Smarter Support.</span><span className="block">Seamless <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">Rentals.</span></span></h1><p className="mt-3 max-w-lg text-xs leading-5 text-blue-100/75">AI-powered. Vendor driven. Customer focused.</p><div className="mt-5 grid max-w-xl grid-cols-4 gap-4">{[[Headphones,"IT Support","Smart ticket resolution"],[Package,"Equipment Rental","Trusted vendors"],[Users,"Multi-Vendor","Experts in one place"],[ShieldCheck,"AI Powered","Faster service"]].map(([FeatureIcon,title,description])=><div key={title} className="text-center"><div className="mx-auto grid h-12 w-16 place-items-center rounded-xl border border-violet-300/20 bg-[#111052]/55 shadow-lg shadow-violet-950/20 backdrop-blur-md"><FeatureIcon className="text-violet-400" size={24} strokeWidth={1.8}/></div><b className="mt-2 block text-[11px] text-white">{title}</b><span className="mx-auto mt-1 block max-w-[100px] text-[9px] leading-3 text-blue-100/60">{description}</span></div>)}</div></div>
+      </section>
+      <section className="flex min-h-[calc(100vh-24px)] items-center justify-center px-1 py-4 lg:min-h-0 lg:justify-end lg:pl-10 lg:pr-3 xl:pl-14 xl:pr-4">
+        <div className="w-full max-w-[500px] rounded-[26px] bg-white p-6 shadow-2xl shadow-black/20 sm:p-8 lg:min-h-[600px] lg:p-6">
+          <div className="mb-7 flex items-center gap-3 lg:hidden"><WefyxMark className="h-11 w-14"/><div><div className="text-3xl font-bold text-navy">Wefyx<span className="text-brand">.</span>pro</div><div className="mt-1 text-xs text-slate-500">IT Support Management Platform</div></div></div>
+          <div className="mb-4 flex items-start justify-between gap-4"><div><h2 className="text-3xl font-bold tracking-tight">Create Account</h2><p className="mt-1.5 text-sm text-slate-500">Join your <b className="text-violet-600">Wefyx.pro</b> support network</p></div><button type="button" className="flex h-9 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600"><Globe2 size={15} strokeWidth={1.8}/><span>English</span><ChevronDown size={14} strokeWidth={2}/></button></div>
+          <div className="mb-4 grid grid-cols-2 rounded-xl border bg-slate-50 p-1"><button type="button" aria-pressed={accountType === "vendor"} onClick={() => setAccountType("vendor")} className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><Users size={16}/> Vendor / Partner</button><button type="button" aria-pressed={accountType === "customer"} onClick={() => setAccountType("customer")} className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><CircleUserRound size={16}/> Customer / Client</button></div>
+          <form onSubmit={submit} className="space-y-3">
+            <LoginField label="Full name" icon={UserRound}><input required maxLength={120} value={name} onChange={(event) => setName(event.target.value)} type="text" className="w-full bg-transparent text-sm outline-none" placeholder="Your full name" /></LoginField>
+            <LoginField label="Company / organization" icon={Building2}><input required maxLength={200} value={organization} onChange={(event) => setOrganization(event.target.value)} type="text" className="w-full bg-transparent text-sm outline-none" placeholder="Your company name" /></LoginField>
+            <LoginField label="Email address" icon={Mail}><input required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} type="email" className="w-full bg-transparent text-sm outline-none" placeholder="you@company.com" /></LoginField>
+            <div><label className="mb-2 block text-xs font-semibold">Password</label><div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-blue-50"><LockKeyhole size={18} className="text-slate-400"/><input required minLength={8} maxLength={72} value={password} onChange={(event) => setPassword(event.target.value)} type={showPassword ? "text" : "password"} className="w-full bg-transparent text-sm outline-none" placeholder="At least 8 characters"/><button type="button" aria-label="Show password" onClick={() => setShowPassword(!showPassword)} className="text-slate-400">{showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></div>
+            <div><label className="mb-2 block text-xs font-semibold">Confirm password</label><div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-blue-50"><LockKeyhole size={18} className="text-slate-400"/><input required value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} type={showConfirmPassword ? "text" : "password"} className="w-full bg-transparent text-sm outline-none" placeholder="Repeat your password"/><button type="button" aria-label="Show confirm password" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="text-slate-400">{showConfirmPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></div>
+            <label className="flex items-start gap-2 pt-1 text-xs leading-5 text-slate-600"><input required type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-1 accent-blue-600"/><span>I have read and acknowledge the <a href="/privacy-policy" className="font-semibold text-violet-600 hover:underline">Privacy Policy</a>.</span></label>
+            <div className={`flex min-h-9 items-center rounded-lg px-3 text-[11px] ${error ? "bg-red-50 text-red-600" : success ? "bg-emerald-50 text-emerald-700" : "invisible"}`} role="alert">{error || success || "No registration message"}</div>
+            <button disabled={loading} className="flex h-12 w-full items-center justify-center rounded-xl bg-[#5b4cf0] text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-[#4d3ee3] disabled:opacity-70">{loading ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"/> : "Create Account  →"}</button>
+          </form>
+          <div className="mt-5 text-center text-[11px] text-slate-400">Already have an account? <button type="button" onClick={() => onBack(email.trim())} className="font-semibold text-violet-600 hover:text-violet-700 hover:underline">Sign in</button></div>
+          <div className="mt-3 text-center text-[11px] text-slate-400">By creating an account, you agree to our <a href="/privacy-policy" className="font-semibold text-violet-600 hover:underline">Privacy Policy</a></div>
+        </div>
+      </section>
+      <footer className="col-span-2 hidden rounded-2xl border border-white/10 bg-[#09083d]/90 px-5 py-3 text-white lg:block"><div className="grid grid-cols-4 divide-x divide-white/10">{[[ShieldCheck,"Enterprise Grade Security","Your data is protected"],[Clock3,"99.9% Platform Uptime","Reliable. Always."],[Headphones,"24/7 AI-Powered Support","Here when you need us"],[Store,"Trusted Vendor Network","Growing every day"]].map(([FooterIcon,title,description])=><div key={title} className="flex items-center justify-center gap-3 px-5"><FooterIcon size={24} className="shrink-0 text-blue-400"/><div><b className="block text-[11px]">{title}</b><span className="text-[10px] text-blue-100/60">{description}</span></div></div>)}</div></footer>
     </div>
   );
 }
@@ -1569,7 +1666,7 @@ function TicketsPage() {
       try {
         const saved = await send(`/tickets/${modal.id}`, "PUT", updated);
         setTickets((v) => v.map((t) => (t.id === saved.id ? saved : t)));
-      } catch {}
+      } catch { }
     } else {
       const temp = {
         ...form,
@@ -1582,22 +1679,22 @@ function TicketsPage() {
       try {
         const saved = await send("/tickets", "POST", form);
         setTickets((v) => v.map((t) => (t.id === temp.id ? saved : t)));
-      } catch {}
+      } catch { }
     }
   }
   async function remove(t) {
     setTickets((v) => v.filter((x) => x.id !== t.id));
     try {
       await send(`/tickets/${t.id}`, "DELETE");
-    } catch {}
+    } catch { }
   }
   const statusClass = {
-      OPEN: "bg-blue-50 text-blue-600",
-      IN_PROGRESS: "bg-violet-50 text-violet-600",
-      PENDING: "bg-amber-50 text-amber-600",
-      RESOLVED: "bg-emerald-50 text-emerald-600",
-      CLOSED: "bg-slate-100 text-slate-500",
-    },
+    OPEN: "bg-blue-50 text-blue-600",
+    IN_PROGRESS: "bg-violet-50 text-violet-600",
+    PENDING: "bg-amber-50 text-amber-600",
+    RESOLVED: "bg-emerald-50 text-emerald-600",
+    CLOSED: "bg-slate-100 text-slate-500",
+  },
     priorityClass = {
       LOW: "text-slate-500",
       MEDIUM: "text-blue-600",
@@ -1719,7 +1816,7 @@ function TicketsPage() {
                           await send(`/tickets/${t.id}/status`, "PATCH", {
                             status,
                           });
-                        } catch {}
+                        } catch { }
                       }}
                       className={`rounded-md border-0 px-2 py-1 text-[10px] font-semibold ${statusClass[t.status]}`}
                     >
@@ -2319,8 +2416,10 @@ function LogoutAlert({ onCancel, onConfirm }) {
 }
 function AuthenticatedApp() {
   const [authenticated, setAuthenticated] = useState(
-      () => localStorage.getItem("wefyx-auth") === "true",
-    ),
+    () => localStorage.getItem("wefyx-auth") === "true",
+  ),
+    [registering, setRegistering] = useState(false),
+    [loginEmail, setLoginEmail] = useState(""),
     [page, setPage] = useState("Dashboard"),
     [previousPage, setPreviousPage] = useState("Dashboard"),
     [expanded, setExpanded] = useState(() => window.innerWidth >= 1024),
@@ -2330,7 +2429,13 @@ function AuthenticatedApp() {
     window.addEventListener("wefyx-unauthorized", unauthorized);
     return () => window.removeEventListener("wefyx-unauthorized", unauthorized);
   }, []);
-  if (!authenticated) return <Login onLogin={() => setAuthenticated(true)} />;
+  if (!authenticated) {
+    return registering ? (
+      <Registration onBack={(email = "") => { setLoginEmail(email); setRegistering(false); }} />
+    ) : (
+      <Login initialEmail={loginEmail} onLogin={() => setAuthenticated(true)} onRegister={() => setRegistering(true)} />
+    );
+  }
   function logout() {
     localStorage.removeItem("wefyx-auth");
     localStorage.removeItem("wefyx-token");
@@ -2338,15 +2443,16 @@ function AuthenticatedApp() {
     setLogoutOpen(false);
     setAuthenticated(false);
   }
-  const signedInUser=JSON.parse(localStorage.getItem("wefyx-user")||"null");
-  if(signedInUser?.role==="EMPLOYEE") return <EmployeePortal user={signedInUser} onLogout={logout}/>;
-  if(signedInUser?.role==="VENDOR") return <VendorPortal user={signedInUser} onLogout={logout}/>;
-  if(signedInUser?.role!=="SUPER_ADMIN") { logout(); return null; }
+  const signedInUser = JSON.parse(localStorage.getItem("wefyx-user") || "null");
+  if (signedInUser?.role === "EMPLOYEE") return <EmployeePortal user={signedInUser} onLogout={logout} />;
+  if (signedInUser?.role === "VENDOR") return <VendorPortal user={signedInUser} onLogout={logout} />;
+  if (signedInUser?.role === "CUSTOMER") return <CustomerPortal user={signedInUser} onLogout={logout} />;
+  if (signedInUser?.role !== "SUPER_ADMIN") { logout(); return null; }
   let content =
     page === "Dashboard" ? (
       <Dashboard />
     ) : page === "Users Management" ? (
-      <><EmployeeApprovals/><DynamicUsersPage /></>
+      <><EmployeeApprovals /><DynamicUsersPage /></>
     ) : page === "Role Management" ? (
       <DynamicRolesPage />
     ) : page === "Permissions" ? (
@@ -2408,7 +2514,16 @@ function AuthenticatedApp() {
 }
 
 export default function App() {
-  return window.location.pathname.replace(/\/$/, "") === "/privacy-policy"
-    ? <PrivacyPolicyPage />
-    : <AuthenticatedApp />;
+  const path = window.location.pathname.replace(/\/$/, "") || "/";
+  if (path === "/privacy-policy") return <PrivacyPolicyPage />;
+  if (path === "/portal") return <AuthenticatedApp />;
+  if (path === "/rent") return <RentalCatalog />;
+  if (path === "/rent/dell-latitude-5550") return <RentalDetail />;
+  if (path === "/cart") return <CartPage />;
+  if (path === "/services") return <InfoPage type="services" />;
+  if (path === "/data-center") return <InfoPage type="data-center" />;
+  if (path === "/about") return <InfoPage type="about" />;
+  if (path === "/contact") return <InfoPage type="contact" />;
+  if (path === "/shop") return <InfoPage type="shop" />;
+  return <ServiceWebsite />;
 }
