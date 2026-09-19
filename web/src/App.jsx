@@ -27,6 +27,7 @@ import {
   Search,
   Bell,
   Mail,
+  Phone,
   HelpCircle,
   Globe2,
   ChevronDown,
@@ -59,7 +60,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
-import { get, send, login } from "./api";
+import { get, send, sendPublic, login } from "./api";
 import { localUsers, localRoles } from "./data";
 import { HelpCenterPage, NotificationsPage } from "./SupportPages";
 import { MessagesPage } from "./MessagesPage";
@@ -78,6 +79,7 @@ import PrivacyPolicyPage from "./PrivacyPolicyPage";
 import EmployeePortal from "./EmployeePortal";
 import EmployeeApprovals from './EmployeeApprovals';
 import VendorPortal from "./VendorPortal";
+import PublicRegistration, { CareersPage } from "./PublicRegistration";
 import CustomerPortal from "./CustomerPortal";
 import RequirementsPage from "./RequirementsPage";
 import ServiceWebsite from "./ServiceWebsite";
@@ -1037,7 +1039,7 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
     [show, setShow] = useState(false),
     [loading, setLoading] = useState(false),
     [error, setError] = useState(""),
-    [accountType, setAccountType] = useState("vendor");
+    [accountType, setAccountType] = useState("customer");
   useEffect(() => {
     if (initialEmail) setEmail(initialEmail);
   }, [initialEmail]);
@@ -1152,24 +1154,33 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
               <ChevronDown size={14} strokeWidth={2} />
             </button>
           </div>
-          <div className="mb-4 grid grid-cols-2 rounded-xl border bg-slate-50 p-1">
+          <div className="mb-2 grid grid-cols-3 rounded-xl border bg-slate-50 p-1">
             <button
               type="button"
               aria-pressed={accountType === "vendor"}
               onClick={() => setAccountType("vendor")}
-              className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
+              className={`order-2 flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
             >
-              <Users size={16} /> Vendor / Partner
+              <Users size={15} /> Vendor
             </button>
             <button
               type="button"
               aria-pressed={accountType === "customer"}
               onClick={() => setAccountType("customer")}
-              className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
+              className={`order-1 flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
             >
-              <CircleUserRound size={16} /> Customer / Client
+              <CircleUserRound size={15} /> Customer
+            </button>
+            <button
+              type="button"
+              aria-pressed={accountType === "employee"}
+              onClick={() => setAccountType("employee")}
+              className={`order-3 flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "employee" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
+            >
+              <UserRound size={15} /> Employee
             </button>
           </div>
+          {accountType === "employee" && <p className="mb-4 text-center text-[11px] text-slate-500">Employee accounts must be approved by an administrator before sign in.</p>}
           <form onSubmit={submit} className="space-y-3">
             <LoginField label="Email address" icon={Mail}>
               <input
@@ -1298,10 +1309,11 @@ function LoginField({ label, icon: Icon, children }) {
   );
 }
 function Registration({ onBack }) {
-  const [accountType, setAccountType] = useState("vendor"),
+  const [accountType, setAccountType] = useState("customer"),
     [name, setName] = useState(""),
     [organization, setOrganization] = useState(""),
     [email, setEmail] = useState(""),
+    [phone, setPhone] = useState(""),
     [password, setPassword] = useState(""),
     [confirmPassword, setConfirmPassword] = useState(""),
     [consent, setConsent] = useState(false),
@@ -1318,6 +1330,10 @@ function Registration({ onBack }) {
       setError("Enter your full name, organization, and a valid email address.");
       return;
     }
+    if (!/^[+0-9][0-9() .-]{6,24}$/.test(phone.trim())) {
+      setError("Enter a valid phone number, including country code.");
+      return;
+    }
     if (password.length < 8 || password.length > 72) {
       setError("Use a password between 8 and 72 characters.");
       return;
@@ -1332,14 +1348,15 @@ function Registration({ onBack }) {
     }
     setLoading(true);
     try {
-      const result = await send("/auth/register", "POST", {
+      const result = await sendPublic("/auth/register", "POST", {
         name: name.trim(),
         organization: organization.trim(),
         email: email.trim(),
+        phone: phone.trim(),
         password,
-        role: accountType === "vendor" ? "VENDOR" : "CUSTOMER",
+        role: accountType === "vendor" ? "VENDOR" : accountType === "employee" ? "EMPLOYEE" : "CUSTOMER",
       });
-      setSuccess(result.message || "Account created. You can now sign in.");
+      setSuccess(result.message || (accountType === "employee" ? "Registration submitted. An administrator must approve your employee account before you can sign in." : "Account created. You can now sign in."));
       setPassword("");
       setConfirmPassword("");
     } catch (requestError) {
@@ -1360,11 +1377,13 @@ function Registration({ onBack }) {
         <div className="w-full max-w-[500px] rounded-[26px] bg-white p-6 shadow-2xl shadow-black/20 sm:p-8 lg:min-h-[600px] lg:p-6">
           <div className="mb-7 flex items-center gap-3 lg:hidden"><WefyxMark className="h-11 w-14"/><div><div className="text-3xl font-bold text-navy">Wefyx<span className="text-brand">.</span>pro</div><div className="mt-1 text-xs text-slate-500">IT Support Management Platform</div></div></div>
           <div className="mb-4 flex items-start justify-between gap-4"><div><h2 className="text-3xl font-bold tracking-tight">Create Account</h2><p className="mt-1.5 text-sm text-slate-500">Join your <b className="text-violet-600">Wefyx.pro</b> support network</p></div><button type="button" className="flex h-9 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600"><Globe2 size={15} strokeWidth={1.8}/><span>English</span><ChevronDown size={14} strokeWidth={2}/></button></div>
-          <div className="mb-4 grid grid-cols-2 rounded-xl border bg-slate-50 p-1"><button type="button" aria-pressed={accountType === "vendor"} onClick={() => setAccountType("vendor")} className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><Users size={16}/> Vendor / Partner</button><button type="button" aria-pressed={accountType === "customer"} onClick={() => setAccountType("customer")} className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><CircleUserRound size={16}/> Customer / Client</button></div>
+          <div className="mb-2 grid grid-cols-3 rounded-xl border bg-slate-50 p-1"><button type="button" aria-pressed={accountType === "customer"} onClick={() => setAccountType("customer")} className={`flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><CircleUserRound size={15}/> Customer</button><button type="button" aria-pressed={accountType === "vendor"} onClick={() => setAccountType("vendor")} className={`flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><Users size={15}/> Vendor</button><button type="button" aria-pressed={accountType === "employee"} onClick={() => setAccountType("employee")} className={`flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "employee" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><UserRound size={15}/> Employee</button></div>
+          <p className="mb-4 text-center text-[11px] text-slate-500">{accountType === "employee" ? "Employee registrations require administrator approval before sign in." : `Create a ${accountType} account to access your Wefyx workspace.`}</p>
           <form onSubmit={submit} className="space-y-3">
             <LoginField label="Full name" icon={UserRound}><input required maxLength={120} value={name} onChange={(event) => setName(event.target.value)} type="text" className="w-full bg-transparent text-sm outline-none" placeholder="Your full name" /></LoginField>
             <LoginField label="Company / organization" icon={Building2}><input required maxLength={200} value={organization} onChange={(event) => setOrganization(event.target.value)} type="text" className="w-full bg-transparent text-sm outline-none" placeholder="Your company name" /></LoginField>
             <LoginField label="Email address" icon={Mail}><input required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} type="email" className="w-full bg-transparent text-sm outline-none" placeholder="you@company.com" /></LoginField>
+            <LoginField label="Phone number" icon={Phone}><input required maxLength={25} value={phone} onChange={(event) => setPhone(event.target.value)} type="tel" className="w-full bg-transparent text-sm outline-none" placeholder="+971 50 123 4567" /></LoginField>
             <div><label className="mb-2 block text-xs font-semibold">Password</label><div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-blue-50"><LockKeyhole size={18} className="text-slate-400"/><input required minLength={8} maxLength={72} value={password} onChange={(event) => setPassword(event.target.value)} type={showPassword ? "text" : "password"} className="w-full bg-transparent text-sm outline-none" placeholder="At least 8 characters"/><button type="button" aria-label="Show password" onClick={() => setShowPassword(!showPassword)} className="text-slate-400">{showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></div>
             <div><label className="mb-2 block text-xs font-semibold">Confirm password</label><div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-blue-50"><LockKeyhole size={18} className="text-slate-400"/><input required value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} type={showConfirmPassword ? "text" : "password"} className="w-full bg-transparent text-sm outline-none" placeholder="Repeat your password"/><button type="button" aria-label="Show confirm password" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="text-slate-400">{showConfirmPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></div>
             <label className="flex items-start gap-2 pt-1 text-xs leading-5 text-slate-600"><input required type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-1 accent-blue-600"/><span>I have read and acknowledge the <a href="/privacy-policy" className="font-semibold text-violet-600 hover:underline">Privacy Policy</a>.</span></label>
@@ -2414,11 +2433,11 @@ function LogoutAlert({ onCancel, onConfirm }) {
     </div>
   );
 }
-function AuthenticatedApp() {
+function AuthenticatedApp({ initialRegister = false }) {
   const [authenticated, setAuthenticated] = useState(
     () => localStorage.getItem("wefyx-auth") === "true",
   ),
-    [registering, setRegistering] = useState(false),
+    [registering, setRegistering] = useState(() => initialRegister),
     [loginEmail, setLoginEmail] = useState(""),
     [page, setPage] = useState("Dashboard"),
     [previousPage, setPreviousPage] = useState("Dashboard"),
@@ -2517,6 +2536,8 @@ export default function App() {
   const path = window.location.pathname.replace(/\/$/, "") || "/";
   if (path === "/privacy-policy") return <PrivacyPolicyPage />;
   if (path === "/portal") return <AuthenticatedApp />;
+  if (path === "/register") return <PublicRegistration />;
+  if (path === "/careers") return <CareersPage />;
   if (path === "/rent") return <RentalCatalog />;
   if (path === "/rent/dell-latitude-5550") return <RentalDetail />;
   if (path === "/cart") return <CartPage />;

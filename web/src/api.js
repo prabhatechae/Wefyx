@@ -4,3 +4,5 @@ async function response(request){if(request.status===401){localStorage.removeIte
 export async function login(email,password){return response(await fetch(`${BASE}/auth/login`,{method:"POST",headers:headers(true),body:JSON.stringify({email,password})}))}
 export async function get(path){const organization=localStorage.getItem("wefyx-organization")||"ALL";const scoped=path==="/users"&&organization!=="ALL"?`${path}?organization=${encodeURIComponent(organization)}`:path;const data=await response(await fetch(`${BASE}${scoped}`,{headers:headers()}));if(path==="/tickets"&&organization!=="ALL"&&Array.isArray(data))return data.filter(item=>item.customer===organization);return data}
 export async function send(path,method,body){return response(await fetch(`${BASE}${path}`,{method,headers:headers(true),body:body?JSON.stringify(body):undefined}))}
+// Public onboarding endpoints must not inherit a stale portal access token.
+export async function sendPublic(path,method,body){return response(await fetch(`${BASE}${path}`,{method,credentials:"omit",headers:{"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined}))}
