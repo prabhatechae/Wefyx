@@ -29,7 +29,7 @@ public class SecurityConfig {
         config.setAllowCredentials(false);
         var source=new UrlBasedCorsConfigurationSource();source.registerCorsConfiguration("/**",config);return source;
     }
-    @Bean SecurityFilterChain security(HttpSecurity http,JwtFilter jwt)throws Exception{return http.csrf(c->c.disable()).cors(c->{}).sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling(e->e.authenticationEntryPoint((request,response,error)->response.sendError(HttpServletResponse.SC_UNAUTHORIZED))).authorizeHttpRequests(a->a.requestMatchers("/","/index.html","/assets/**","/images/**","/favicon.ico","/api/auth/login","/api/auth/register","/error").permitAll().anyRequest().authenticated()).addFilterBefore(jwt,UsernamePasswordAuthenticationFilter.class).build();}
+    @Bean SecurityFilterChain security(HttpSecurity http,JwtFilter jwt)throws Exception{return http.csrf(c->c.disable()).cors(c->{}).sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling(e->e.authenticationEntryPoint((request,response,error)->response.sendError(HttpServletResponse.SC_UNAUTHORIZED))).authorizeHttpRequests(a->a.requestMatchers("/","/index.html","/assets/**","/images/**","/favicon.ico","/portal","/register","/careers","/privacy-policy","/rent","/rent/**","/cart","/services","/data-center","/about","/contact","/shop","/api/auth/login","/api/auth/register","/error").permitAll().anyRequest().authenticated()).addFilterBefore(jwt,UsernamePasswordAuthenticationFilter.class).build();}
 }
 @Component class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwt; JwtFilter(JwtService jwt){this.jwt=jwt;}
