@@ -13,6 +13,7 @@ public class SupportUser {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @NotBlank private String name;
     @Email @NotBlank @Column(unique = true) private String email;
+    private String phone;
     @NotBlank private String role;
     @NotBlank private String organization;
     private String location;
@@ -26,6 +27,6 @@ public class SupportUser {
     private String password;
     protected SupportUser() {}
     public SupportUser(String name,String email,String role,String organization,String location,UserStatus status,LocalDateTime lastLogin,LocalDateTime joinedOn){this.name=name;this.email=email;this.role=role;this.organization=organization;this.location=location;this.status=status;this.lastLogin=lastLogin;this.joinedOn=joinedOn;}
-    public Long getId(){return id;} public String getName(){return name;} public void setName(String v){name=v;} public String getEmail(){return email;} public void setEmail(String v){email=v;} public String getRole(){return role;} public void setRole(String v){role=v;} public String getOrganization(){return organization;} public void setOrganization(String v){organization=v;} public String getLocation(){return location;} public void setLocation(String v){location=v;} public UserStatus getStatus(){return status;} public void setStatus(UserStatus v){status=v;} public LocalDateTime getLastLogin(){return lastLogin;} public void setLastLogin(LocalDateTime v){lastLogin=v;} public LocalDateTime getJoinedOn(){return joinedOn;} public void setJoinedOn(LocalDateTime v){joinedOn=v;}
+    public Long getId(){return id;} public String getName(){return name;} public void setName(String v){name=v;} public String getEmail(){return email;} public void setEmail(String v){email=v;} public String getPhone(){return phone;} public void setPhone(String v){phone=v;} public String getRole(){return role;} public void setRole(String v){role=v;} public String getOrganization(){return organization;} public void setOrganization(String v){organization=v;} public String getLocation(){return location;} public void setLocation(String v){location=v;} public UserStatus getStatus(){return status;} public void setStatus(UserStatus v){status=v;} public LocalDateTime getLastLogin(){return lastLogin;} public void setLastLogin(LocalDateTime v){lastLogin=v;} public LocalDateTime getJoinedOn(){return joinedOn;} public void setJoinedOn(LocalDateTime v){joinedOn=v;}
     public String getPasswordHash(){return passwordHash;} public void setPasswordHash(String v){passwordHash=v;} public String getPassword(){return password;} public void setPassword(String v){password=v;}
 }

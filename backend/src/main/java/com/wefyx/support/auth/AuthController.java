@@ -56,6 +56,7 @@ public class AuthController {
         var now=java.time.LocalDateTime.now();
         boolean pending="EMPLOYEE".equals(request.role());
         var user=new SupportUser(request.name().trim(),email,request.role(),request.organization().trim(),"",pending?UserStatus.PENDING:UserStatus.ACTIVE,null,now);
+        user.setPhone(request.phone().trim());
         user.setPasswordHash(passwords.encode(request.password()));users.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message",pending?"Registration submitted. An administrator must approve your account before sign in.":"Account created. Please sign in.","email",email,"role",request.role(),"status",pending?"PENDING":"ACTIVE"));
     }
@@ -70,5 +71,5 @@ public class AuthController {
         return "EMPLOYEE";
     }
     public record LoginRequest(String email,String password){}
-    public record RegistrationRequest(@NotBlank @Size(max=120) String name,@NotBlank @Email @Size(max=254) String email,@NotBlank @Size(min=8,max=72) String password,@NotBlank @Size(max=200) String organization,@NotBlank String role){}
+    public record RegistrationRequest(@NotBlank @Size(max=120) String name,@NotBlank @Email @Size(max=254) String email,@NotBlank @Pattern(regexp="^[+0-9][0-9() .-]{6,24}$",message="Enter a valid phone number") String phone,@NotBlank @Size(min=8,max=72) String password,@NotBlank @Size(max=200) String organization,@NotBlank String role){}
 }

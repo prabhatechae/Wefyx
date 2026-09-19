@@ -12,11 +12,23 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.io.IOException;
 import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+    @Bean CorsConfigurationSource corsConfigurationSource(){
+        var config=new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("http://127.0.0.1:*","http://localhost:*","https://wefyx.pro","https://www.wefyx.pro"));
+        config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization","Content-Type","Accept"));
+        config.setExposedHeaders(List.of("Authorization"));
+        config.setAllowCredentials(false);
+        var source=new UrlBasedCorsConfigurationSource();source.registerCorsConfiguration("/**",config);return source;
+    }
     @Bean SecurityFilterChain security(HttpSecurity http,JwtFilter jwt)throws Exception{return http.csrf(c->c.disable()).cors(c->{}).sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling(e->e.authenticationEntryPoint((request,response,error)->response.sendError(HttpServletResponse.SC_UNAUTHORIZED))).authorizeHttpRequests(a->a.requestMatchers("/","/index.html","/assets/**","/images/**","/favicon.ico","/api/auth/login","/api/auth/register","/error").permitAll().anyRequest().authenticated()).addFilterBefore(jwt,UsernamePasswordAuthenticationFilter.class).build();}
 }
 @Component class JwtFilter extends OncePerRequestFilter {
