@@ -11,8 +11,9 @@ import {
   KeyRound,
   CheckCircle2,
   UserRound,
+  Camera,
 } from "lucide-react";
-import { get } from "./api";
+import { get, getProfilePhotoUrl, uploadProfilePhoto } from "./api";
 
 function Info({ label, value }) {
   return (
@@ -23,18 +24,24 @@ function Info({ label, value }) {
   );
 }
 
-export default function AdminProfilePage({ onBack }) {
-  const [user, setUser] = useState(null);
+export default function AdminProfilePage({ onBack, profile }) {
+  const [user, setUser] = useState(profile || null);
+  const [photoUrl, setPhotoUrl] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [photoError, setPhotoError] = useState("");
   useEffect(() => {
-    get("/users").then((users) =>
-      setUser(
-        Array.isArray(users)
-          ? users.find((item) => item.email === "admin@wefyx.pro") || null
-          : null,
-      ),
-    );
+    if (profile?.role && profile.role !== "SUPER_ADMIN") {
+      get("/auth/me").then(setUser).catch(() => {});
+      return;
+    }
+    get("/users").then((users) => setUser(Array.isArray(users) ? users.find((item) => item.email === (profile?.email || "admin@wefyx.pro")) || profile || null : profile || null)).catch(() => {});
+  }, [profile]);
+  useEffect(() => {
+    let active=true,currentUrl=null;
+    getProfilePhotoUrl().then((url)=>{if(active){currentUrl=url;setPhotoUrl(url)}}).catch(()=>{});
+    return()=>{active=false;if(currentUrl)URL.revokeObjectURL(currentUrl)};
   }, []);
-  const admin = user || {
+  const account = user || profile || {
     name: "System Administrator",
     email: "admin@wefyx.pro",
     role: "Super Admin",
@@ -44,6 +51,16 @@ export default function AdminProfilePage({ onBack }) {
     joinedOn: "2026-04-21T09:00:00",
     lastLogin: new Date().toISOString(),
   };
+  const roleLabel = { SUPER_ADMIN: "Super Admin", EMPLOYEE: "Employee", VENDOR: "Vendor", CUSTOMER: "Customer" }[account.role] || account.role;
+  const initials = String(account.name || "Wefyx User").split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+  const accessScope = account.role === "SUPER_ADMIN" ? "All organizations" : account.organization || "Own account";
+  async function changePhoto(event){
+    const file=event.target.files?.[0];if(!file)return;
+    setPhotoError("");setUploading(true);
+    try{await uploadProfilePhoto(file);const next=await getProfilePhotoUrl();setPhotoUrl((previous)=>{if(previous)URL.revokeObjectURL(previous);return next});window.dispatchEvent(new Event("wefyx-profile-photo-updated"));}
+    catch(error){setPhotoError(error.message||"Unable to update profile photo.")}
+    finally{setUploading(false);event.target.value=""}
+  }
   return (
     <div className="space-y-4 p-4 lg:p-5">
       <button
@@ -54,45 +71,59 @@ export default function AdminProfilePage({ onBack }) {
       </button>
       <div className="flex flex-col items-start gap-4 xl:flex-row">
         <section className="card flex w-full flex-wrap items-start gap-6 p-6 xl:min-w-0 xl:flex-1">
-          <div className="grid h-24 w-24 place-items-center rounded-full bg-blue-100 text-2xl font-bold text-brand">
-            SA
+          <div className="relative shrink-0">
+            <div className="relative flex h-24 w-24 min-w-24 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-2xl font-bold text-brand ring-4 ring-white shadow-md">
+              {photoUrl ? (
+                <img
+                  src={photoUrl}
+                  alt={`${account.name} profile`}
+                  draggable={false}
+                  className="absolute inset-0 block h-full w-full object-cover object-center"
+                />
+              ) : (
+                <span className="block select-none leading-none">{initials}</span>
+              )}
+            </div>
+            <label title="Upload profile photo" className="absolute bottom-0 right-0 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-brand text-white shadow-lg transition hover:bg-blue-700"><Camera size={16}/><input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={changePhoto} disabled={uploading}/></label>
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-2xl font-bold">{admin.name}</h2>
+              <h2 className="text-2xl font-bold">{account.name}</h2>
               <span className="pill bg-emerald-50 text-emerald-600">
                 Active
               </span>
             </div>
             <span className="mt-2 inline-flex items-center gap-1 rounded bg-violet-50 px-2 py-1 text-[10px] font-semibold text-violet-600">
               <ShieldCheck size={12} />
-              {admin.role}
+              {roleLabel}
             </span>
             <div className="mt-4 space-y-2 text-xs text-slate-500">
               <div className="flex gap-2">
                 <Mail size={14} />
-                {admin.email}
+                {account.email}
               </div>
               <div className="flex gap-2">
                 <Building2 size={14} />
-                {admin.organization}
+                {account.organization}
               </div>
               <div className="flex gap-2">
                 <MapPin size={14} />
-                {admin.location}
+                {account.location || "—"}
               </div>
             </div>
           </div>
+          {photoError&&<p className="w-full rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{photoError}</p>}
+          {uploading&&<p className="w-full text-xs font-semibold text-brand">Uploading profile photo…</p>}
           <div className="grid min-w-[280px] flex-1 grid-cols-2 gap-5 border-l pl-6 text-xs lg:grid-cols-4">
             <div>
               <span className="text-slate-400">User ID</span>
               <b className="mt-1 block">
-                USR-{String(admin.id || 1).padStart(6, "0")}
+                {account.id ? `USR-${String(account.id).padStart(6, "0")}` : "Verified account"}
               </b>
             </div>
             <div>
               <span className="text-slate-400">Account Type</span>
-              <b className="mt-1 block">Platform Admin</b>
+              <b className="mt-1 block">{roleLabel}</b>
             </div>
             <div>
               <span className="text-slate-400">Last Login</span>
@@ -128,9 +159,10 @@ export default function AdminProfilePage({ onBack }) {
             <UserRound size={17} className="text-brand" />
             <h3 className="text-sm font-bold">Personal Information</h3>
           </div>
-          <Info label="Full Name" value={admin.name} />
-          <Info label="Email Address" value={admin.email} />
-          <Info label="Location" value={admin.location} />
+          <Info label="Full Name" value={account.name} />
+          <Info label="Email Address" value={account.email} />
+          <Info label="Phone Number" value={account.phone} />
+          <Info label="Location" value={account.location} />
           <Info label="Language" value="English" />
         </section>
         <section className="card p-5">
@@ -138,10 +170,10 @@ export default function AdminProfilePage({ onBack }) {
             <ShieldCheck size={17} className="text-violet-600" />
             <h3 className="text-sm font-bold">Role & Organization</h3>
           </div>
-          <Info label="Primary Role" value={admin.role} />
-          <Info label="Organization" value={admin.organization} />
-          <Info label="Access Scope" value="All Organizations" />
-          <Info label="Permission Level" value="Full System Access" />
+          <Info label="Primary Role" value={roleLabel} />
+          <Info label="Organization" value={account.organization} />
+          <Info label="Access Scope" value={accessScope} />
+          <Info label="Permission Level" value={account.role === "SUPER_ADMIN" ? "Full system access" : `${roleLabel} access`} />
         </section>
         <section className="card p-5">
           <div className="mb-3 flex items-center gap-2">
@@ -151,8 +183,8 @@ export default function AdminProfilePage({ onBack }) {
           <Info
             label="Last Login"
             value={
-              admin.lastLogin
-                ? new Date(admin.lastLogin).toLocaleString()
+              account.lastLogin
+                ? new Date(account.lastLogin).toLocaleString()
                 : "Today"
             }
           />
@@ -161,8 +193,8 @@ export default function AdminProfilePage({ onBack }) {
           <Info
             label="Member Since"
             value={
-              admin.joinedOn
-                ? new Date(admin.joinedOn).toLocaleDateString()
+              account.joinedOn
+                ? new Date(account.joinedOn).toLocaleDateString()
                 : "Apr 21, 2026"
             }
           />
@@ -176,8 +208,8 @@ export default function AdminProfilePage({ onBack }) {
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {[
             ["Signed in", "Current session", CheckCircle2],
-            ["Organization accessed", "All Organizations", Building2],
-            ["Permissions verified", "Super Admin access", ShieldCheck],
+            ["Organization accessed", accessScope, Building2],
+            ["Permissions verified", `${roleLabel} access`, ShieldCheck],
           ].map(([title, detail, Icon]) => (
             <div
               key={title}
