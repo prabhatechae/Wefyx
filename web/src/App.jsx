@@ -79,12 +79,14 @@ import PrivacyPolicyPage from "./PrivacyPolicyPage";
 import EmployeePortal from "./EmployeePortal";
 import EmployeeApprovals from './EmployeeApprovals';
 import VendorPortal from "./VendorPortal";
-import PublicRegistration, { CareersPage } from "./PublicRegistration";
+import PublicRegistration, { CareersPage, VendorRegistrationPage } from "./PublicRegistration";
 import CustomerPortal from "./CustomerPortal";
 import RequirementsPage from "./RequirementsPage";
 import ServiceWebsite from "./ServiceWebsite";
 import { CartPage, RentalCatalog, RentalDetail } from "./RentalPages";
 import InfoPage from "./InfoPages";
+import SupportPage from "./SupportPage";
+import { portalSessionUrl } from "./portal";
 const sections = [
   ["MAIN NAVIGATION", [["Dashboard", LayoutDashboard]]],
   [
@@ -2535,16 +2537,21 @@ function AuthenticatedApp({ initialRegister = false }) {
 export default function App() {
   const path = window.location.pathname.replace(/\/$/, "") || "/";
   if (path === "/privacy-policy") return <PrivacyPolicyPage />;
-  if (path === "/portal") return <AuthenticatedApp />;
+  if (path === "/portal") {
+    window.location.replace(portalSessionUrl());
+    return <div className="grid min-h-screen place-items-center bg-slate-50 text-sm font-semibold text-slate-600">Opening Wefyx portal…</div>;
+  }
   if (path === "/register") return <PublicRegistration />;
   if (path === "/careers") return <CareersPage />;
+  if (path === "/become-a-vendor") return <VendorRegistrationPage />;
   if (path === "/rent") return <RentalCatalog />;
   if (path === "/rent/dell-latitude-5550") return <RentalDetail />;
   if (path === "/cart") return <CartPage />;
   if (path === "/services") return <InfoPage type="services" />;
   if (path === "/data-center") return <InfoPage type="data-center" />;
   if (path === "/about") return <InfoPage type="about" />;
-  if (path === "/contact") return <InfoPage type="contact" />;
+  if (path === "/contact") return <SupportPage />;
+  if (path === "/support") return <SupportPage />;
   if (path === "/shop") return <InfoPage type="shop" />;
   return <ServiceWebsite />;
 }

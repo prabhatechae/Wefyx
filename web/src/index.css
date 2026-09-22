@@ -74,32 +74,39 @@ header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96)!importa
 
 .sr-actions svg,.sr-submit svg{width:16px}
 .sr-forms{display:grid;grid-template-columns:1.36fr 1fr;gap:14px;margin-top:16px;align-items:start}
+.sr-forms.sr-single-form{width:min(900px,calc(100% - 56px));grid-template-columns:1fr}
 .sr-forms>form{border:1px solid var(--sline);border-radius:7px;background:#fff;padding:17px 16px;box-shadow:0 3px 10px #174d7b08;align-self:start}
 .sr-forms header{display:flex;gap:14px;margin-bottom:16px}
 .sr-forms header>svg{width:36px;height:36px;padding:8px;border-radius:7px;background:#e8f3ff;color:var(--sblue)}
-.sr-forms h2{margin:1px 0 5px;font-size:20px;letter-spacing:-.7px}
-.sr-forms header p{margin:0;color:#64758e;font-size:10px;line-height:1.35}
-.sr-booking{display:grid;grid-template-columns:1fr 168px;gap:13px;align-items:start;align-content:start;grid-auto-rows:min-content}
+.sr-forms h2{margin:1px 0 6px;font-size:23px;letter-spacing:-.7px}
+.sr-forms header p{margin:0;color:#64758e;font-size:13px;line-height:1.5}
+.sr-booking{display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:start;align-content:start;grid-auto-rows:min-content}
 .sr-booking>.sr-fields{min-height:0}
-.sr-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;align-content:start;grid-auto-rows:min-content}
-.sr-fields label{font-size:9px;font-weight:700;color:#334964}
+.sr-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;align-items:start;align-content:start;grid-auto-rows:min-content}
+.sr-fields label{font-size:12px;font-weight:700;color:#334964}
 .sr-fields sup{color:#e54747;margin-left:3px}
-.sr-fields input,.sr-fields select,.sr-fields textarea{width:100%;height:29px;margin-top:5px;border:1px solid #dbe4ee;border-radius:3px;background:#fff;padding:0 9px;color:#6c7d94;font:9px Inter,Arial,sans-serif;outline:none}
-.sr-fields textarea{height:82px;padding-top:8px;resize:vertical}
+.sr-fields input,.sr-fields select,.sr-fields textarea{width:100%;height:42px;margin-top:7px;border:1px solid #dbe4ee;border-radius:5px;background:#fff;padding:0 12px;color:#42536a;font:12px Inter,Arial,sans-serif;outline:none}
+.sr-fields textarea{height:105px;padding-top:11px;line-height:1.45;resize:vertical}
 .sr-fields input:focus,.sr-fields select:focus,.sr-fields textarea:focus{border-color:var(--sblue);box-shadow:0 0 0 2px #0870ef18}
 .sr-summary{padding:17px 12px;background:linear-gradient(135deg,#eef7ff,#dceeff);border-radius:4px}
-.sr-summary h3{font-size:12px;margin:0 0 15px}
-.sr-summary p,.sr-summary strong{display:flex;justify-content:space-between;margin:10px 0;font-size:10px}
+.sr-summary h3{font-size:16px;margin:0 0 17px}
+.sr-summary p,.sr-summary strong{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:12px 0;font-size:13px}
 .sr-summary strong{padding-top:10px;border-top:1px solid #cdddea}
-.sr-summary button{width:100%;height:42px;margin:38px 0 13px;padding:0 8px;border:1px solid var(--sblue);border-radius:5px;background:var(--sblue);color:#fff;font-size:11px;font-weight:800;cursor:pointer}
-.sr-summary small{display:flex;gap:5px;color:#70819a;font-size:8px}
+.sr-summary .sr-free{color:#078a4b;font-size:15px;letter-spacing:.05em}
+.sr-old-price,.wp-old-price{color:inherit;text-decoration-line:line-through;text-decoration-color:#000;text-decoration-thickness:2px}
+.sr-summary button{width:100%;height:48px;margin:32px 0 14px;padding:0 10px;border:1px solid var(--sblue);border-radius:6px;background:var(--sblue);color:#fff;font-size:13px;font-weight:800;cursor:pointer}
+.sr-summary small{display:flex;gap:6px;color:#70819a;font-size:10px;line-height:1.4}
 .sr-summary small svg{width:12px}
 .sr-upload{display:block}
-.sr-upload>span{height:82px;margin-top:5px;border:1px dashed #b6cde5;border-radius:3px;background:#fbfdff;display:grid;place-content:center;text-align:center;color:#6b7d92;font-weight:400;line-height:1.5}
+.sr-upload .sr-file-input{display:none}
+.sr-upload>span{height:105px;margin-top:7px;border:1px dashed #b6cde5;border-radius:5px;background:#fbfdff;display:grid;place-content:center;text-align:center;color:#6b7d92;font-size:11px;font-weight:400;line-height:1.5}
+.sr-upload>span small{display:block;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#61728a;font-size:10px}
 .sr-upload svg{display:block;width:23px;height:23px;margin:0 auto 3px;color:var(--sblue)}
 .sr-upload b{color:#096de7}
 .sr-requirement .sr-wide{grid-column:span 2}
-.sr-submit{grid-column:span 2;width:100%;border:0;height:41px;border-radius:5px;background:var(--sblue);color:#fff;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px}
+.sr-signed-customer{display:flex;align-items:center;gap:11px;padding:13px 15px;border:1px solid #bfe4ce;border-radius:7px;background:#effcf4;color:#165c38;font-size:12px}.sr-signed-customer>svg{width:21px}.sr-signed-customer span{display:flex;flex-direction:column}.sr-signed-customer small{margin-top:2px;color:#5e766a;font-size:10px}
+.sr-submit{grid-column:span 2;width:100%;border:0;height:48px;border-radius:6px;background:var(--sblue);color:#fff;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px}
+.sr-submit:disabled{cursor:wait;opacity:.65}
 .sr-core{padding:19px 0}
 .sr-core h2,.sr-process h2{margin:0;font-size:25px;letter-spacing:-1.2px}
 .sr-core>p,.sr-process>p{margin:4px 0 13px;color:#61728a;font-size:11px}
@@ -134,6 +141,16 @@ header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96)!importa
 .sr-support a svg{width:13px}
 .sr-notice{position:fixed;right:22px;bottom:22px;z-index:100;display:flex;align-items:center;gap:8px;padding:12px 15px;border-radius:6px;background:#063266;color:#fff;font-size:11px;box-shadow:0 12px 30px #0004}
 .sr-notice svg{width:16px;color:#6fce99}
+.sr-success-blast{position:fixed;inset:0;z-index:200;display:grid;place-items:center;overflow:hidden;background:rgba(4,20,43,.58);backdrop-filter:blur(5px);animation:srFadeIn .25s ease both}
+.sr-success-card{position:relative;z-index:2;width:min(430px,calc(100% - 32px));padding:42px 32px 34px;border-radius:24px;background:#fff;text-align:center;box-shadow:0 26px 75px rgba(1,23,52,.35);animation:srSuccessPop .55s cubic-bezier(.2,1.35,.35,1) both}
+.sr-success-card>svg{width:46px;height:46px;margin:-18px auto 10px;padding:11px;border-radius:50%;background:#e8fff3;color:#079455;stroke-width:3}
+.sr-success-card h2{margin:5px 0 9px;color:#071a3a;font-size:25px;letter-spacing:-.7px}
+.sr-success-card p{margin:0;color:#66788f;font-size:13px;line-height:1.55}
+.sr-success-flower{position:absolute;left:50%;top:-35px;width:70px;height:70px;transform:translateX(-50%);display:grid;place-items:center;border:6px solid #fff;border-radius:50%;background:linear-gradient(135deg,#7b4dff,#ff4e91);color:#fff;font-size:36px;box-shadow:0 10px 25px rgba(100,58,230,.3);animation:srFlowerSpin .8s cubic-bezier(.2,1.3,.3,1)}
+.sr-success-progress{height:5px;margin-top:24px;overflow:hidden;border-radius:10px;background:#e8eef7}.sr-success-progress:after{content:"";display:block;width:100%;height:100%;transform-origin:left;background:linear-gradient(90deg,#7b4dff,#ff4e91,#ffb02e);animation:srProgress 2.2s linear both}
+.sr-flower-burst{position:absolute;left:50%;top:50%;width:0;height:0}.sr-flower-burst i{--angle:calc(var(--petal) * 15deg);position:absolute;width:14px;height:25px;border-radius:80% 20% 70% 30%;background:#ff4e91;opacity:0;transform:rotate(var(--angle)) translateY(0) scale(.2);animation:srPetalBlast 1.15s ease-out calc(var(--petal) * 12ms) both}.sr-flower-burst i:nth-child(4n+2){background:#7b4dff}.sr-flower-burst i:nth-child(4n+3){background:#ffb02e}.sr-flower-burst i:nth-child(4n){background:#28b8ee}
+@keyframes srFadeIn{from{opacity:0}to{opacity:1}}@keyframes srSuccessPop{from{opacity:0;transform:scale(.72) translateY(25px)}to{opacity:1;transform:scale(1) translateY(0)}}@keyframes srFlowerSpin{from{transform:translateX(-50%) scale(.25) rotate(-120deg)}to{transform:translateX(-50%) scale(1) rotate(0)}}@keyframes srPetalBlast{0%{opacity:0;transform:rotate(var(--angle)) translateY(0) scale(.2)}20%{opacity:1}100%{opacity:0;transform:rotate(var(--angle)) translateY(-330px) scale(1) rotate(240deg)}}@keyframes srProgress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){.sr-success-blast *{animation-duration:.01ms!important}}
 
 @media(max-width:1100px){
   .sr-copy h1{font-size:36px}
