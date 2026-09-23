@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: it-support-service
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:file:./data/itsupport;AUTO_SERVER=TRUE}
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    open-in-view: false
+  h2:
+    console:
+      enabled: ${H2_CONSOLE_ENABLED:false}
+server:
+  port: ${PORT:8080}
+wefyx:
+  seed:
+    enabled: ${SEED_DATA:false}
+  cors-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:4173}
+  auth:
+    email: ${ADMIN_EMAIL:admin@wefyx.pro}
+    password: ${ADMIN_PASSWORD:admin123}
+    vendor-email: ${VENDOR_EMAIL:}
+    vendor-password: ${VENDOR_PASSWORD:}
+    vendor-name: ${VENDOR_NAME:TechSolutions LLC}
+    secret: ${JWT_SECRET:change-this-secret-before-production-deployment-32chars}
+    expiration-seconds: ${JWT_EXPIRATION_SECONDS:28800}

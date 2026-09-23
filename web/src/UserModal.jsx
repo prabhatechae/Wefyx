@@ -3,12 +3,18 @@ import {
   ORGANIZATIONS,
   selectedOrganization,
 } from "./organizationContext";
-export default function UserModal({ user, onClose, onSave }) {
+const roleOptions = {
+  CUSTOMER: ["CUSTOMER", "Customer Admin"],
+  EMPLOYEE: ["EMPLOYEE", "L1 Technician", "L2 Engineer", "L3 Engineer", "Support Agent", "NOC Engineer", "Finance Manager"],
+  VENDOR: ["VENDOR", "Vendor Manager"],
+  ALL: ["CUSTOMER", "Customer Admin", "EMPLOYEE", "L1 Technician", "L2 Engineer", "L3 Engineer", "VENDOR", "Vendor Manager", "Support Agent", "NOC Engineer", "Finance Manager"],
+};
+export default function UserModal({ user, onClose, onSave, accountType = "ALL" }) {
   const [form, setForm] = useState(() =>
     user || {
       name: "",
       email: "",
-      role: "Customer Admin",
+      role: accountType === "ALL" ? "CUSTOMER" : accountType,
       organization: selectedOrganization(),
       location: "Dubai, UAE",
       status: "ACTIVE",
@@ -98,14 +104,7 @@ export default function UserModal({ user, onClose, onSave }) {
               onChange={(e) => set("role", e.target.value)}
               className="mt-2 h-11 w-full rounded-lg border px-3 font-normal"
             >
-              <option>Customer Admin</option>
-              <option>L1 Technician</option>
-              <option>L2 Engineer</option>
-              <option>L3 Engineer</option>
-              <option>Vendor Manager</option>
-              <option>Support Agent</option>
-              <option>NOC Engineer</option>
-              <option>Finance Manager</option>
+              {(roleOptions[accountType] || roleOptions.ALL).map((role) => <option key={role}>{role}</option>)}
             </select>
           </label>
           <label className="text-xs font-semibold">

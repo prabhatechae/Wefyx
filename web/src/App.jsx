@@ -59,7 +59,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
-import { get, send, login } from "./api";
+import { get, send, login, getProfilePhotoUrl } from "./api";
 import { localUsers, localRoles } from "./data";
 import { HelpCenterPage, NotificationsPage } from "./SupportPages";
 import { MessagesPage } from "./MessagesPage";
@@ -77,14 +77,20 @@ import DynamicPermissionsPage from "./DynamicPermissionsPage";
 import PrivacyPolicyPage from "./PrivacyPolicyPage";
 import EmployeePortal from "./EmployeePortal";
 import EmployeeApprovals from './EmployeeApprovals';
+import VendorApprovals from './VendorApprovals';
 import VendorPortal from "./VendorPortal";
+import CustomerPortal from "./CustomerPortal";
 import RequirementsPage from "./RequirementsPage";
+import CustomerTicketsPage from "./CustomerTicketsPage";
+import TicketDeskPage from "./TicketDeskPage";
 const sections = [
   ["MAIN NAVIGATION", [["Dashboard", LayoutDashboard]]],
   [
     "USER & ACCESS MANAGEMENT",
     [
-      ["Users Management", Users],
+      ["Customers", Building2],
+      ["Employees", UserRound],
+      ["Vendors", Store],
       ["Role Management", ShieldCheck],
       ["Permissions", KeyRound],
       ["Permission Matrix", Shield],
@@ -144,6 +150,17 @@ const sections = [
     ],
   ],
 ];
+const roleSections = {
+  CUSTOMER: [
+    ["CUSTOMER", [["Dashboard", LayoutDashboard], ["My Requirements", ReceiptText], ["Support Tickets", Ticket], ["Notifications", Bell], ["Help Center", HelpCircle]]],
+  ],
+  EMPLOYEE: [
+    ["EMPLOYEE", [["Dashboard", LayoutDashboard], ["Requirements & Quotes", ReceiptText], ["Tickets", Ticket], ["Notifications", Bell], ["Help Center", HelpCircle]]],
+  ],
+  VENDOR: [
+    ["VENDOR", [["Dashboard", LayoutDashboard], ["Orders & Quotes", ShoppingCart], ["Notifications", Bell], ["Help Center", HelpCircle]]],
+  ],
+};
 function Sidebar({ page, setPage, open, setOpen }) {
   return (
     <aside
@@ -197,6 +214,7 @@ function Sidebar({ page, setPage, open, setOpen }) {
 }
 function Header({
   page,
+  user,
   onMenu,
   onLogout,
   onHelp,
@@ -204,6 +222,11 @@ function Header({
   onMessages,
   onProfile,
 }) {
+  const isAdmin = user?.role === "SUPER_ADMIN";
+  const roleLabel = { CUSTOMER: "Customer", EMPLOYEE: "Employee", VENDOR: "Vendor", SUPER_ADMIN: "Super Admin" }[user?.role] || "Account";
+  const initials = String(user?.name || roleLabel).split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+  const [profilePhoto,setProfilePhoto]=useState(null);
+  useEffect(()=>{let current=null,active=true;const load=()=>getProfilePhotoUrl().then((url)=>{if(!active)return;if(current)URL.revokeObjectURL(current);current=url;setProfilePhoto(url)}).catch(()=>{});load();window.addEventListener("wefyx-profile-photo-updated",load);return()=>{active=false;window.removeEventListener("wefyx-profile-photo-updated",load);if(current)URL.revokeObjectURL(current)}},[user?.email]);
   const [org, setOrg] = useState(
     () => localStorage.getItem("wefyx-organization") || "ALL",
   );
@@ -220,10 +243,10 @@ function Header({
         </button>
         <div>
           <h1 className="text-lg font-bold">
-            {page === "Dashboard" ? "Super Admin Dashboard" : page}
+            {page === "Dashboard" ? `${roleLabel} Dashboard` : page}
           </h1>
           <p className="text-[11px] text-slate-500">
-            {org === "ALL" ? "All Organizations" : org} › {page}
+            {isAdmin ? (org === "ALL" ? "All Organizations" : org) : (user?.organization || roleLabel)} › {page}
           </p>
         </div>
       </div>
@@ -235,7 +258,7 @@ function Header({
             placeholder="Search everything..."
           />
         </div>
-        <div className="hidden items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-2 lg:flex">
+        {isAdmin && <div className="hidden items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-2 lg:flex">
           <Building2 size={15} className="text-brand" />
           <select
             value={org}
@@ -250,7 +273,7 @@ function Header({
             <option>MSP Global Solutions</option>
             <option>TechGear LLC</option>
           </select>
-        </div>
+        </div>}
         <Search className="lg:hidden" size={18} />
         <button
           onClick={onNotifications}
@@ -278,12 +301,12 @@ function Header({
           <HelpCircle size={18} />
         </button>
         <div className="hidden items-center gap-2 border-l pl-4 sm:flex">
-          <button onClick={onProfile} title="View profile" className="grid h-9 w-9 place-items-center rounded-full bg-blue-100 font-bold text-brand hover:ring-2 hover:ring-brand/30">
-            SA
+          <button onClick={onProfile} title="View profile" className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-blue-100 font-bold text-brand hover:ring-2 hover:ring-brand/30">
+            {profilePhoto?<img src={profilePhoto} alt="Profile" className="h-full w-full object-cover"/>:initials}
           </button>
           <button onClick={onProfile} className="hidden text-left 2xl:block">
-            <div className="text-xs font-semibold">System Administrator</div>
-            <div className="text-[10px] text-slate-500">Super Admin</div>
+            <div className="text-xs font-semibold">{user?.name || roleLabel}</div>
+            <div className="text-[10px] text-slate-500">{roleLabel}</div>
           </button>
           <button
             onClick={onLogout}
@@ -1033,7 +1056,7 @@ function Login({ onLogin }) {
     [show, setShow] = useState(false),
     [loading, setLoading] = useState(false),
     [error, setError] = useState(""),
-    [accountType, setAccountType] = useState("vendor");
+    [accountType, setAccountType] = useState("customer");
   async function submit(e) {
     e.preventDefault();
     setError("");
@@ -1145,22 +1168,30 @@ function Login({ onLogin }) {
               <ChevronDown size={14} strokeWidth={2} />
             </button>
           </div>
-          <div className="mb-4 grid grid-cols-2 rounded-xl border bg-slate-50 p-1">
-            <button
-              type="button"
-              aria-pressed={accountType === "vendor"}
-              onClick={() => setAccountType("vendor")}
-              className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
-            >
-              <Users size={16}/> Vendor / Partner
-            </button>
+          <div className="mb-4 grid grid-cols-3 rounded-xl border bg-slate-50 p-1">
             <button
               type="button"
               aria-pressed={accountType === "customer"}
               onClick={() => setAccountType("customer")}
-              className={`flex h-10 items-center justify-center gap-2 rounded-lg text-xs font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
+              className={`flex h-10 items-center justify-center gap-1.5 rounded-lg px-2 text-[11px] font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
             >
-              <CircleUserRound size={16}/> Customer / Client
+              <CircleUserRound size={15}/> Customer
+            </button>
+            <button
+              type="button"
+              aria-pressed={accountType === "employee"}
+              onClick={() => setAccountType("employee")}
+              className={`flex h-10 items-center justify-center gap-1.5 rounded-lg px-2 text-[11px] font-semibold transition-all ${accountType === "employee" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
+            >
+              <UserRound size={15}/> Employee
+            </button>
+            <button
+              type="button"
+              aria-pressed={accountType === "vendor"}
+              onClick={() => setAccountType("vendor")}
+              className={`flex h-10 items-center justify-center gap-1.5 rounded-lg px-2 text-[11px] font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
+            >
+              <Users size={15}/> Vendor
             </button>
           </div>
           <form onSubmit={submit} className="space-y-3">
@@ -1282,7 +1313,7 @@ function LoginField({ label, icon: Icon, children }) {
     </div>
   );
 }
-function AppSidebar({ page, setPage, expanded, setExpanded }) {
+function AppSidebar({ page, setPage, expanded, setExpanded, menuSections = sections }) {
   return (
     <aside
       className={`${expanded ? "w-[220px]" : "w-0 lg:w-[70px]"} fixed inset-y-0 z-30 shrink-0 overflow-hidden bg-navy text-white transition-[width] duration-300 lg:static`}
@@ -1306,7 +1337,7 @@ function AppSidebar({ page, setPage, expanded, setExpanded }) {
         )}
       </div>
       <nav className="h-[calc(100vh-132px)] overflow-y-auto overflow-x-hidden py-2">
-        {sections.map(([title, items]) => (
+        {menuSections.map(([title, items]) => (
           <div key={title}>
             <div
               className={`${expanded ? "nav-section" : "my-3 hidden h-px bg-white/10 lg:block"}`}
@@ -2317,7 +2348,27 @@ function LogoutAlert({ onCancel, onConfirm }) {
     </div>
   );
 }
+function consumePortalHandoff() {
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const token = params.get("access_token");
+  const encodedUser = params.get("user");
+  if (!token || !encodedUser) return;
+  try {
+    const user = JSON.parse(encodedUser);
+    localStorage.setItem("wefyx-token", token);
+    localStorage.setItem("wefyx-auth", "true");
+    localStorage.setItem("wefyx-user", JSON.stringify(user));
+    localStorage.setItem("wefyx-account-type", String(user.role || "").toLowerCase());
+    window.history.replaceState({}, "", `${window.location.pathname}${window.location.search}`);
+  } catch {
+    localStorage.removeItem("wefyx-auth");
+    localStorage.removeItem("wefyx-token");
+    localStorage.removeItem("wefyx-user");
+  }
+}
+
 function AuthenticatedApp() {
+  consumePortalHandoff();
   const [authenticated, setAuthenticated] = useState(
       () => localStorage.getItem("wefyx-auth") === "true",
     ),
@@ -2339,20 +2390,32 @@ function AuthenticatedApp() {
     setAuthenticated(false);
   }
   const signedInUser=JSON.parse(localStorage.getItem("wefyx-user")||"null");
-  if(signedInUser?.role==="EMPLOYEE") return <EmployeePortal user={signedInUser} onLogout={logout}/>;
-  if(signedInUser?.role==="VENDOR") return <VendorPortal user={signedInUser} onLogout={logout}/>;
-  if(signedInUser?.role!=="SUPER_ADMIN") { logout(); return null; }
-  let content =
-    page === "Dashboard" ? (
+  const userRole = signedInUser?.role;
+  if(!["SUPER_ADMIN","EMPLOYEE","VENDOR","CUSTOMER"].includes(userRole)) { logout(); return null; }
+  const menuSections = userRole === "SUPER_ADMIN" ? sections : roleSections[userRole];
+  let content;
+  if (page === "My Profile") {
+    content = <AdminProfilePage profile={signedInUser} onBack={() => setPage(previousPage)} />;
+  } else if (userRole === "CUSTOMER") {
+    content = page === "Support Tickets" ? <CustomerTicketsPage user={signedInUser} /> : page === "Notifications" ? <NotificationsPage /> : page === "Help Center" ? <HelpCenterPage /> : <CustomerPortal user={signedInUser} onLogout={logout} embedded />;
+  } else if (userRole === "EMPLOYEE") {
+    content = page === "Requirements & Quotes" ? <RequirementsPage user={signedInUser} /> : page === "Tickets" ? <TicketDeskPage user={signedInUser} /> : page === "Notifications" ? <NotificationsPage /> : page === "Help Center" ? <HelpCenterPage /> : <EmployeePortal user={signedInUser} onLogout={logout} embedded />;
+  } else if (userRole === "VENDOR") {
+    content = page === "Notifications" ? <NotificationsPage /> : page === "Help Center" ? <HelpCenterPage /> : <VendorPortal user={signedInUser} onLogout={logout} embedded />;
+  } else content = page === "Dashboard" ? (
       <Dashboard />
-    ) : page === "Users Management" ? (
-      <><EmployeeApprovals/><DynamicUsersPage /></>
+    ) : page === "Customers" ? (
+      <DynamicUsersPage userType="CUSTOMER" />
+    ) : page === "Employees" ? (
+      <><EmployeeApprovals/><DynamicUsersPage userType="EMPLOYEE" /></>
+    ) : page === "Vendors" ? (
+      <><VendorApprovals/><DynamicUsersPage userType="VENDOR" /></>
     ) : page === "Role Management" ? (
       <DynamicRolesPage />
     ) : page === "Permissions" ? (
       <DynamicPermissionsPage />
     ) : page === "Tickets" ? (
-      <TicketsPage />
+      <TicketDeskPage user={signedInUser} />
     ) : page === "Audit Logs" ? (
       <DynamicAuditLogsPage />
     ) : page === "Permission Matrix" ? (
@@ -2377,6 +2440,7 @@ function AuthenticatedApp() {
         setPage={setPage}
         expanded={expanded}
         setExpanded={setExpanded}
+        menuSections={menuSections}
       />
       {expanded && (
         <button
@@ -2388,6 +2452,7 @@ function AuthenticatedApp() {
       <main className="min-w-0 flex-1">
         <Header
           page={page}
+          user={signedInUser}
           onMenu={() => setExpanded(!expanded)}
           onLogout={() => setLogoutOpen(true)}
           onHelp={() => setPage("Help Center")}

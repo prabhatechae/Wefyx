@@ -1,0 +1,2 @@
+package com.wefyx.support.notification;import org.springframework.stereotype.Service;
+@Service public class NotificationService{private final AccountNotificationRepository repository;public NotificationService(AccountNotificationRepository r){repository=r;}public void send(String email,Long requirementId,String type,String title,String message){var n=new AccountNotification();n.setRecipientEmail(email);n.setRequirementId(requirementId);n.setType(type);n.setTitle(title);n.setMessage(message);repository.save(n);}}
