@@ -9,8 +9,10 @@ public class PublicPageController {
     @GetMapping({
         "/portal", "/book-support", "/book-support/{step}", "/my-tickets", "/my-tickets/{id}",
         "/service-tasks", "/service-tasks/{id}", "/service-tasks/{id}/report", "/support-updates/{id}",
-        "/register", "/careers", "/become-a-vendor", "/rent", "/rent/{product}",
-        "/cart", "/services", "/data-center", "/about", "/contact",
+        "/register", "/signup", "/join", "/login", "/signin", "/forgot-password", "/reset-password",
+        "/careers", "/become-a-vendor", "/rent", "/rent/{product}", "/rent-equipment",
+        "/cart", "/services", "/it-services", "/managed-services", "/data-center", "/amc",
+        "/solutions", "/business-solutions", "/industries", "/about", "/contact",
         "/support", "/shop", "/privacy-policy"
     })
     public String website() {

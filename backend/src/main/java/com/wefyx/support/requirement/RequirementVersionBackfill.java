@@ -17,5 +17,7 @@ public class RequirementVersionBackfill implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         jdbc.update("UPDATE requirements SET row_version = 0 WHERE row_version IS NULL");
+        jdbc.execute("ALTER TABLE vendor_quotations ADD COLUMN IF NOT EXISTS version INTEGER");
+        jdbc.update("UPDATE vendor_quotations SET version = 1 WHERE version IS NULL");
     }
 }

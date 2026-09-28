@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VendorQuotationRepository extends JpaRepository<VendorQuotation,Long> {
+    List<VendorQuotation> findByRequirementId(Long requirementId);
     List<VendorQuotation> findByRequirementIdOrderByAmountAsc(Long requirementId);
     List<VendorQuotation> findByVendorEmailIgnoreCaseOrderByCreatedAtDesc(String vendorEmail);
     Optional<VendorQuotation> findByRequirementIdAndVendorEmailIgnoreCase(Long requirementId,String vendorEmail);
