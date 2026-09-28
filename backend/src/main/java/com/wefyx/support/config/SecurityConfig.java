@@ -20,9 +20,10 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
     @Bean SecurityFilterChain security(HttpSecurity http,JwtFilter jwt)throws Exception{return http.csrf(c->c.disable()).cors(c->{}).sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling(e->e.authenticationEntryPoint((request,response,error)->response.sendError(HttpServletResponse.SC_UNAUTHORIZED))).authorizeHttpRequests(a->a
+        .requestMatchers(HttpMethod.GET,"/api/bookings/catalog","/api/bookings/availability","/book-support/**","/my-tickets/**","/service-tasks/**","/support-updates/**","/portal").permitAll()
         .requestMatchers(HttpMethod.POST,"/api/support-requests").permitAll()
         .requestMatchers(HttpMethod.GET,"/register","/careers","/become-a-vendor","/rent/**","/cart","/services","/data-center","/about","/contact","/support","/shop","/privacy-policy").permitAll()
-        .requestMatchers("/","/index.html","/assets/**","/images/**","/favicon.ico","/api/auth/login","/api/auth/register","/error").permitAll()
+        .requestMatchers("/","/index.html","/assets/**","/images/**","/favicon.ico","/api","/api/","/api/auth/**","/error").permitAll()
         .requestMatchers(HttpMethod.GET,"/api/users/**").hasAnyRole("SUPER_ADMIN","EMPLOYEE")
         .requestMatchers("/api/users/**","/api/roles/**","/api/dashboard/**","/api/organizations/**","/api/employee-registrations/**","/api/vendor-registrations/**").hasRole("SUPER_ADMIN")
         .requestMatchers("/api/support-requests/**").hasAnyRole("SUPER_ADMIN","EMPLOYEE")

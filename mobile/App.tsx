@@ -1,5 +1,6 @@
 import './global.css';
 import Registration from './src/Registration';
+import WebServices, {openWebsite} from './src/WebServices';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -21,7 +22,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary, type Asset as ImageAsset } from 'react-native-image-picker';
 import DeviceInfo from 'react-native-device-info';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
@@ -65,6 +66,7 @@ import {
   apiGet,
   apiLogin,
   apiSend,
+  apiUpload,
   clearSessionToken,
   getSessionToken,
   saveSessionToken,
@@ -126,6 +128,7 @@ type RootStack = {
   Main: undefined;
   TicketDetails: { ticket: Ticket };
   BookSupport: undefined;
+  WebServices: undefined;
   TrackTechnician: { ticket?: Ticket } | undefined;
   ContractDetails: undefined;
   Notifications: undefined;
@@ -347,20 +350,10 @@ function Login({ onLogin }: { onLogin: () => void }) {
       setBusy(false);
     }
   }
-  async function reset() {
-    setMessage('');
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setMessage('Enter your registered email address.');
-      return;
-    }
-    setBusy(true);
-    await new Promise<void>(resolve => setTimeout(() => resolve(), 700));
-    setBusy(false);
-    setMessage('Password reset instructions have been sent.');
-  }
   if(registering)return <Registration role="CUSTOMER" onBack={()=>setRegistering(false)} onRegistered={value=>{setEmail(value);setPassword('');setRegistering(false)}}/>;
   return (
     <SafeAreaView className="flex-1 bg-primary">
+      <Pressable onPress={() => openWebsite('/')} className="px-5 py-3"><Text className="font-bold text-white">Explore Wefyx website</Text></Pressable>
       <StatusBar barStyle="light-content" backgroundColor="#003078" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -385,66 +378,10 @@ function Login({ onLogin }: { onLogin: () => void }) {
             <View className="rounded-[30px] bg-white p-6 shadow-lg">
               {forgot ? (
                 <>
-                  <Pressable
-                    onPress={() => {
-                      setForgot(false);
-                      setMessage('');
-                    }}
-                    className="mb-6 flex-row items-center"
-                  >
-                    <ArrowLeft size={18} color="#2563EB" />
-                    <Text className="ml-2 text-sm font-bold text-blue-600">
-                      Back to sign in
-                    </Text>
-                  </Pressable>
-                  <Text className="font-bold text-3xl text-textPrimary">
-                    Reset password
-                  </Text>
-                  <Text className="font-regular mt-2 text-sm leading-5 text-textSecondary">
-                    Enter your work email and we will send recovery
-                    instructions.
-                  </Text>
-                  <Text className="font-semibold mb-2 mt-7 text-xs text-textSecondary">
-                    WORK EMAIL
-                  </Text>
-                  <View className="h-14 flex-row items-center rounded-2xl bg-inputBg px-4">
-                    <Mail size={18} color="#123674" />
-                    <TextInput
-                      value={email}
-                      onChangeText={setEmail}
-                      autoCapitalize="none"
-                      autoComplete="off"
-                      textContentType="none"
-                      keyboardType="email-address"
-                      placeholder="name@company.com"
-                      placeholderTextColor="#828692"
-                      className="font-regular ml-3 h-12 flex-1 text-textPrimary"
-                    />
-                  </View>
-                  {message ? (
-                    <Text
-                      className={`mt-3 text-xs font-semibold ${
-                        message.startsWith('Password')
-                          ? 'text-emerald-600'
-                          : 'text-red-500'
-                      }`}
-                    >
-                      {message}
-                    </Text>
-                  ) : null}
-                  <Pressable
-                    disabled={busy}
-                    onPress={reset}
-                    className="mt-6 h-14 items-center justify-center rounded-2xl bg-primary"
-                  >
-                    {busy ? (
-                      <ActivityIndicator color="white" />
-                    ) : (
-                      <Text className="font-semibold text-base text-white">
-                        Send reset link
-                      </Text>
-                    )}
-                  </Pressable>
+                  <Pressable onPress={() => {setForgot(false); setMessage('');}}><Text className="font-bold text-primary">Back to sign in</Text></Pressable>
+                  <Text className="mt-6 text-2xl font-bold text-ink">Reset password</Text>
+                  <Text className="mt-3 text-slate-500">Continue with the website's password recovery flow in your browser.</Text>
+                  <Pressable onPress={() => openWebsite('/forgot-password')} className="mt-6 rounded-xl bg-primary p-4"><Text className="text-center font-bold text-white">Open password recovery</Text></Pressable>
                 </>
               ) : (
                 <>
@@ -552,6 +489,7 @@ function CustomerHome() {
   const [tickets, setTickets] = useState<Ticket[]>([]),
     [loading, setLoading] = useState(true),
     [sessionUser, setSessionUser] = useState<{ name: string; email: string; role: string } | null>(null);
+  useFocusEffect(React.useCallback(() => { load(); }, []));
   const navigation = useNavigation<any>();
   async function load() {
     setLoading(true);
@@ -563,7 +501,6 @@ function CustomerHome() {
     }
   }
   useEffect(() => {
-    load();
     AsyncStorage.getItem('wefyx-user').then(value => {
       if (value) setSessionUser(JSON.parse(value));
     });
@@ -615,6 +552,7 @@ function CustomerHome() {
           </View>
         </View>
         <View className="px-5 pt-5">
+          <Pressable onPress={() => navigation.navigate('WebServices')} className="mb-3 rounded-2xl border border-primary bg-white p-4"><Text className="font-bold text-primary">Explore services, shop and rentals</Text><Text className="mt-1 text-xs text-slate-500">Browse the Wefyx website and book support</Text></Pressable>
           <Pressable
             onPress={() => navigation.navigate('BookSupport')}
             className="h-14 flex-row items-center justify-between rounded-2xl bg-primary px-5"
@@ -641,8 +579,8 @@ function CustomerHome() {
           </Pressable>
           <View className="mt-5 flex-row gap-3">
             {[
-              ['Open', tickets.filter(x => x.status === 'OPEN').length, '#F59E0B'],
-              ['In progress', tickets.filter(x => x.status === 'IN_PROGRESS').length, '#2563EB'],
+              ['Open', tickets.filter(x => ['SUBMITTED', 'UNDER_REVIEW'].includes(x.status)).length, '#F59E0B'],
+              ['In progress', tickets.filter(x => ['IN_PROGRESS', 'ACCEPTED', 'SENT_TO_VENDOR'].includes(x.status)).length, '#2563EB'],
               ['Resolved', tickets.filter(x => ['RESOLVED', 'CLOSED'].includes(x.status)).length, '#16A34A'],
             ].map(([label, value, color]: any) => (
               <View key={label} className="flex-1 rounded-2xl border border-border bg-white p-3">
@@ -750,33 +688,23 @@ function CustomerHome() {
 }
 
 function BookSupport({ navigation }: any) {
-  const categories = [
-      'Products',
-      'Services',
-      'Rental',
-      'Repair',
-      'Installation',
-      'Maintenance',
-      'Procurement',
-      'Consulting',
-      'Hardware',
-      'Software',
-      'Other',
-    ],
-    urgencyOptions = ['Standard', 'Urgent', 'Critical'];
-  const [category, setCategory] = useState('Hardware'),
+  const categories = ['General service', 'IT support', 'Hardware / equipment', 'Software / licensing', 'Professional service', 'Other'],
+    urgencyOptions = ['Low', 'Medium', 'High', 'Urgent'];
+  const [category, setCategory] = useState('General service'),
     [customCategory, setCustomCategory] = useState(''),
-    [urgency, setUrgency] = useState('Standard'),
+    [urgency, setUrgency] = useState('Medium'),
     [title, setTitle] = useState(''),
     [description, setDescription] = useState(''),
-    [quotationRequested, setQuotationRequested] = useState(false),
+    [quotationRequested, setQuotationRequested] = useState(true),
     [preferredDate, setPreferredDate] = useState(() => new Date(Date.now() + 60 * 60 * 1000)),
     [busy, setBusy] = useState(false),
     [images, setImages] = useState<ImageAsset[]>([]),
-    [customerName, setCustomerName] = useState('Wefyx User');
+    [customerName, setCustomerName] = useState('Wefyx User'),
+    [organization, setOrganization] = useState(''),
+    [createdRequest, setCreatedRequest] = useState<Ticket | null>(null);
   useEffect(() => {
     AsyncStorage.getItem('wefyx-user').then(value => {
-      if (value) setCustomerName(JSON.parse(value).name || 'Wefyx User');
+      if (value) { const user = JSON.parse(value); setCustomerName(user.name || 'Wefyx User'); setOrganization(user.organization || ''); }
     });
   }, []);
   async function addImages() {
@@ -784,27 +712,30 @@ function BookSupport({ navigation }: any) {
     if (!result.didCancel && result.assets) setImages(result.assets);
   }
   async function submit() {
+    if (busy) return;
+    if (images.some(image => (image.fileSize || 0) > 10 * 1024 * 1024 || !['image/jpeg', 'image/png', 'image/webp'].includes(image.type || 'image/jpeg'))) {
+      Alert.alert('Unsupported photo', 'Choose JPEG, PNG or WebP photos of 10 MB or less.'); return;
+    }
     if (!title.trim() || !description.trim()) {
       Alert.alert('Requirement details needed', 'Enter a title and describe what your organization needs.');
       return;
     }
     setBusy(true);
     try {
-      const ticket = await apiSend<Ticket>('/requirements', 'POST', {
+      const ticket = createdRequest || await apiSend<Ticket>('/requirements', 'POST', {
         title: title.trim(),
         description: `${description.trim()}\nPreferred service time: ${preferredDate.toLocaleString()}`,
         customerName,
-        organization: customerName,
-        priority: urgency === 'Critical' ? 'HIGH' : urgency === 'Urgent' ? 'MEDIUM' : 'LOW',
+        organization,
+        priority: urgency,
         category: category === 'Other' ? customCategory.trim() || 'Other' : category,
         quotationRequested,
       });
+      setCreatedRequest(ticket);
+      if (images.length) await apiUpload(`/requirements/${ticket.id}/attachments`, images);
       Alert.alert('Requirement submitted', `${ticket.reference} is now with the Wefyx support team.`, [{text:'Done',onPress:()=>navigation.goBack()}]);
-    } catch {
-      Alert.alert(
-        'Unable to create request',
-        'Please check the backend connection.',
-      );
+    } catch (error) {
+      Alert.alert('Submission incomplete', `${error instanceof Error ? error.message : 'Please try again.'} Retry to finish submitting; a saved requirement will not be duplicated.`);
     } finally {
       setBusy(false);
     }
@@ -1272,7 +1203,7 @@ function Dashboard() {
     load();
   }, []);
   const counts = [
-    tickets.filter(x => x.status === 'OPEN').length,
+    tickets.filter(x => ['SUBMITTED', 'UNDER_REVIEW'].includes(x.status)).length,
     tickets.filter(x => x.status === 'IN_PROGRESS').length,
     tickets.filter(x => x.status === 'PENDING').length,
     tickets.filter(x => ['RESOLVED', 'CLOSED'].includes(x.status)).length,
@@ -1368,6 +1299,7 @@ function TicketsScreen() {
     [query, setQuery] = useState(''),
     [statusFilter, setStatusFilter] = useState('All'),
     [refreshing, setRefreshing] = useState(false);
+  useFocusEffect(React.useCallback(() => { load(); }, []));
   const navigation = useNavigation<any>();
   async function load() {
     setRefreshing(true);
@@ -1385,9 +1317,6 @@ function TicketsScreen() {
       setRefreshing(false);
     }
   }
-  useEffect(() => {
-    load();
-  }, []);
   const shown = useMemo(
     () =>
       items.filter(x => {
@@ -1395,8 +1324,9 @@ function TicketsScreen() {
           .toLowerCase()
           .includes(query.toLowerCase());
         const matchesStatus = statusFilter === 'All'
-          || (statusFilter === 'Open' && x.status === 'OPEN')
-          || (statusFilter === 'In Progress' && ['IN_PROGRESS', 'PENDING'].includes(x.status))
+          || (statusFilter === 'Open' && ['SUBMITTED', 'UNDER_REVIEW'].includes(x.status))
+          || (statusFilter === 'In Progress' && ['IN_PROGRESS', 'ACCEPTED', 'SENT_TO_VENDOR'].includes(x.status))
+          || (statusFilter === 'Quotes' && x.quotationStatus === 'SHARED_WITH_CUSTOMER')
           || (statusFilter === 'Resolved' && ['RESOLVED', 'CLOSED'].includes(x.status));
         return matchesQuery && matchesStatus;
       }),
@@ -1409,7 +1339,7 @@ function TicketsScreen() {
         <TabHero title="Support Tickets" subtitle={`${items.length} requests · Track progress and updates`} icon={TicketIcon} />
       <View className="px-5 pt-5">
         <View className="mb-4 flex-row rounded-xl bg-inputBg p-1">
-          {['All', 'Open', 'In Progress', 'Resolved'].map(value => (
+          {['All', 'Open', 'In Progress', 'Quotes', 'Resolved'].map(value => (
             <Pressable key={value} onPress={() => setStatusFilter(value)} className={`flex-1 items-center rounded-lg py-2 ${statusFilter === value ? 'bg-primary' : ''}`}>
               <Text className={`text-[10px] font-semibold ${statusFilter === value ? 'text-white' : 'text-textSecondary'}`}>{value}</Text>
             </Pressable>
@@ -1417,8 +1347,8 @@ function TicketsScreen() {
         </View>
         <View className="mb-4 flex-row gap-3">
           {[
-            ['Open', items.filter(x => x.status === 'OPEN').length, '#F59E0B'],
-            ['Working', items.filter(x => ['IN_PROGRESS', 'PENDING'].includes(x.status)).length, '#2563EB'],
+            ['Open', items.filter(x => ['SUBMITTED', 'UNDER_REVIEW'].includes(x.status)).length, '#F59E0B'],
+            ['Working', items.filter(x => ['IN_PROGRESS', 'ACCEPTED', 'SENT_TO_VENDOR'].includes(x.status)).length, '#2563EB'],
             ['Completed', items.filter(x => ['RESOLVED', 'CLOSED'].includes(x.status)).length, '#16A34A'],
           ].map(([label, value, color]: any) => (
             <View key={label} className="flex-1 rounded-2xl border border-border bg-white p-3">
@@ -1498,21 +1428,21 @@ function TicketDetails({ route, navigation }: any) {
     [message, setMessage] = useState(''),
     [saving, setSaving] = useState(false);
   async function loadQuotes() {
-    if (!ticket.quotationRequested) return;
     try { setQuotes(await apiGet<VendorQuotation[]>(`/requirements/${ticket.id}/quotations?view=customer`)); } catch { setQuotes([]); }
   }
-  useEffect(() => { loadQuotes(); }, [ticket.id]);
+  useEffect(() => { loadQuotes(); const timer = setInterval(loadQuotes, 15000); return () => clearInterval(timer); }, [ticket.id]);
   async function loadMessages(){try{setMessages(await apiGet<any[]>(`/requirements/${ticket.id}/messages`));}catch{setMessages([])}}
-  useEffect(()=>{loadMessages()},[ticket.id]);
-  async function sendChat(){if(!message.trim())return;await apiSend(`/requirements/${ticket.id}/messages`,'POST',{message:message.trim(),senderName:ticket.customer,senderRole:'CUSTOMER'});setMessage('');await loadMessages()}
+  useEffect(()=>{loadMessages(); const timer = setInterval(loadMessages, 3000); return () => clearInterval(timer);},[ticket.id]);
+  async function sendChat(){if(!message.trim() || saving)return;setSaving(true);try{await apiSend(`/requirements/${ticket.id}/messages`,'POST',{message:message.trim(),senderName:ticket.customer,senderRole:'CUSTOMER'});setMessage('');await loadMessages();}catch(error){Alert.alert('Message not sent', error instanceof Error ? error.message : 'Please try again.');}finally{setSaving(false);}}
   async function selectQuote(quotation: VendorQuotation) {
     setSaving(true);
     try {
-      const saved = await apiSend<Ticket>(
-        `/requirements/${ticket.id}/quotations/${quotation.id}/select`,
+      await apiSend<Ticket>(
+        `/requirements/${ticket.id}/quotations/${quotation.id}/${quotation.status === 'STAFF_APPROVED' ? 'confirm' : 'select'}`,
         'PATCH',
+        quotation.status === 'STAFF_APPROVED' ? { decision: 'CONFIRM' } : {},
       );
-      setTicket(requirementToTicket(saved)); await loadQuotes();
+      setTicket(requirementToTicket(await apiGet(`/requirements/${ticket.id}`))); await loadQuotes();
       Alert.alert('Vendor selected', `${quotation.vendorName} has been awarded this requirement for AED ${quotation.amount}.`);
     } catch {
       Alert.alert('Update failed', 'Could not reach the backend.');
@@ -1562,9 +1492,9 @@ function TicketDetails({ route, navigation }: any) {
             </View>
           ))}
         </Card>
-        {ticket.quotationRequested && <><Text className="mb-3 mt-6 text-base font-black text-ink">Vendor quotations</Text>{quotes.length === 0 ? <Card><Text className="text-sm text-slate-500">The Wefyx employee is collecting vendor quotations. Offers will appear here after review.</Text></Card> : quotes.map(quote => <View key={quote.id} className={`mb-3 rounded-2xl border bg-white p-4 ${quote.status === 'SELECTED' ? 'border-primary' : 'border-border'}`}><View className="flex-row justify-between"><Text className="text-base font-black text-ink">{quote.vendorName}</Text><Text className="text-base font-black text-primary">AED {quote.amount}</Text></View><Text className="mt-2 text-xs text-slate-500">Completion: {quote.leadTimeDays} days</Text>{quote.notes ? <Text className="mt-2 text-sm text-slate-600">{quote.notes}</Text> : null}{quote.status === 'SHARED_WITH_CUSTOMER' && <Pressable disabled={saving} onPress={() => selectQuote(quote)} className="mt-4 items-center rounded-xl bg-primary py-3"><Text className="text-sm font-bold text-white">Choose this quotation</Text></Pressable>}{quote.status === 'SELECTED' && <Text className="mt-3 text-sm font-bold text-green-600">Selected and awarded</Text>}</View>)}</>}
+        {ticket.quotationRequested && <><Text className="mb-3 mt-6 text-base font-black text-ink">Vendor quotations</Text>{quotes.length === 0 ? <Card><Text className="text-sm text-slate-500">The Wefyx employee is collecting vendor quotations. Offers will appear here after review.</Text></Card> : quotes.map(quote => <View key={quote.id} className={`mb-3 rounded-2xl border bg-white p-4 ${['SELECTED', 'FINAL_CONFIRMED'].includes(quote.status) ? 'border-primary' : 'border-border'}`}><View className="flex-row justify-between"><Text className="text-base font-black text-ink">{quote.vendorName}</Text><Text className="text-base font-black text-primary">AED {quote.amount}</Text></View><Text className="mt-2 text-xs text-slate-500">Completion: {quote.leadTimeDays} days</Text>{quote.notes ? <Text className="mt-2 text-sm text-slate-600">{quote.notes}</Text> : null}{['STAFF_APPROVED', 'SHARED_WITH_CUSTOMER'].includes(quote.status) && <Pressable disabled={saving} onPress={() => selectQuote(quote)} className="mt-4 items-center rounded-xl bg-primary py-3"><Text className="text-sm font-bold text-white">Confirm order</Text></Pressable>}{['SELECTED', 'FINAL_CONFIRMED'].includes(quote.status) && <Text className="mt-3 text-sm font-bold text-green-600">Selected and awarded</Text>}</View>)}</>}
         <Text className="mb-3 mt-6 text-base font-black text-ink">Support chat</Text>
-        <Card>{messages.map(m=><View key={m.id} className="mb-2 rounded-xl bg-slate-50 p-3"><Text className="text-[10px] font-bold text-primary">{m.senderName} · {m.senderRole}</Text><Text className="mt-1 text-sm text-ink">{m.message}</Text></View>)}{!messages.length&&<Text className="text-sm text-slate-500">No messages yet. Ask the Wefyx team anything about this requirement.</Text>}<View className="mt-3 flex-row gap-2"><TextInput value={message} onChangeText={setMessage} placeholder="Write a message" className="h-12 flex-1 rounded-xl border border-border px-3 text-ink"/><Pressable onPress={sendChat} className="h-12 items-center justify-center rounded-xl bg-primary px-4"><Text className="font-bold text-white">Send</Text></Pressable></View></Card>
+        <Card>{messages.map(m=><View key={m.id} className="mb-2 rounded-xl bg-slate-50 p-3"><Text className="text-[10px] font-bold text-primary">{m.senderName} · {m.senderRole}</Text><Text className="mt-1 text-sm text-ink">{m.message}</Text></View>)}{!messages.length&&<Text className="text-sm text-slate-500">No messages yet. Ask the Wefyx team anything about this requirement.</Text>}<View className="mt-3 flex-row gap-2"><TextInput value={message} onChangeText={setMessage} placeholder="Write a message" className="h-12 flex-1 rounded-xl border border-border px-3 text-ink"/><Pressable disabled={saving || !message.trim()} onPress={sendChat} className="h-12 items-center justify-center rounded-xl bg-primary px-4"><Text className="font-bold text-white">Send</Text></Pressable></View></Card>
       </ScrollView>
     </SafeAreaView>
   );
@@ -1678,49 +1608,37 @@ function Assets() {
 }
 
 function Notifications({ navigation }: any) {
-  const [notes, setNotes] = useState<ResourceRecord[]>([]),
-    [loading, setLoading] = useState(true);
+  const [notes, setNotes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   async function load() {
     setLoading(true);
-    try { setNotes(await apiGet<ResourceRecord[]>('/resources/audit-logs')); }
-    catch (error) { if (!(error instanceof ApiError && error.status === 401)) Alert.alert('Unable to load notifications'); }
+    try { setNotes(await apiGet<any[]>('/notifications')); }
+    catch (error) { Alert.alert('Unable to load notifications', error instanceof Error ? error.message : 'Please retry.'); }
     finally { setLoading(false); }
   }
   useEffect(() => { load(); }, []);
-  return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="h-16 flex-row items-center border-b border-border bg-white px-5">
-        <Pressable onPress={() => navigation.goBack()} className="h-10 w-10 items-center justify-center rounded-full bg-inputBg">
-          <ArrowLeft size={20} color="#0A0E3D" />
-        </Pressable>
-        <View className="ml-3"><Text className="text-lg font-bold text-textPrimary">Notifications</Text><Text className="text-xs text-textSecondary">Live support and service updates</Text></View>
-      </View>
-      <ScrollView className="bg-background px-5" refreshControl={<RefreshControl refreshing={false} onRefresh={load} />} contentContainerClassName="pb-12 pt-5">
-        {notes.map((note, i) => (
-          <Card key={note.id} className="mb-3">
-            <View className="flex-row">
-              <View
-                className={`h-11 w-11 items-center justify-center rounded-full ${
-                  i === 0 ? 'bg-violet-100' : 'bg-slate-100'
-                }`}
-              >
-                <Bell size={19} color={purple} />
-              </View>
-              <View className="ml-3 flex-1">
-                <Text className="font-bold text-ink">{note.name}</Text>
-                <Text className="mt-1 text-xs leading-5 text-slate-500">
-                  {note.details || note.status}
-                </Text>
-                <Text className="mt-2 text-[10px] text-slate-400">{note.createdAt ? new Date(note.createdAt).toLocaleString() : ''}</Text>
-              </View>
-            </View>
-          </Card>
-        ))}
-        {!loading && notes.length === 0 && <View className="items-center rounded-3xl border border-dashed border-blue-200 bg-white px-7 py-10"><Bell size={32} color={purple}/><Text className="mt-4 text-lg font-black text-ink">No notifications</Text><Text className="mt-2 text-center text-xs text-slate-500">Live service updates will appear here.</Text></View>}
-      </ScrollView>
-      {loading && <CenteredPageLoader />}
-    </SafeAreaView>
-  );
+  async function open(note: any) {
+    try {
+      await apiSend(`/notifications/${note.id}/read`, 'PATCH');
+      setNotes(rows => rows.map(row => row.id === note.id ? { ...row, read: true } : row));
+      if (note.requirementId) {
+        const requirement = await apiGet(`/requirements/${note.requirementId}`);
+        navigation.navigate('TicketDetails', { ticket: requirementToTicket(requirement) });
+      }
+    } catch (error) { Alert.alert('Unable to open notification', error instanceof Error ? error.message : 'Please retry.'); }
+  }
+  return <SafeAreaView className="flex-1 bg-white">
+    <Pressable onPress={() => navigation.goBack()} className="p-5"><Text className="font-bold text-brand">Back</Text></Pressable>
+    <Text className="px-5 text-xl font-bold text-ink">Notifications</Text>
+    <ScrollView className="px-5" refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}>
+      {notes.map(note => <Pressable key={note.id} onPress={() => open(note)} className="my-2 rounded-xl border border-border p-4">
+        <Text className="font-bold text-ink">{note.read ? '' : '? '}{note.title}</Text>
+        <Text className="mt-2 text-slate-600">{note.message}</Text>
+        <Text className="mt-2 text-xs text-slate-400">{note.createdAt ? new Date(note.createdAt).toLocaleString() : ''}</Text>
+      </Pressable>)}
+      {!loading && !notes.length && <Text className="py-8 text-slate-500">No notifications.</Text>}
+    </ScrollView>
+  </SafeAreaView>;
 }
 
 function Help({ navigation }: any) {
@@ -1775,11 +1693,9 @@ function Profile({ onLogout }: { onLogout: () => void }) {
     AsyncStorage.getItem('wefyx-user').then(value => {
       const saved = value ? JSON.parse(value) : null;
       setSession(saved);
-      Promise.all([apiGet<User[]>('/users'), apiGet<ResourceRecord[]>('/resources/audit-logs')])
-        .then(([users, logs]) => {
-          setUser(users.find(u => u.email === saved?.email) || null);
-          setActivity(logs.filter(log => !saved?.name || log.owner === saved.name || log.owner === 'System Administrator').slice(0, 5));
-        })
+      setUser(saved);
+      apiGet<any[]>('/notifications')
+        .then(notes => setActivity(notes.slice(0, 5).map(note => ({...note, name: note.title, details: note.message}))))
         .catch(() => {})
         .finally(() => setLoading(false));
     });
@@ -2037,6 +1953,7 @@ export default function App() {
                 </Stack.Screen>
                 <Stack.Screen name="TicketDetails" component={TicketDetails} />
                 <Stack.Screen name="BookSupport" component={BookSupport} />
+                <Stack.Screen name="WebServices" component={WebServices} />
                 <Stack.Screen name="TrackTechnician" component={TrackTechnician} />
                 <Stack.Screen name="ContractDetails" component={ContractDetails} />
                 <Stack.Screen name="Notifications" component={Notifications} />

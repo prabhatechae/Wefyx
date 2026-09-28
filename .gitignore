@@ -29,6 +29,7 @@
 **/coverage/
 
 # Local runtime data, reports, crash dumps, and copied deployment bundles
+.tools/
 **/data/
 **/*.log
 **/hs_err_pid*.log

@@ -10,10 +10,12 @@ public class RequirementMessage {
  @Column(nullable=false) private String senderEmail;
  private String senderName;
  private String senderRole;
+ private String vendorEmail;
+ private String vendorName;
  @Column(nullable=false,length=4000) private String message;
  private LocalDateTime createdAt;
  @PrePersist void created(){if(createdAt==null)createdAt=LocalDateTime.now();}
  public Long getId(){return id;} public Long getRequirementId(){return requirementId;} public void setRequirementId(Long v){requirementId=v;}
  public String getSenderEmail(){return senderEmail;} public void setSenderEmail(String v){senderEmail=v;} public String getSenderName(){return senderName;} public void setSenderName(String v){senderName=v;}
- public String getSenderRole(){return senderRole;} public void setSenderRole(String v){senderRole=v;} public String getMessage(){return message;} public void setMessage(String v){message=v;} public LocalDateTime getCreatedAt(){return createdAt;}
+ public String getSenderRole(){return senderRole;} public void setSenderRole(String v){senderRole=v;} public String getVendorEmail(){return vendorEmail;} public void setVendorEmail(String v){vendorEmail=v;} public String getVendorName(){return vendorName;} public void setVendorName(String v){vendorName=v;} public String getMessage(){return message;} public void setMessage(String v){message=v;} public LocalDateTime getCreatedAt(){return createdAt;}
 }

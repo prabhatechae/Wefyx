@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "requirements")
 public class Requirement {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
+    @Version private Long rowVersion;
     @Column(unique = true, nullable = false) private String reference;
     @NotBlank private String title;
     @Column(length = 4000) private String description;

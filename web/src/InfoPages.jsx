@@ -3,6 +3,7 @@ import { ArrowRight, Building2, CalendarDays, Check, Cloud, FileText, Headphones
 import { PublicFooter, PublicHeader } from "./RentalPages";
 import { get, login, send, sendPublic, uploadFiles } from "./api";
 import { goToPortal } from "./portal";
+import SupportOverview from "./SupportOverview";
 
 const services = [[Building2,"Managed IT Services",["Proactive monitoring","Patch & update management","Cost optimization"]],[Headphones,"IT Support & Helpdesk",["24/7 helpdesk support","Remote & on-site support","Fast issue resolution"]],[Network,"Network & Infrastructure",["Network design","Wi-Fi & LAN solutions","Firewall & security"]],[Cloud,"Cloud & Microsoft 365",["Cloud migration","Microsoft 365 setup","Secure cloud solutions"]],[ShieldCheck,"Cybersecurity",["Threat protection","Endpoint security","Security audits"]],[Server,"Data Center & AMC",["Server & storage","Data center setup","AMC & maintenance"]]];
 const generic = {"data-center":["DATA CENTER SOLUTIONS","Design. Build. Operate. With confidence."],about:["ABOUT WEFYX","Smarter IT. Stronger businesses."],contact:["CONTACT WEFYX","Let’s solve your next technology challenge."],shop:["BUSINESS TECHNOLOGY","Equip your people for their best work."]};
@@ -33,17 +34,17 @@ function ServicesPage(){
     }catch(error){setNotice(error.message||"Unable to submit your requirement.")}finally{setBusy(false)}
   };
   return <div className="services-reference"><PublicHeader/><main>
-    <section className="sr-hero">
+    <section className="sr-hero support-services-hero">
       <div className="sr-hero-media">
-        <img src="/images/home-hero-reference.png" alt="Wefyx engineer in a server room" className="sr-hero-img"/>
+        <img src="/images/home-support-hero.png" alt="Wefyx IT engineer providing office support" className="sr-hero-img"/>
         <div className="sr-hero-fade"/>
       </div>
       <div className="sr-shell sr-hero-inner">
         <div className="sr-copy">
-          <p>TRUSTED IT SERVICES PARTNER IN THE UAE</p>
-          <h1>Complete IT Services<br/>for <em>Modern Businesses.</em></h1>
-          <span>Managed IT, on-site support, infrastructure, cloud, cybersecurity,<br/>CCTV, biometric and data center solutions across the UAE.</span>
-          <div className="sr-actions"><a href="#requirement">Submit Requirement <ArrowRight size={16}/></a></div>
+          <p>IT SUPPORT SERVICES</p>
+          <h1>Professional IT Support<br/>When You Need It</h1>
+          <span>Get expert support at your office or remotely.<br/>Tell us what you need and receive a tailored proposal.</span>
+          <div className="sr-actions"><a href="/book-support">Book a Support Service <ArrowRight size={16}/></a><a href="#requirement">Submit Requirement <ArrowRight size={16}/></a></div>
           <div className="sr-proof">
             <b><ShieldCheck/>Reliable<br/>Support</b>
             <b><UsersRound/>Certified<br/>Engineers</b>
@@ -60,7 +61,7 @@ function ServicesPage(){
         </aside>
       </div>
     </section>
-    <section className="sr-shell sr-forms sr-single-form"><CompactRequirementForm done={submit} busy={busy}/></section>
+    <SupportOverview /><section className="sr-shell sr-forms sr-single-form"><CompactRequirementForm done={submit} busy={busy}/></section>
     <section className="sr-shell sr-core"><h2>Our Core IT Services</h2><p>End-to-end IT solutions to keep your business running, secure and future-ready.</p><div>{services.map(([I,t,items])=><article key={t}><I/><h3>{t}</h3><ul>{items.map(x=><li key={x}>{x}</li>)}</ul><a href="#requirement">Learn More <ArrowRight/></a></article>)}</div></section>
     <section className="sr-shell sr-process"><h2>Our Simple Process</h2><p>From request to resolution — a seamless experience.</p><div className="sr-steps">{[[FileText,"Submit Requirement","Share your needs and attachments"],[FileText,"Review & Proposal","Our employee reviews and prepares the proposal"],[Check,"Accept & Confirm Deal","Approve the proposal and confirm the engagement"],[CalendarDays,"Site Visit & Execution","We schedule the visit and deliver the service"]].map(([I,t,d],i)=><article key={t}><b>{i+1}</b><I/><span><strong>{t}</strong><small>{d}</small></span>{i<3&&<ArrowRight/>}</article>)}</div><div className="sr-quick">{[[Headphones,"24/7","Support Available"],[Zap,"SLA","Response Time"],[UsersRound,"Certified","Engineers"],[MapPin,"UAE","Nationwide Coverage"],[Building2,"250+","Business Clients"]].map(([I,n,l])=><span key={n}><I/><b>{n}<small>{l}</small></b></span>)}</div></section>
     <section className="sr-shell sr-support"><Headphones/><div><h2>Need Immediate IT Assistance?</h2><p>Submit your requirement first. After proposal acceptance and deal confirmation, our team will schedule the site visit.</p></div><a href="#requirement">Submit Requirement <ArrowRight/></a><a href="tel:+97141234567"><Phone/>Talk to Support</a></section>

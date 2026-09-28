@@ -1,5 +1,19 @@
 # Wefyx deployment
 
+## Local development (Windows)
+
+Run both services in separate terminals from the repository root:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\backend\start-local.ps1
+```
+
+```powershell
+npm --prefix web run dev
+```
+
+Open `http://localhost:5173`. Keep the backend terminal running: Vite forwards `/api` to `http://127.0.0.1:8080`, and a stopped backend causes HTTP 502. Check `http://localhost:5173/api/bookings/catalog` to verify the connection. The backend uses the existing persistent local database by default; environment variables override settings in `backend/src/main/resources/application.yml`.
+
 ## Docker Compose
 
 1. Install Docker Engine and Docker Compose on the server.

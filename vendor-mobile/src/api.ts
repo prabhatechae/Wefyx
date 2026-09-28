@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import * as Keychain from 'react-native-keychain';
@@ -20,7 +21,9 @@ export async function clearSessionToken() {
   await Keychain.resetGenericPassword({ service: SESSION_SERVICE });
 }
 
-export const API_BASE = 'https://wefyx.pro/api';
+export const API_BASE = __DEV__
+  ? `http://${Platform.OS === 'android' ? '10.0.2.2' : 'localhost'}:8080/api`
+  : 'https://wefyx.pro/api';
 
 let unauthorizedHandler: (() => void) | undefined;
 
@@ -70,6 +73,7 @@ async function read<T>(response: Response): Promise<T> {
       response.status,
     );
   }
+  if (response.status === 204) return undefined as T;
   return response.json();
 }
 

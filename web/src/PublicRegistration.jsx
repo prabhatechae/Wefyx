@@ -1,74 +1,1303 @@
-import { useState } from "react";
-import { ArrowRight, BriefcaseBusiness, Building2, Check, CheckCircle2, CircleUserRound, Eye, EyeOff, LockKeyhole, Mail, Phone, UserRound } from "lucide-react";
-import { login, sendPublic } from "./api";
+import { useEffect, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Briefcase,
+  Building2,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  Edit2,
+  Eye,
+  EyeOff,
+  Globe,
+  Headphones,
+  KeyRound,
+  Lock,
+  Mail,
+  MapPin,
+  Package,
+  Phone,
+  Shield,
+  ShieldCheck,
+  Smartphone,
+  User,
+  Zap,
+} from "lucide-react";
+import { sendPublic } from "./api";
+import "./auth.css";
 
-const blank = { name: "", organization: "", email: "", phone: "", password: "", confirm: "" };
-
-function TopNav() {
-  return <><div className="!bg-[#04162e] !text-[#dbeafe] px-5 py-2 text-center text-xs sm:flex sm:justify-between sm:px-[7%]"><span>UAE's trusted managed IT & infrastructure partner</span><span className="hidden sm:inline">24/7 Support · Dubai, UAE</span></div><header className="relative z-10 !bg-[#061b38] !text-white border-b border-white/10 px-5 py-4 sm:px-[7%]"><div className="mx-auto flex max-w-7xl items-center justify-between"><a href="/" className="!text-white leading-none"><b className="text-2xl tracking-tight">WEFYX<span className="!text-[#3f9df3]">.PRO</span></b><small className="!text-[#bfd8f5] mt-1 block text-[10px] tracking-wide">Smarter IT. Stronger Business.</small></a><nav className="flex items-center gap-3 text-sm font-semibold"><a href="/become-a-vendor" className="hidden !text-[#dbeafe] hover:!text-white sm:block">Become a Vendor</a><a href="/careers" className="hidden !text-[#dbeafe] hover:!text-white sm:block">Careers</a><a href="/portal" className="!text-white rounded-lg border border-white/20 px-3 py-2 hover:!bg-white/10">Sign In</a></nav></div></header></>;
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17Z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98Z"
+      />
+    </svg>
+  );
 }
 
-function TextField({ label, icon: Icon, reveal = false, ...props }) {
-  const [visible, setVisible] = useState(false);
-  const isPassword = props.type === "password";
-  return <label className="block"><span className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-600">{label}</span><span className="flex h-12 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-[#1571c6] focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50"><Icon size={18} className="shrink-0 text-slate-400"/><input {...props} type={isPassword && visible ? "text" : props.type} className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"/>{reveal && isPassword && <button type="button" aria-label={visible ? "Hide password" : "Show password"} onClick={() => setVisible((value) => !value)} className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-slate-400 transition hover:bg-slate-200 hover:text-[#1571c6]">{visible ? <EyeOff size={18}/> : <Eye size={18}/>}</button>}</span></label>;
+function MicrosoftIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 21 21" aria-hidden="true">
+      <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+      <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+      <rect x="1" y="1" width="9" height="9" fill="#00a4ef" />
+      <rect x="11" y="1" width="9" height="9" fill="#ffb900" />
+    </svg>
+  );
 }
 
-function SuccessOverlay({ email, signedIn }) {
-  const confetti = ["left-8 top-11 bg-[#ffcb45]","left-16 top-24 bg-[#ec4899]","right-12 top-14 bg-[#5f7cff]","right-20 top-28 bg-[#22c55e]","left-24 top-5 bg-[#22c55e]","right-28 top-5 bg-[#f97316]"];
-  signedIn = signedIn ?? localStorage.getItem("wefyx-auth") === "true";
-  return <div className="fixed inset-0 z-50 grid place-items-center bg-[#04162e]/85 p-5 backdrop-blur-sm"><div className="relative w-full max-w-sm overflow-hidden rounded-[28px] bg-white px-8 py-11 text-center shadow-2xl"><div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-[#0b4f91] via-[#1a8ae1] to-[#61b5ff]"/>{confetti.map((item,index)=><span key={item} className={`absolute h-3 w-2 rotate-[25deg] rounded-sm ${item} animate-bounce`} style={{animationDelay:`${index*90}ms`}}/>)}<div className="relative mx-auto grid h-24 w-24 place-items-center rounded-full bg-emerald-500 text-white shadow-xl shadow-emerald-200"><span className="absolute inset-[-12px] rounded-full border border-emerald-200 animate-ping"/><span className="absolute inset-[-27px] rounded-full border border-emerald-100 animate-pulse"/><CheckCircle2 size={55}/></div><p className="mt-8 text-[11px] font-extrabold tracking-[.22em] text-[#1976c9]">WELCOME TO WEFYX</p><h2 className="mt-2 text-3xl font-bold text-[#08264d]">Account created!</h2><p className="mt-3 text-sm leading-6 text-slate-500">Your customer workspace is ready for <b className="text-slate-700">{email}</b>.</p><button type="button" onClick={() => window.location.assign(signedIn?"/portal?new=1":"/portal")} className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-[#0b579f] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-100 transition hover:bg-[#084983]">{signedIn?"Create your first requirement":"Go to customer login"} <ArrowRight size={17}/></button><p className="mt-4 text-xs text-slate-400">{signedIn?"You are securely signed in and ready to continue.":"Your account is active and ready to use."}</p></div></div>;
+export function UaeFlag({ width = 24, height = 15, className = "" }) {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 24 16"
+      className={className}
+      aria-label="UAE Flag"
+      style={{
+        borderRadius: "2px",
+        display: "inline-block",
+        verticalAlign: "middle",
+        flexShrink: 0,
+        boxShadow: "0 0 0 1px rgba(0,0,0,0.12)",
+        overflow: "hidden",
+      }}
+    >
+      <rect width="24" height="5.33" y="0" fill="#00732f" />
+      <rect width="24" height="5.34" y="5.33" fill="#ffffff" />
+      <rect width="24" height="5.33" y="10.67" fill="#000000" />
+      <rect width="7.2" height="16" x="0" y="0" fill="#ff0000" />
+    </svg>
+  );
 }
 
-function RegistrationForm({ type = "CUSTOMER" }) {
-  const employee = type === "EMPLOYEE";
-  const vendor = type === "VENDOR";
-  const [form, setForm] = useState(blank);
-  const [consent, setConsent] = useState(false);
+function BrandHeader() {
+  return (
+    <header className="wf-auth-header">
+      <div className="wf-auth-header-inner">
+        <a href="/" className="wf-auth-logo" aria-label="Wefyx Home">
+          <strong>
+            Wefy<span>x</span>
+          </strong>
+          <small>IT Support. Assets. Always On.</small>
+        </a>
+
+        <div className="flex items-center gap-4 text-xs">
+          <a href="/" className="font-semibold text-slate-500 hover:text-slate-900">
+            ← Back to Home
+          </a>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function OnboardingStepper({ current }) {
+  const steps = [
+    { id: "verify", label: "Verify" },
+    { id: "business", label: "Business Details" },
+    { id: "address", label: "Address" },
+    { id: "complete", label: "Complete" },
+  ];
+  return (
+    <ol className="wf-onboarding-stepper" aria-label="Onboarding Progress">
+      {steps.map((step, index) => {
+        const isDone = index < current;
+        const isActive = index === current;
+        return (
+          <li
+            key={step.id}
+            className={isDone ? "done" : isActive ? "active" : ""}
+            aria-current={isActive ? "step" : undefined}
+          >
+            <span>{isDone ? <Check size={14} strokeWidth={2.8} /> : index + 1}</span>
+            <b>{step.label}</b>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+export default function PublicRegistration({ initialView = "login" }) {
+  // view: 'login' | 'signup' | 'otp' | 'business' | 'address' | 'review' | 'success' | 'forgot'
+  const [view, setView] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+    if (mode === "login" || mode === "signin") return "login";
+    if (mode === "signup" || mode === "register") return "signup";
+    if (mode === "otp") return "otp";
+    if (mode === "business") return "business";
+    if (mode === "address") return "address";
+    if (mode === "review") return "review";
+    if (mode === "success") return "success";
+    if (mode === "forgot") return "forgot";
+    if (window.location.pathname === "/login" || window.location.pathname === "/signin") return "login";
+    if (window.location.pathname === "/register" || window.location.pathname === "/signup" || window.location.pathname === "/join") return "signup";
+    if (window.location.pathname === "/forgot-password") return "forgot";
+    return initialView === "signup" ? "signup" : "login";
+  });
+
+  // Login Form (Unified simple login for ALL roles without any role selector tabs)
+  const [loginForm, setLoginForm] = useState({
+    identifier: "admin@wefyx.pro",
+    password: "admin@123",
+    rememberMe: true,
+  });
+
+  // Registration Multi-Step Form (Screen 1 to 5)
+  const [form, setForm] = useState({
+    phone: "50 123 4567",
+    fullPhone: "+971 50 123 4567",
+    otp: ["4", "8", "2", "1", "6", "3"],
+    companyName: "Acme Trading LLC",
+    tradeLicense: "1234567",
+    industry: "Trading & Distribution",
+    companyEmail: "info@acmeuae.com",
+    contactPerson: "Ahmed Khan",
+    jobTitle: "IT Manager",
+    website: "www.acmeuae.com",
+    password: "Password@123",
+    country: "United Arab Emirates",
+    emirate: "Dubai",
+    address: "Office 1204, Business Bay, Dubai, UAE",
+    additionalInfo: "Landmark, Building Name, Floor, etc.",
+    serviceVisitsSame: true,
+    billingAddressSame: true,
+    termsConsent: true,
+    role: "CUSTOMER", // Default role for all self-registrations
+  });
+
+  // Forgot Password Form
+  const [forgotPhone, setForgotPhone] = useState("+971 50 123 4567");
+  const [forgotStep, setForgotStep] = useState(0);
+  const [newPassword, setNewPassword] = useState("");
+
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  const [done, setDone] = useState(false);
-  const [signedIn, setSignedIn] = useState(false);
-  const update = (key) => (event) => setForm((current) => ({ ...current, [key]: event.target.value }));
-  async function submit(event) {
-    event.preventDefault(); setError(""); setMessage("");
-    if (!form.name.trim() || !form.organization.trim() || !/^\S+@\S+\.\S+$/.test(form.email.trim())) return setError("Please enter your name, organization, and a valid work email.");
-    if (!/^[+0-9][0-9() .-]{6,24}$/.test(form.phone.trim())) return setError("Please enter a valid phone number, including country code.");
-    if (form.password.length < 8) return setError("Your password must contain at least 8 characters.");
-    if (form.password !== form.confirm) return setError("Your passwords do not match.");
-    if (!consent) return setError("Please accept the Privacy Policy to continue.");
+  const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [timer, setTimer] = useState(25);
+
+  const otpInputsRef = useRef([]);
+
+  // Resend Timer Countdown
+  useEffect(() => {
+    let interval = null;
+    if (view === "otp" && timer > 0) {
+      interval = setInterval(() => setTimer((t) => t - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [view, timer]);
+
+  const update = (key) => (event) => {
+    const value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
+    setForm((curr) => ({ ...curr, [key]: value }));
+  };
+
+  // OTP inputs handling
+  function handleOtpChange(index, val) {
+    const char = val.slice(-1);
+    const nextOtp = [...form.otp];
+    nextOtp[index] = char;
+    setForm((curr) => ({ ...curr, otp: nextOtp }));
+    if (char && index < 5) {
+      otpInputsRef.current[index + 1]?.focus();
+    }
+  }
+
+  function handleOtpKeyDown(index, event) {
+    if (event.key === "Backspace" && !form.otp[index] && index > 0) {
+      otpInputsRef.current[index - 1]?.focus();
+    }
+  }
+
+  function handleOtpPaste(event) {
+    event.preventDefault();
+    const pasted = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (pasted) {
+      const nextOtp = [...form.otp];
+      for (let i = 0; i < 6; i++) {
+        nextOtp[i] = pasted[i] || "";
+      }
+      setForm((curr) => ({ ...curr, otp: nextOtp }));
+      otpInputsRef.current[Math.min(pasted.length, 5)]?.focus();
+    }
+  }
+
+  // Action: Screen 1 -> Screen 2 (Send OTP)
+  async function handleSendOtp(event) {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+    const cleanPhone = form.phone.trim();
+    if (!cleanPhone) return setError("Please enter your mobile number.");
+    const full = cleanPhone.startsWith("+") ? cleanPhone : `+971 ${cleanPhone}`;
+    setForm((curr) => ({ ...curr, fullPhone: full }));
     setBusy(true);
     try {
-      const response = await sendPublic("/auth/register", "POST", { name: form.name.trim(), organization: form.organization.trim(), email: form.email.trim(), phone: form.phone.trim(), password: form.password, role: type });
-      if (employee || vendor) { setMessage(response.message || "Application submitted. A Wefyx administrator will review it before enabling sign in."); setForm((current) => ({ ...current, password: "", confirm: "" })); }
-      else {
-        sessionStorage.setItem("wefyx-registered-email", form.email.trim());
-        try {
-          const session = await login(form.email.trim(), form.password);
-          localStorage.setItem("wefyx-token", session.token);
-          localStorage.setItem("wefyx-auth", "true");
-          localStorage.setItem("wefyx-user", JSON.stringify(session.user));
-          localStorage.setItem("wefyx-account-type", "customer");
-          setSignedIn(true);
-        } catch { setSignedIn(false); }
-        setDone(true);
-      }
-    } catch (requestError) { setError(requestError.message || "We could not create your account. Please try again."); }
-    finally { setBusy(false); }
+      await sendPublic("/auth/send-otp", "POST", { phone: full });
+      setTimer(25);
+      setView("otp");
+    } catch (err) {
+      setError(err.message || "Failed to send OTP. Please try again.");
+    } finally {
+      setBusy(false);
+    }
   }
-  return <><form onSubmit={submit} className="mt-7 space-y-4"><div className="grid gap-4 sm:grid-cols-2"><TextField label={vendor ? "Contact person" : "Full name"} icon={UserRound} value={form.name} onChange={update("name")} placeholder={vendor ? "Primary contact name" : "Your full name"}/><TextField label={employee ? "Current organization" : vendor ? "Registered company name" : "Company / organization"} icon={Building2} value={form.organization} onChange={update("organization")} placeholder="Company name"/></div><div className="grid gap-4 sm:grid-cols-2"><TextField label="Work email" icon={Mail} value={form.email} onChange={update("email")} type="email" placeholder="you@company.com"/><TextField label="Phone number" icon={Phone} value={form.phone} onChange={update("phone")} type="tel" placeholder="+971 50 123 4567"/></div><div className="grid gap-4 sm:grid-cols-2"><TextField label="Password" icon={LockKeyhole} value={form.password} onChange={update("password")} type="password" reveal placeholder="At least 8 characters"/><TextField label="Confirm password" icon={LockKeyhole} value={form.confirm} onChange={update("confirm")} type="password" reveal placeholder="Repeat password"/></div><label className="flex items-start gap-3 rounded-xl bg-slate-50 p-3 text-xs leading-5 text-slate-600"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-0.5 h-4 w-4 accent-[#1571c6]"/><span>I have read and agree to the <a className="font-bold text-[#1571c6] hover:underline" href="/privacy-policy">Privacy Policy</a>.</span></label>{error && <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}{message && <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-700">{message}</p>}<button disabled={busy} className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#0b579f] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-100 transition hover:bg-[#084983] disabled:opacity-70">{busy ? "Please wait…" : employee ? "Submit employee application" : vendor ? "Submit vendor application" : "Create my customer account"}<ArrowRight size={17}/></button></form>{done && <SuccessOverlay email={form.email}/>}</>;
+
+  // Action: Screen 2 -> Screen 3 (Verify OTP)
+  async function handleVerifyOtp(event) {
+    event.preventDefault();
+    setError("");
+    const code = form.otp.join("");
+    if (code.length !== 6) return setError("Please enter the complete 6-digit OTP.");
+    setBusy(true);
+    try {
+      await sendPublic("/auth/verify-otp", "POST", { phone: form.fullPhone, otp: code });
+      setView("business");
+    } catch (err) {
+      setError(err.message || "Invalid OTP. Please check and try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Action: Screen 3 -> Screen 4 (Business Details)
+  function handleBusinessSubmit(event) {
+    event.preventDefault();
+    setError("");
+    if (!form.companyName.trim() || !form.companyEmail.trim() || !form.contactPerson.trim()) {
+      return setError("Please fill in all required company details.");
+    }
+    if (!/^\S+@\S+\.\S+$/.test(form.companyEmail.trim())) {
+      return setError("Please enter a valid company email address.");
+    }
+    setView("address");
+  }
+
+  // Action: Screen 4 -> Screen 5 (Address Details)
+  function handleAddressSubmit(event) {
+    event.preventDefault();
+    setError("");
+    if (!form.address.trim()) {
+      return setError("Please enter your company address.");
+    }
+    setView("review");
+  }
+
+  // Action: Screen 5 -> Screen 6 (Final Registration - Default Role CUSTOMER)
+  async function handleCreateAccount(event) {
+    event.preventDefault();
+    setError("");
+    if (!form.termsConsent) {
+      return setError("Please agree to the Terms of Service and Privacy Policy.");
+    }
+    setBusy(true);
+    try {
+      const payload = {
+        name: form.contactPerson.trim(),
+        email: form.companyEmail.trim(),
+        organization: form.companyName.trim(),
+        companyName: form.companyName.trim(),
+        phone: form.fullPhone.trim(),
+        tradeLicense: form.tradeLicense.trim(),
+        industry: form.industry,
+        jobTitle: form.jobTitle.trim(),
+        website: form.website.trim(),
+        country: form.country,
+        emirate: form.emirate,
+        address: form.address.trim(),
+        password: form.password || "Password@123",
+        role: "CUSTOMER", // Default role
+      };
+      const res = await sendPublic("/auth/register", "POST", payload);
+      if (res.token) {
+        localStorage.setItem("wefyx-token", res.token);
+        localStorage.setItem("wefyx-auth", "true");
+        localStorage.setItem("wefyx-user", JSON.stringify(res.user));
+        localStorage.setItem("wefyx-account-type", "customer");
+      }
+      setView("success");
+    } catch (err) {
+      if (err.status === 409 || String(err.message).toLowerCase().includes("already exists")) {
+        try {
+          const loginRes = await sendPublic("/auth/login", "POST", {
+            email: form.companyEmail.trim(),
+            phone: form.fullPhone.trim(),
+            password: form.password || "Password@123",
+          });
+          if (loginRes.token) {
+            localStorage.setItem("wefyx-token", loginRes.token);
+            localStorage.setItem("wefyx-auth", "true");
+            localStorage.setItem("wefyx-user", JSON.stringify(loginRes.user));
+            localStorage.setItem("wefyx-account-type", "customer");
+            setView("success");
+            return;
+          }
+        } catch {
+          // continue
+        }
+        setError("An account with this email address already exists. Please sign in with your password.");
+      } else {
+        setError(err.message || "Failed to create account. Please try again.");
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Action: Screen 7 (Simple Login - Backend determines role)
+  async function handleLoginSubmit(event) {
+    event.preventDefault();
+    setError("");
+    const id = loginForm.identifier.trim();
+    if (!id || !loginForm.password) {
+      return setError("Please enter your email or mobile number and password.");
+    }
+    setBusy(true);
+    try {
+      const isPhone = id.replace(/\s+/g, "").match(/^\+?\d+$/);
+      const payload = isPhone
+        ? { phone: id, password: loginForm.password }
+        : { email: id, password: loginForm.password };
+
+      const res = await sendPublic("/auth/login", "POST", payload);
+      if (res.token) {
+        localStorage.setItem("wefyx-token", res.token);
+        localStorage.setItem("wefyx-auth", "true");
+        localStorage.setItem("wefyx-user", JSON.stringify(res.user));
+        localStorage.setItem("wefyx-account-type", (res.user.role || "customer").toLowerCase());
+        window.location.assign("/portal");
+      }
+    } catch (err) {
+      setError(err.message || "Invalid credentials. Please check your email/mobile and password.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Action: Screen 8 (Forgot Password)
+  async function handleForgotSubmit(event) {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+    if (!forgotPhone.trim()) return setError("Please enter your mobile number.");
+    setBusy(true);
+    try {
+      if (forgotStep === 0) {
+        await sendPublic("/auth/send-otp", "POST", { phone: forgotPhone });
+        setForgotStep(1);
+        setSuccess("OTP sent to " + forgotPhone + ". Enter your new password below.");
+      } else {
+        await sendPublic("/auth/reset-password", "POST", {
+          phone: forgotPhone,
+          password: newPassword,
+        });
+        setSuccess("Password reset successfully! Redirecting to login...");
+        setTimeout(() => {
+          setView("login");
+          setForgotStep(0);
+        }, 1500);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to reset password. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="wf-auth-app">
+      <BrandHeader />
+
+      <main className="wf-auth-body">
+        {/* ======================================================== */}
+        {/* SCREEN 1: SIGN UP (JOIN WEFYX)                           */}
+        {/* ======================================================== */}
+        {view === "signup" && (
+          <div className="wf-auth-wrapper wf-auth-split">
+            <section className="wf-brand-side">
+              <div className="wf-brand-intro">
+                <h1 className="wf-brand-title">
+                  Join Wefy<span>x</span>
+                </h1>
+                <p className="wf-brand-subtitle">
+                  Create your account and get started with smart IT support and asset services for your business.
+                </p>
+
+                <ul className="wf-benefits-list">
+                  <li className="wf-benefit-item">
+                    <span className="wf-benefit-icon">
+                      <ShieldCheck size={20} strokeWidth={2.4} />
+                    </span>
+                    <div className="wf-benefit-text">
+                      <b>Quick Registration</b>
+                      <small>Get started in minutes</small>
+                    </div>
+                  </li>
+                  <li className="wf-benefit-item">
+                    <span className="wf-benefit-icon">
+                      <CheckCircle2 size={20} strokeWidth={2.4} />
+                    </span>
+                    <div className="wf-benefit-text">
+                      <b>Secure &amp; Verified</b>
+                      <small>OTP verification</small>
+                    </div>
+                  </li>
+                  <li className="wf-benefit-item">
+                    <span className="wf-benefit-icon">
+                      <Briefcase size={20} strokeWidth={2.4} />
+                    </span>
+                    <div className="wf-benefit-text">
+                      <b>Access All Services</b>
+                      <small>Support, AMC, Asset Rental and more</small>
+                    </div>
+                  </li>
+                  <li className="wf-benefit-item">
+                    <span className="wf-benefit-icon">
+                      <Headphones size={20} strokeWidth={2.4} />
+                    </span>
+                    <div className="wf-benefit-text">
+                      <b>Dedicated Support</b>
+                      <small>We are always here for you</small>
+                    </div>
+                  </li>
+                </ul>
+
+                <div className="wf-brand-slogan-wrap">
+                  <p className="wf-skyline-slogan">
+                    Smarter IT<br />
+                    <span className="wf-slogan-script">for a Better</span><br />
+                    Tomorrow
+                  </p>
+                </div>
+              </div>
+
+              {/* Dubai Skyline Illustration */}
+              <div className="wf-skyline-backdrop">
+                <svg
+                  className="wf-skyline-graphic"
+                  viewBox="0 0 1000 320"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  preserveAspectRatio="xMidYMax meet"
+                >
+                  <path d="M0 320L1000 320L1000 295L940 295L940 250L910 250L910 230L890 230L890 200L860 200L860 240L830 240L830 180L800 180L800 150L780 150L780 110L765 70L750 110L750 220L720 220L720 180L690 180L690 250L640 250L640 190L610 190L610 140L585 90L560 140L560 210L520 210L520 20L500 0L480 20L480 260L430 260L430 170L390 170L390 130L360 130L360 220L310 220L310 190L270 190L270 150L240 150L240 240L190 240L190 210L140 210L140 270L80 270L80 230L30 230L30 300L0 300Z" fill="#1e3a8a" opacity="0.12" />
+                  <path d="M40 320L980 320L980 280L930 280L930 235L880 235L880 215L840 215L840 190L790 190L790 230L740 230L740 160L710 160L710 240L660 240L660 175L620 175L620 120L590 120L590 205L540 205L540 80L515 45L490 80L490 250L450 250L450 185L410 185L410 210L360 210L360 145L320 145L320 235L260 235L260 170L210 170L210 255L160 255L160 195L110 195L110 265L60 265L60 305L40 305Z" fill="#0284c7" opacity="0.18" />
+                  <path d="M100 320L920 320L920 260L870 260L870 210L820 210L820 240L760 240L760 180L720 180L720 220L670 220L670 150L630 150L630 230L570 230L570 130L530 130L530 100L507 70L485 100L485 240L440 240L440 195L380 195L380 230L330 230L330 165L280 165L280 220L230 220L230 270L170 270L170 240L120 240L120 290L100 290Z" fill="#00a86b" opacity="0.22" />
+                </svg>
+              </div>
+            </section>
+
+            <section className="wf-auth-card">
+              <div className="wf-tab-bar">
+                <button type="button" className="wf-tab-btn active">
+                  Sign Up
+                </button>
+                <button type="button" onClick={() => setView("login")} className="wf-tab-btn">
+                  Login
+                </button>
+              </div>
+
+              <div className="wf-social-group">
+                <button type="button" className="wf-social-btn">
+                  <GoogleIcon />
+                  <span>Continue with Google</span>
+                </button>
+                <button type="button" className="wf-social-btn">
+                  <MicrosoftIcon />
+                  <span>Continue with Microsoft</span>
+                </button>
+              </div>
+
+              <div className="wf-divider">OR</div>
+
+              <form onSubmit={handleSendOtp}>
+                <div className="wf-form-group">
+                  <label className="wf-form-label">
+                    Mobile Number<i>*</i>
+                  </label>
+                  <div className="wf-phone-wrapper">
+                    <div className="wf-flag-badge">
+                      <UaeFlag width={24} height={15} />
+                      <span className="wf-prefix-text">+971</span>
+                    </div>
+                    <input
+                      type="tel"
+                      value={form.phone.replace(/^\+971\s*/, "")}
+                      onChange={(e) => setForm((c) => ({ ...c, phone: e.target.value }))}
+                      placeholder="50 123 4567"
+                      required
+                    />
+                  </div>
+                  <span className="wf-helper">We&apos;ll send you a 6-digit OTP to verify your number.</span>
+                </div>
+
+                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+
+                <button type="submit" disabled={busy} className="wf-primary-btn">
+                  {busy ? "Sending OTP…" : "Send OTP"} <ArrowRight size={17} />
+                </button>
+
+                <p className="wf-terms-text">
+                  By continuing, you agree to our <a href="/privacy-policy">Terms of Service</a> and{" "}
+                  <a href="/privacy-policy">Privacy Policy</a>.
+                </p>
+
+                <div className="wf-footer-link">
+                  Already have an account? <button type="button" onClick={() => setView("login")}>Login</button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SCREEN 2: VERIFY OTP                                     */}
+        {/* ======================================================== */}
+        {view === "otp" && (
+          <div className="wf-auth-wrapper wf-auth-narrow">
+            <section className="wf-auth-card wf-otp-box">
+              <OnboardingStepper current={0} />
+
+              <div className="wf-otp-phone-card">
+                <Smartphone size={36} />
+              </div>
+
+              <h2 className="text-2xl font-bold text-slate-900">Verify Your Mobile Number</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                We have sent a 6-digit OTP to <strong>{form.fullPhone}</strong>{" "}
+                <button type="button" onClick={() => setView("signup")} className="text-emerald-600 font-semibold underline">
+                  Edit ✎
+                </button>
+              </p>
+
+              <form onSubmit={handleVerifyOtp}>
+                <div className="wf-otp-inputs" onPaste={handleOtpPaste}>
+                  {form.otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      ref={(el) => (otpInputsRef.current[index] = el)}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                      className="wf-otp-digit"
+                      aria-label={`Digit ${index + 1}`}
+                      required
+                    />
+                  ))}
+                </div>
+
+                <div className="wf-resend-timer">
+                  {timer > 0 ? (
+                    <>
+                      Didn&apos;t receive the code? <strong>Resend OTP in 00:{timer < 10 ? `0${timer}` : timer}</strong>
+                    </>
+                  ) : (
+                    <button type="button" onClick={handleSendOtp} className="wf-resend-btn">
+                      Resend OTP now
+                    </button>
+                  )}
+                </div>
+
+                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+
+                <button type="submit" disabled={busy} className="wf-primary-btn">
+                  {busy ? "Verifying…" : "Verify & Continue"} <ArrowRight size={17} />
+                </button>
+
+                <div>
+                  <button type="button" onClick={() => setView("signup")} className="wf-back-link">
+                    <ArrowLeft size={16} /> Back
+                  </button>
+                </div>
+
+                <div className="wf-trust-badge">
+                  <ShieldCheck size={18} />
+                  <span>Your information is secure with us.</span>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SCREEN 3: BUSINESS DETAILS                               */}
+        {/* ======================================================== */}
+        {view === "business" && (
+          <div className="wf-auth-wrapper wf-auth-wide">
+            <section className="wf-auth-card">
+              <OnboardingStepper current={1} />
+
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-slate-900">Tell Us About Your Business</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Please provide your company details to complete your onboarding.
+                </p>
+              </div>
+
+              <form onSubmit={handleBusinessSubmit}>
+                <div className="wf-grid-2">
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">
+                      Company Name<i>*</i>
+                    </label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <Building2 size={17} />
+                      </span>
+                      <input
+                        type="text"
+                        value={form.companyName}
+                        onChange={update("companyName")}
+                        placeholder="Acme Trading LLC"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">
+                      Trade License Number <span className="opt">(Optional)</span>
+                    </label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <Package size={17} />
+                      </span>
+                      <input
+                        type="text"
+                        value={form.tradeLicense}
+                        onChange={update("tradeLicense")}
+                        placeholder="1234567"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group wf-grid-full">
+                    <label className="wf-form-label">
+                      Industry<i>*</i>
+                    </label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <Briefcase size={17} />
+                      </span>
+                      <select value={form.industry} onChange={update("industry")} required>
+                        <option>Trading &amp; Distribution</option>
+                        <option>Information Technology</option>
+                        <option>Healthcare &amp; Clinics</option>
+                        <option>Finance &amp; Banking</option>
+                        <option>Construction &amp; Real Estate</option>
+                        <option>Hospitality &amp; F&amp;B</option>
+                        <option>Retail &amp; E-commerce</option>
+                        <option>Other Services</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">
+                      Company Email<i>*</i>
+                    </label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <Mail size={17} />
+                      </span>
+                      <input
+                        type="email"
+                        value={form.companyEmail}
+                        onChange={update("companyEmail")}
+                        placeholder="info@acmeuae.com"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">
+                      Contact Person<i>*</i>
+                    </label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <User size={17} />
+                      </span>
+                      <input
+                        type="text"
+                        value={form.contactPerson}
+                        onChange={update("contactPerson")}
+                        placeholder="Ahmed Khan"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">Job Title</label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <Briefcase size={17} />
+                      </span>
+                      <input
+                        type="text"
+                        value={form.jobTitle}
+                        onChange={update("jobTitle")}
+                        placeholder="IT Manager"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">Company Website</label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <Globe size={17} />
+                      </span>
+                      <input
+                        type="text"
+                        value={form.website}
+                        onChange={update("website")}
+                        placeholder="www.acmeuae.com"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+
+                <button type="submit" className="wf-primary-btn mt-2">
+                  Next: Address Details <ArrowRight size={17} />
+                </button>
+
+                <div>
+                  <button type="button" onClick={() => setView("otp")} className="wf-back-link">
+                    <ArrowLeft size={16} /> Back
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SCREEN 4: COMPANY ADDRESS                                */}
+        {/* ======================================================== */}
+        {view === "address" && (
+          <div className="wf-auth-wrapper wf-auth-wide">
+            <section className="wf-auth-card">
+              <OnboardingStepper current={2} />
+
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-slate-900">Company Address</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Where should we provide support?
+                </p>
+              </div>
+
+              <form onSubmit={handleAddressSubmit}>
+                <div className="wf-grid-2">
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">
+                      Country<i>*</i>
+                    </label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <UaeFlag width={18} height={12} />
+                      </span>
+                      <select value={form.country} onChange={update("country")} required>
+                        <option>United Arab Emirates</option>
+                        <option>Saudi Arabia</option>
+                        <option>Qatar</option>
+                        <option>Oman</option>
+                        <option>Bahrain</option>
+                        <option>Kuwait</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">
+                      Emirate<i>*</i>
+                    </label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <MapPin size={17} />
+                      </span>
+                      <select value={form.emirate} onChange={update("emirate")} required>
+                        <option>Dubai</option>
+                        <option>Abu Dhabi</option>
+                        <option>Sharjah</option>
+                        <option>Ajman</option>
+                        <option>Ras Al Khaimah</option>
+                        <option>Fujairah</option>
+                        <option>Umm Al Quwain</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group wf-grid-full">
+                    <label className="wf-form-label">
+                      Address<i>*</i>
+                    </label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <MapPin size={17} />
+                      </span>
+                      <input
+                        type="text"
+                        value={form.address}
+                        onChange={update("address")}
+                        placeholder="Office 1204, Business Bay, Dubai, UAE"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group wf-grid-full">
+                    <label className="wf-form-label">Additional Information (Optional)</label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <Building2 size={17} />
+                      </span>
+                      <input
+                        type="text"
+                        value={form.additionalInfo}
+                        onChange={update("additionalInfo")}
+                        placeholder="Landmark, Building Name, Floor, etc."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="wf-form-group wf-grid-full">
+                    <label className="wf-checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={form.serviceVisitsSame}
+                        onChange={update("serviceVisitsSame")}
+                      />
+                      <span>Use this address for service visits</span>
+                    </label>
+
+                    <label className="wf-checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={form.billingAddressSame}
+                        onChange={update("billingAddressSame")}
+                      />
+                      <span>Billing address is the same</span>
+                    </label>
+                  </div>
+                </div>
+
+                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+
+                <button type="submit" className="wf-primary-btn mt-2">
+                  Next: Complete Registration <ArrowRight size={17} />
+                </button>
+
+                <div>
+                  <button type="button" onClick={() => setView("business")} className="wf-back-link">
+                    <ArrowLeft size={16} /> Back
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SCREEN 5: REVIEW & COMPLETE                              */}
+        {/* ======================================================== */}
+        {view === "review" && (
+          <div className="wf-auth-wrapper wf-auth-wide">
+            <section className="wf-auth-card">
+              <OnboardingStepper current={3} />
+
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold text-slate-900">Review &amp; Complete</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Please review your information before creating your account.
+                </p>
+              </div>
+
+              <div className="wf-review-grid">
+                <div className="wf-review-card">
+                  <div className="wf-review-card-top">
+                    <h4>Company Details</h4>
+                    <button type="button" onClick={() => setView("business")} className="wf-edit-btn">
+                      <Edit2 size={13} /> Edit
+                    </button>
+                  </div>
+                  <dl className="wf-review-rows">
+                    <dt>Company Name</dt>
+                    <dd>{form.companyName}</dd>
+                    <dt>Trade License</dt>
+                    <dd>{form.tradeLicense || "—"}</dd>
+                    <dt>Industry</dt>
+                    <dd>{form.industry}</dd>
+                    <dt>Company Email</dt>
+                    <dd>{form.companyEmail}</dd>
+                    <dt>Contact Person</dt>
+                    <dd>{form.contactPerson}</dd>
+                    <dt>Job Title</dt>
+                    <dd>{form.jobTitle || "—"}</dd>
+                    <dt>Website</dt>
+                    <dd>{form.website || "—"}</dd>
+                  </dl>
+                </div>
+
+                <div className="wf-review-card">
+                  <div className="wf-review-card-top">
+                    <h4>Address</h4>
+                    <button type="button" onClick={() => setView("address")} className="wf-edit-btn">
+                      <Edit2 size={13} /> Edit
+                    </button>
+                  </div>
+                  <dl className="wf-review-rows">
+                    <dt>Address</dt>
+                    <dd>{form.address}</dd>
+                    <dt>Emirate</dt>
+                    <dd>{form.emirate}</dd>
+                    <dt>Country</dt>
+                    <dd>{form.country}</dd>
+
+                    <dt className="wf-review-subhead">Account Access</dt>
+                    <dd className="wf-review-subhead" />
+                    <dt>Mobile Number</dt>
+                    <dd>{form.fullPhone}</dd>
+                    <dt>Assigned Role</dt>
+                    <dd className="text-emerald-700 font-bold">Customer (Default)</dd>
+                  </dl>
+                </div>
+              </div>
+
+              <form onSubmit={handleCreateAccount}>
+                <div className="wf-form-group">
+                  <label className="wf-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={form.termsConsent}
+                      onChange={update("termsConsent")}
+                      required
+                    />
+                    <span>
+                      I agree to the <a href="/privacy-policy" className="font-semibold underline">Terms of Service</a> and{" "}
+                      <a href="/privacy-policy" className="font-semibold underline">Privacy Policy</a>
+                    </span>
+                  </label>
+                </div>
+
+                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+
+                <button type="submit" disabled={busy} className="wf-primary-btn">
+                  {busy ? "Creating Account…" : "Create My Account"} <ArrowRight size={17} />
+                </button>
+
+                <div>
+                  <button type="button" onClick={() => setView("address")} className="wf-back-link">
+                    <ArrowLeft size={16} /> Back
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SCREEN 6: WELCOME TO WEFYX!                              */}
+        {/* ======================================================== */}
+        {view === "success" && (
+          <div className="wf-auth-wrapper wf-auth-narrow">
+            <section className="wf-auth-card wf-success-view">
+              <div className="wf-burst-icon">
+                <Check size={48} strokeWidth={3} />
+              </div>
+
+              <h2 className="wf-success-title">Welcome to Wefyx!</h2>
+              <p className="wf-success-lead">Your account has been created successfully.</p>
+              <p className="wf-success-desc">
+                You can now access all our services, raise support tickets, book on-site support, explore asset rentals and more.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => window.location.assign("/portal")}
+                className="wf-primary-btn"
+              >
+                Go to Dashboard <ArrowRight size={17} />
+              </button>
+
+              <div className="wf-whats-next-box">
+                <h4>What&apos;s Next?</h4>
+                <div className="wf-whats-next-grid">
+                  <a href="/portal" className="wf-next-item">
+                    <CheckCircle2 size={16} />
+                    <span>Raise a support ticket</span>
+                  </a>
+                  <a href="/rent" className="wf-next-item">
+                    <CheckCircle2 size={16} />
+                    <span>Explore IT asset rental</span>
+                  </a>
+                  <a href="/amc" className="wf-next-item">
+                    <CheckCircle2 size={16} />
+                    <span>Manage AMC contracts</span>
+                  </a>
+                  <a href="/contact" className="wf-next-item">
+                    <CheckCircle2 size={16} />
+                    <span>Get expert support anytime</span>
+                  </a>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SCREEN 7: WELCOME BACK (CLEAN SIMPLE LOGIN)              */}
+        {/* ======================================================== */}
+        {view === "login" && (
+          <div className="wf-auth-wrapper wf-auth-split wf-reference-login">
+            <a href="/" className="wf-reference-logo" aria-label="Wefyx home">Wefy<span>x</span></a>
+            <section className="wf-auth-card">
+
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold text-slate-900">Welcome Back</h2>
+                <p className="mt-1 text-xs text-slate-500">
+                  Login to your Wefyx account
+                </p>
+              </div>
+
+              <div className="wf-social-group">
+                <button type="button" className="wf-social-btn">
+                  <GoogleIcon />
+                  <span>Continue with Google</span>
+                </button>
+                <button type="button" className="wf-social-btn">
+                  <MicrosoftIcon />
+                  <span>Continue with Microsoft</span>
+                </button>
+              </div>
+
+              <div className="wf-divider">OR</div>
+
+              <form onSubmit={handleLoginSubmit}>
+                <div className="wf-form-group">
+                  <label className="wf-form-label" htmlFor="login-id">
+                    Email address or Mobile Number
+                  </label>
+                  <div className="wf-input-with-icon">
+                    <span className="wf-input-icon">
+                      <Mail size={17} />
+                    </span>
+                    <input
+                      id="login-id"
+                      type="text"
+                      value={loginForm.identifier}
+                      onChange={(e) =>
+                        setLoginForm({ ...loginForm, identifier: e.target.value })
+                      }
+                      placeholder="admin@wefyx.pro or +971 50 123 4567"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="wf-form-group">
+                  <div className="flex items-center justify-between">
+                    <label className="wf-form-label" htmlFor="login-pass">
+                      Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setView("forgot")}
+                      className="wf-forgot-link-inline"
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
+                  <div className="wf-input-with-icon">
+                    <span className="wf-input-icon">
+                      <Lock size={17} />
+                    </span>
+                    <input
+                      id="login-pass"
+                      type={showPassword ? "text" : "password"}
+                      value={loginForm.password}
+                      onChange={(e) =>
+                        setLoginForm({ ...loginForm, password: e.target.value })
+                      }
+                      placeholder="••••••••"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="wf-input-toggle"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="wf-remember-row">
+                  <label className="wf-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={loginForm.rememberMe}
+                      onChange={(e) =>
+                        setLoginForm({ ...loginForm, rememberMe: e.target.checked })
+                      }
+                    />
+                    <span>Remember me</span>
+                  </label>
+
+                  <span className="wf-secure-login-badge">
+                    <ShieldCheck size={14} /> Secure login
+                  </span>
+                </div>
+
+                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+
+                <button type="submit" disabled={busy} className="wf-primary-btn">
+                  {busy ? "Logging In…" : "Login"} <ArrowRight size={17} />
+                </button>
+
+                <div className="wf-footer-link">
+                  Don&apos;t have an account?{" "}
+                  <button type="button" onClick={() => setView("signup")}>
+                    Sign Up
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            {/* Right Side: Engineer Hero with Branding */}
+            <section className="wf-login-side">
+              <img
+                src="/images/home-support-hero.png"
+                alt="Wefyx IT Engineer Support"
+                className="wf-login-hero-img"
+              />
+              <div className="wf-login-quote">
+                Same Support.<br />Greater Possibilities.
+              </div>
+
+              <div className="wf-login-trust-bar">
+                <span>
+                  <ShieldCheck size={15} /> Secure
+                </span>
+                <span>
+                  <Shield size={15} /> Reliable
+                </span>
+                <span>
+                  <Zap size={15} /> Always On
+                </span>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* SCREEN 8: FORGOT PASSWORD                                */}
+        {/* ======================================================== */}
+        {view === "forgot" && (
+          <div className="wf-auth-wrapper wf-auth-narrow">
+            <section className="wf-auth-card text-center">
+              <div className="wf-otp-phone-card">
+                <KeyRound size={34} />
+              </div>
+
+              <h2 className="text-2xl font-bold text-slate-900">Forgot Password?</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                {forgotStep === 0
+                  ? "Enter your mobile number and we'll send you an OTP to reset your password."
+                  : "Enter your new password to reset your account credentials."}
+              </p>
+
+              <form onSubmit={handleForgotSubmit} className="mt-6 text-left">
+                {forgotStep === 0 ? (
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">
+                      Mobile Number<i>*</i>
+                    </label>
+                    <div className="wf-phone-wrapper">
+                      <div className="wf-flag-badge">
+                        <UaeFlag width={24} height={15} />
+                        <span className="wf-prefix-text">+971</span>
+                      </div>
+                      <input
+                        type="tel"
+                        value={forgotPhone.replace(/^\+971\s*/, "")}
+                        onChange={(e) => setForgotPhone(`+971 ${e.target.value}`)}
+                        placeholder="50 123 4567"
+                        required
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="wf-form-group">
+                    <label className="wf-form-label">
+                      New Password<i>*</i>
+                    </label>
+                    <div className="wf-input-with-icon">
+                      <span className="wf-input-icon">
+                        <Lock size={17} />
+                      </span>
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="At least 8 characters"
+                        minLength={8}
+                        required
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+                {success && <div className="wf-alert wf-alert-success">{success}</div>}
+
+                <button type="submit" disabled={busy} className="wf-primary-btn mt-2">
+                  {busy ? "Processing…" : forgotStep === 0 ? "Send OTP" : "Reset Password"} <ArrowRight size={17} />
+                </button>
+
+                <div className="text-center">
+                  <button type="button" onClick={() => setView("login")} className="wf-back-link">
+                    <ArrowLeft size={16} /> Back to Login
+                  </button>
+                </div>
+              </form>
+            </section>
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }
 
-function Onboarding({ type = "CUSTOMER" }) {
-  const employee = type === "EMPLOYEE";
-  const vendor = type === "VENDOR";
-  const heading = employee ? "Build the future of support with us." : vendor ? "Grow your business with Wefyx." : "Your business deserves better IT support.";
-  const intro = employee ? "Apply for a Wefyx employee account. We’ll review your application and enable access once it is approved." : vendor ? "Join the Wefyx vendor network, receive matching customer requirements, submit quotations, and manage fulfilment from one workspace." : "Set up your customer workspace in a minute. Submit any requirement, compare quotations, and manage every step with Wefyx.";
-  const benefits = employee ? ["Work directly on customer requirements", "Coordinate vendor quotations and delivery", "Access activates after administrator approval"] : vendor ? ["Receive requirements matched to your services", "Submit competitive quotations securely", "Vendor access activates after administrator approval"] : ["Request any service, product, or support", "Receive and compare vendor quotations", "Track orders, assets, and conversations"];
-  return <div className="min-h-screen bg-[#f3f7fb]"><TopNav/><main className="mx-auto grid min-h-[calc(100vh-79px)] max-w-7xl overflow-hidden lg:grid-cols-[.92fr_1.08fr]"><section className="relative hidden overflow-hidden bg-[#061b38] px-12 py-14 text-white lg:block"><div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(33,133,232,.35),transparent_32%),radial-gradient(circle_at_90%_86%,rgba(42,83,210,.32),transparent_38%)]"/><img src="/images/home-hero-reference.png" className="absolute bottom-0 right-[-12%] w-[104%] opacity-35 mix-blend-screen" alt=""/><div className="relative z-10 flex h-full flex-col"><span className="inline-flex w-fit items-center rounded-full border border-blue-300/30 bg-blue-400/10 px-4 py-2 text-[11px] font-bold tracking-[.18em] text-blue-100">{employee ? "CAREERS AT WEFYX" : vendor ? "WEFYX VENDOR NETWORK" : "WELCOME TO WEFYX"}</span><h1 className="mt-8 max-w-md text-5xl font-bold leading-[1.08]">{heading}</h1><p className="mt-5 max-w-md text-base leading-7 text-blue-100/75">{intro}</p><div className="mt-auto space-y-4 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">{benefits.map((item) => <div key={item} className="flex items-center gap-3 text-sm text-blue-50"><span className="grid h-6 w-6 place-items-center rounded-full bg-[#2384df]"><Check size={15}/></span>{item}</div>)}</div></div></section><section className="flex items-center justify-center px-5 py-10 sm:px-10"><div className="w-full max-w-xl"><div className="mb-6 lg:hidden"><span className="text-[11px] font-bold tracking-[.18em] text-[#1976c9]">{employee ? "CAREERS AT WEFYX" : vendor ? "VENDOR REGISTRATION" : "CUSTOMER REGISTRATION"}</span><h1 className="mt-2 text-3xl font-bold text-[#08264d]">{heading}</h1></div><div className="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200/70 sm:p-9"><div className="flex items-start gap-4"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-[#1571c6]">{employee || vendor ? <BriefcaseBusiness size={24}/> : <CircleUserRound size={24}/>}</span><div><h2 className="text-2xl font-bold text-[#08264d]">{employee ? "Employee application" : vendor ? "Become a Wefyx vendor" : "Create customer account"}</h2><p className="mt-1 text-sm leading-5 text-slate-500">{employee || vendor ? "Administrator approval is required before you can sign in." : "Your customer workspace will be available immediately."}</p></div></div><RegistrationForm type={type}/><p className="mt-6 text-center text-sm text-slate-500">Already registered? <a href="/portal" className="font-bold text-[#1571c6] hover:underline">Sign in to your account</a></p></div><p className="mt-5 text-center text-xs text-slate-500">Need a customer account? <a href="/register" className="font-bold text-[#1571c6] hover:underline">Register as customer</a></p></div></section></main></div>;
+export function CareersPage() {
+  return <PublicRegistration initialView="signup" />;
 }
 
-export default function PublicRegistration(){ return <Onboarding/>; }
-export function CareersPage(){ return <Onboarding type="EMPLOYEE"/>; }
-export function VendorRegistrationPage(){ return <Onboarding type="VENDOR"/>; }
+export function VendorRegistrationPage() {
+  return <PublicRegistration initialView="signup" />;
+}

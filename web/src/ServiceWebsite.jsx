@@ -1,46 +1,786 @@
-import { useEffect, useState } from "react";
-import { ArrowRight, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Cloud, Headphones, Menu, Monitor, Network, Search, Server, ShieldCheck, ShoppingCart, Sparkles, X, Zap, Building2, Camera, Fingerprint, Laptop, Gauge, CircleHelp, Mail, Phone, Send, MapPin, FileText, UserRound } from "lucide-react";
-
-const slides = [
-  { tag: "YOUR TRUSTED IT PARTNER IN THE UAE", title: <>Complete Managed IT Services<br/>For a <i>Smarter, Stronger Business.</i></>, panel: "BUILDING THE DIGITAL FOUNDATION FOR TOMORROW" },
-  { tag: "DATA CENTER SOLUTIONS", title: <>Design. Build. Operate.<br/><i>Mission-Critical Data Centers.</i></>, panel: "BUILT FOR UPTIME. DESIGNED FOR SCALE." },
-  { tag: "24/7 IT SUPPORT", title: <>Your Complete IT Department.<br/><i>Without the Overhead.</i></>, panel: "SUPPORT THAT NEVER STOPS." },
-  { tag: "NETWORK & CYBERSECURITY", title: <>Secure. Connected.<br/><i>Always Available.</i></>, panel: "PROTECTING EVERY CONNECTION." },
-  { tag: "FLEXIBLE IT RENTAL", title: <>Business Technology.<br/><i>When You Need It.</i></>, panel: "TECHNOLOGY ON YOUR TERMS." },
-];
-const quickServices = [[Headphones,"Managed IT Services"],[Server,"Data Center Construction"],[CircleHelp,"IT Support & Helpdesk"],[Cloud,"Cloud & Infrastructure"],[ShieldCheck,"Cybersecurity"],[Network,"Network & Wi-Fi Solutions"],[Camera,"CCTV & Physical Security"],[Fingerprint,"Biometric & Access Control"],[Laptop,"Rent IT Equipment"],[ShoppingCart,"Shop Electronics"]];
-const cores = [[Headphones,"IT Support & Helpdesk",["Remote & on-site support","End user support","24/7 helpdesk","SLA-based support"]],[Network,"Network & Infrastructure",["Network design & setup","Wi-Fi solutions","Firewall & security","Monitoring & optimization"]],[Cloud,"Cloud Services",["Cloud migration","Microsoft 365","Cloud backup","Hybrid cloud solutions"]],[ShieldCheck,"Cybersecurity",["Threat protection","Security audits","Endpoint security","Compliance support"]],[Server,"Data Center Services",["Design & construction","Power & cooling","Rack & cabling","Operations & maintenance"]],[Gauge,"AMC & Asset Management",["Annual maintenance","Preventive maintenance","Asset tracking","Lifecycle management"]]];
+import { useEffect, useState, useRef } from "react";
+import {
+  Activity,
+  ArrowRight,
+  Boxes,
+  Briefcase,
+  Building2,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  Cpu,
+  FileCheck,
+  FileText,
+  Flame,
+  Globe2,
+  GraduationCap,
+  HardHat,
+  Headphones,
+  HeartPulse,
+  Hotel,
+  Landmark,
+  Laptop,
+  Lock,
+  MapPin,
+  Monitor,
+  MonitorCheck,
+  Network,
+  Package,
+  Phone,
+  Power,
+  Printer,
+  RefreshCw,
+  Scale,
+  Search,
+  Server,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  ShoppingBag,
+  ShoppingCart,
+  SlidersHorizontal,
+  Smartphone,
+  Sparkles,
+  Store,
+  Thermometer,
+  TrendingUp,
+  Truck,
+  UserCheck,
+  UserRound,
+  UsersRound,
+  UtensilsCrossed,
+  Warehouse,
+  Wifi,
+  Wrench,
+  Zap
+} from "lucide-react";
+import UnifiedHeader from "./UnifiedHeader";
+import HeroSlider from "./HeroSlider";
+import SupportOverview from "./SupportOverview";
+import AIQuotationModal from "./AIQuotationModal";
+import SiteVisitModal from "./SiteVisitModal";
+import { PublicFooter } from "./RentalPages";
+import { get } from "./api";
+import "./home.css";
 
 export default function ServiceWebsite() {
-  const [menu,setMenu] = useState(false), [slide,setSlide] = useState(0), [paused,setPaused] = useState(false), [toast,setToast] = useState(""), [enquiry,setEnquiry] = useState("");
-  useEffect(() => { if (paused) return; const t = setInterval(()=>setSlide(s=>(s+1)%slides.length),6000); return ()=>clearInterval(t); },[paused]);
-  const message = (x) => { setToast(x); window.setTimeout(()=>setToast(""),3500); };
-  const openEnquiry = (kind) => { setMenu(false); setEnquiry(kind); };
-  const submitEnquiry = (event) => { event.preventDefault(); const type = enquiry === "site visit" ? "site visit" : "requirement"; setEnquiry(""); message(`Your ${type} has been received. Our team will be in touch shortly.`); };
-  const current=slides[slide];
-  return <div className="wefyx-public">
-    <div className="wp-top"><div className="wp-shell"><span>UAE's trusted managed IT & infrastructure partner</span><span>24/7 Support &nbsp; • &nbsp; Dubai, UAE</span></div></div>
-    <header className="wp-header"><div className="wp-shell wp-mainnav">
-      <a className="wp-logo" href="/"><b>Wefyx<span>.pro</span></b><small>Smarter IT. Stronger Business.</small></a>
-      <div className="wp-search"><Search size={17}/><input placeholder="Search services, equipment, rentals, solutions..."/><button aria-label="Search"><Search size={16}/></button></div>
-      <div className="wp-actions"><span><MapPin size={15}/> UAE <ChevronDown size={13}/></span><a href="/contact"><Headphones size={15}/> Support</a><a href="/services#requirement"><FileText size={15}/> Request Quote</a><a aria-label="Cart" href="/cart"><ShoppingCart size={18}/></a><a href="/portal"><UserRound size={15}/> Sign In</a><a className="wp-start" href="/services#requirement">Get Started</a></div>
-      <button className="wp-menu" onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button>
-    </div><nav className={menu?"wp-links wp-open":"wp-links"}><div className="wp-shell">{["Home","IT Services","Managed Services","Data Center","Shop Electronics","Rent Equipment","AMC","Business Solutions","Industries","About","Careers","Become a Vendor","Contact"].map((x,i)=>{const paths={"Home":"/","IT Services":"/services","Managed Services":"/services","Data Center":"/data-center","Shop Electronics":"/shop","Rent Equipment":"/rent","AMC":"/services","Business Solutions":"/services","Industries":"/about","About":"/about","Careers":"/careers","Become a Vendor":"/become-a-vendor","Contact":"/contact"};return <a key={x} href={paths[x]}>{x}{[1,2,3,7,8].includes(i)&&<ChevronDown size={13}/>}</a>})}</div></nav></header>
-    <main>
-      <section className="wp-hero" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)}>
-        <img src="/images/home-hero-reference.png" alt="Wefyx engineer servicing enterprise data center infrastructure"/>
-        <div className="wp-shell wp-hero-inner"><div className="wp-hero-copy"><p>{current.tag}</p><h1>{current.title}</h1><span className="wp-hero-summary">From devices to data centers — we design, deploy, manage and support your entire IT infrastructure so you can focus on what matters most: your business.</span><div className="wp-benefits"><span><Check/> Reduce IT Costs</span><span><Check/> Improve Productivity</span><span><Check/> Enhance Security</span><span><Check/> Scale with Confidence</span></div><div className="wp-hero-buttons"><button onClick={()=>openEnquiry("consultation")}>Get a Free Consultation <ArrowRight size={17}/></button><button onClick={()=>document.querySelector("#services")?.scrollIntoView({behavior:"smooth"})}>Explore Managed Services</button></div></div><aside className="wp-hero-panel"><b>{current.panel}</b><div>{["Data Centers","Cloud Infrastructure","Managed IT Services","Cybersecurity","IT Support","AMC & IT Lifecycle Management"].map(x=><span key={x}><i/> {x}</span>)}</div></aside></div>
-        <div className="wp-controls"><button onClick={()=>setSlide((slide+slides.length-1)%slides.length)}><ChevronLeft/></button>{slides.map((_,i)=><button key={i} aria-label={"Slide "+(i+1)} onClick={()=>setSlide(i)} className={i===slide?"active":""}/>) }<button onClick={()=>setSlide((slide+1)%slides.length)}><ChevronRight/></button></div>
-      </section>
-      <section className="wp-quick"><div className="wp-shell">{quickServices.map(([Icon,title])=><a key={title} href={title.includes("Rent")?"/rent":title.includes("Shop")?"/shop":title.includes("Data Center")?"/data-center":"/services"}><Icon/><span>{title}</span></a>)}</div></section>
-      <section className="wp-shell wp-datacenter" id="data-center"><div className="wp-dc-photo"><img src="/images/data-center-reference.png" alt="Enterprise data center aisle"/></div><div className="wp-dc-copy"><p className="wp-eyebrow">DATA CENTER SOLUTIONS</p><h2>Design. Build. Operate.<br/><em>End-to-End Data Center Services.</em></h2><p>From strategy and design to construction, deployment and ongoing management — Wefyx delivers secure, scalable and high-performance data center solutions for modern businesses.</p><button onClick={()=>message("Data center consultation request started.")}>Explore Data Center Solutions <ArrowRight size={16}/></button></div><div className="wp-dc-panel">{["Data Center Design & Build","Power & Cooling Systems","Network & Security Infrastructure","24/7 Monitoring & Management","Migration & Modernization"].map(x=><span key={x}><Check/> {x}</span>)}<b>Scalable.<br/>Secure.<br/>Always On.</b></div></section>
-      <section className="wp-shell wp-divisions"><article className="wp-division buy"><p>BUY ELECTRONICS</p><h3>Latest Technology<br/>for Your Business</h3><span>Laptops, desktops, servers, networking, accessories and enterprise technology.</span><a href="/shop">Shop Now <ArrowRight size={15}/></a></article><article className="wp-division rent"><p>RENT EQUIPMENT</p><h3>Flexible Rentals<br/>for Every Need</h3><span>Short-term and long-term electronics rentals for companies and individuals.</span><a href="/rent">Rent Now <ArrowRight size={15}/></a></article><article className="wp-division manage"><p>MANAGED IT SERVICES</p><h3>Your Complete<br/>IT Department</h3><span>Proactive, secure and reliable IT management at a predictable cost.</span><a href="/services">Learn More <ArrowRight size={15}/></a></article></section>
-      <section className="wp-trust"><div className="wp-shell"><div className="wp-stats">{[["250+","Business Clients"],["150+","IT Projects Delivered"],["99.9%","Uptime Commitment"],["24/7","Support Available"],["UAE","Nationwide Coverage"]].map(([n,l])=><div key={l}><b>{n}</b><span>{l}</span></div>)}</div><p>Trusted across UAE business sectors</p><div className="wp-logos"><span>ENTERPRISE</span><span>HOSPITALITY</span><span>RETAIL</span><span>HEALTHCARE</span><span>LOGISTICS</span></div></div></section>
-      <section className="wp-shell wp-core" id="services"><div className="wp-title"><h2>Our Core Managed IT Services</h2><span>End-to-end IT management to keep your business running, secure and future-ready.</span></div><div className="wp-core-grid">{cores.map(([Icon,title,items])=><article key={title}><div><Icon/></div><h3>{title}</h3><ul>{items.map(item=><li key={item}>{item}</li>)}</ul><a href="/services">Explore Service <ArrowRight size={15}/></a></article>)}</div></section>
-      <section className="wp-shell wp-cta-row" id="contact"><article className="wp-visit"><div><CalendarDays className="wp-cta-icon"/><h2>Need an IT Expert at Your Office?</h2><p>Submit your requirement and review our proposal first. Once the proposal is accepted and the deal is confirmed, we will schedule the site visit.</p><a href="/services#requirement">Submit Requirement <ArrowRight size={15}/></a></div></article><article className="wp-quote"><div><h2>Get an Instant AI Quotation</h2><p>Tell us your requirements and get an AI-assisted IT solution with estimated pricing.</p><a href="/services#requirement">Try AI Quotation <ArrowRight size={15}/></a></div><ul><li><Check/> Smart recommendations</li><li><Check/> Instant estimates</li><li><Check/> Tailored solutions</li><li><Check/> Save time</li></ul></article></section>
-    </main>
-    <footer className="wp-footer"><div className="wp-shell"><div><a className="wp-logo" href="/"><b>Wefyx<span>.pro</span></b><small>Smarter IT. Stronger Business.</small></a></div><div><b>Solutions</b><a href="/services">Managed IT</a><a href="/data-center">Data Center</a><a href="/services">Cloud</a><a href="/services">Cybersecurity</a></div><div><b>Company</b><a href="/about">About Us</a><a href="/about">Our Projects</a><a href="/careers">Careers</a><a href="/become-a-vendor">Become a Vendor</a></div><div><b>Support</b><a href="/contact">Contact Us</a><a href="/portal">Support Portal</a><a href="/portal">Track Request</a><a href="/services#site-visit">Site Visit</a></div><div><b>Legal</b><a href="/privacy-policy">Privacy Policy</a><a href="/about">About Wefyx</a><a href="/contact">Contact</a></div><div className="wp-newsletter"><b>Stay Updated</b><p>Get the latest insights, offers and technology trends.</p><form onSubmit={e=>{e.preventDefault();message("Thanks for your interest. Please contact us for updates.")}}><input aria-label="Your email" required type="email" placeholder="Enter your email"/><button type="submit">Subscribe</button></form></div></div><div className="wp-footer-bottom"><span>© 2026 Wefyx.pro. All rights reserved.</span><span>Crafted &amp; Built by Prabha Technologies &nbsp; | &nbsp; prabhatech.com</span></div></footer>
-    {enquiry && <div className="wp-modal" role="dialog" aria-modal="true" aria-labelledby="enquiry-title"><button className="wp-modal-backdrop" aria-label="Close form" onClick={()=>setEnquiry("")}/><form className="wp-enquiry" onSubmit={submitEnquiry}><button type="button" className="wp-close" aria-label="Close form" onClick={()=>setEnquiry("")}><X/></button><p className="wp-eyebrow">WEFYX PRO · UAE</p><h2 id="enquiry-title">{enquiry === "site visit" ? "Book an engineer visit" : "Tell us what you need"}</h2><p className="wp-enquiry-copy">Share a few details and a certified Wefyx specialist will respond within one business hour.</p><div className="wp-form-grid"><label>Full name<input required placeholder="Your full name" /></label><label>Work email<input required type="email" placeholder="name@company.com" /></label><label>Company<input placeholder="Company name" /></label><label>Mobile number<input required type="tel" placeholder="+971 50 123 4567" /></label><label className="wp-wide">Service<select defaultValue=""><option value="" disabled>Select a service</option><option>Managed IT Services</option><option>IT Support & Helpdesk</option><option>Cybersecurity</option><option>Data Center Solutions</option><option>Equipment Rental</option></select></label><label className="wp-wide">How can we help?<textarea required placeholder="Briefly describe your requirement..." /></label></div><div className="wp-form-foot"><span><ShieldCheck/> Your information stays private.</span><button type="submit">Send request <Send/></button></div><div className="wp-contact-mini"><span><Phone/> +971 4 555 0180</span><span><Mail/> hello@wefyx.pro</span></div></form></div>}
-    {toast&&<div className="wp-toast"><Check/> {toast}</div>}
-  </div>;
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [showVisitModal, setShowVisitModal] = useState(false);
+  const [catalog, setCatalog] = useState(null);
+
+  // Animated counters state
+  const [countersVisible, setCountersVisible] = useState(false);
+  const trustSectionRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    get("/bookings/catalog")
+      .then((val) => {
+        if (active) setCatalog(val);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Intersection observer for counters
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setCountersVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+    if (trustSectionRef.current) {
+      observer.observe(trustSectionRef.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  // 10 Horizontal Service Icons
+  const serviceStripItems = [
+    { title: "Managed IT Services", href: "/services", icon: Building2, color: "text-blue-600 bg-blue-50" },
+    { title: "Data Center Construction", href: "/data-center", icon: Server, color: "text-indigo-600 bg-indigo-50" },
+    { title: "IT Support & Helpdesk", href: "/services#helpdesk", icon: Headphones, color: "text-emerald-600 bg-emerald-50" },
+    { title: "Cloud & Infrastructure", href: "/services#cloud", icon: Zap, color: "text-sky-600 bg-sky-50" },
+    { title: "Cybersecurity", href: "/services#cybersecurity", icon: ShieldCheck, color: "text-rose-600 bg-rose-50" },
+    { title: "Network & Wi-Fi", href: "/services#network", icon: Network, color: "text-cyan-600 bg-cyan-50" },
+    { title: "CCTV & Security", href: "/services#cctv", icon: Lock, color: "text-amber-600 bg-amber-50" },
+    { title: "Biometric & Access", href: "/services#biometric", icon: UserCheck, color: "text-violet-600 bg-violet-50" },
+    { title: "Rent IT Equipment", href: "/rent", icon: Laptop, color: "text-teal-600 bg-teal-50" },
+    { title: "Shop Electronics", href: "/shop", icon: ShoppingCart, color: "text-blue-600 bg-blue-50" }
+  ];
+
+  // Core Managed Services (6 Cards)
+  const coreServices = [
+    {
+      title: "IT Support & Helpdesk",
+      desc: "Comprehensive remote and on-site user support with strict SLA commitments.",
+      icon: Headphones,
+      color: "from-blue-600 to-indigo-700",
+      items: [
+        "Remote & On-Site Certified Engineers",
+        "24/7/365 Multi-Tier IT Helpdesk",
+        "Desktop, Laptop & Mobile Management",
+        "Incident & Service Request Management",
+        "SLA-Based Guaranteed 15-Min Response"
+      ]
+    },
+    {
+      title: "Network & Infrastructure",
+      desc: "Robust high-performance connectivity engineered for zero downtime.",
+      icon: Network,
+      color: "from-cyan-600 to-blue-700",
+      items: [
+        "Enterprise SD-WAN & Multi-WAN Failover",
+        "Cisco, Aruba & Fortinet Switch Stacking",
+        "High-Density Wi-Fi 6 / 6E Deployments",
+        "Structured CAT6A & Optical Fiber Cabling",
+        "Real-Time Bandwidth & Latency Monitoring"
+      ]
+    },
+    {
+      title: "Cloud & Microsoft 365",
+      desc: "Modern cloud environments providing scalability and secure remote collaboration.",
+      icon: Zap,
+      color: "from-sky-600 to-blue-600",
+      items: [
+        "Microsoft 365 & Exchange Online Migration",
+        "Azure & AWS Cloud Infrastructure Setup",
+        "Active Directory & Entra ID Hybrid Sync",
+        "Virtual Servers & Containerized Workloads",
+        "Continuous Cloud Cost & Health Optimization"
+      ]
+    },
+    {
+      title: "Cybersecurity & EDR",
+      desc: "Multi-layered defense protecting endpoints, networks, and confidential data.",
+      icon: ShieldCheck,
+      color: "from-rose-600 to-indigo-800",
+      items: [
+        "Next-Generation Firewalls (Fortinet / Sophos)",
+        "Endpoint Detection & Response (EDR / XDR)",
+        "MFA, Zero-Trust Access & Encrypted VPN",
+        "Vulnerability Scanning & Patch Management",
+        "Compliance Audits (NESA, ISO 27001, DHA)"
+      ]
+    },
+    {
+      title: "Data Center Services",
+      desc: "Turnkey design, civil execution, cooling, and 24/7 mission-critical operations.",
+      icon: Server,
+      color: "from-indigo-600 to-slate-900",
+      items: [
+        "Tier III/IV Server Room Civil Architecture",
+        "In-Row Precision Cooling & Hot/Cold Aisles",
+        "Redundant N+1 UPS & Generator Integration",
+        "FM-200 & NOVEC 1230 Fire Suppression",
+        "24/7 DCIM NOC Telemetry & Monitoring"
+      ]
+    },
+    {
+      title: "AMC & Asset Lifecycle",
+      desc: "Predictable maintenance contracts and complete IT asset tracking.",
+      icon: Boxes,
+      color: "from-emerald-600 to-teal-800",
+      items: [
+        "Comprehensive & Non-Comprehensive AMC",
+        "Scheduled Monthly Preventive Maintenance",
+        "Hardware Tagging, Warranty & Lifecycle",
+        "Standby Replacement Hardware Included",
+        "Dedicated UAE Technical Account Manager"
+      ]
+    }
+  ];
+
+  // Extended Services (7 Categories)
+  const extendedCategories = [
+    {
+      title: "Managed Endpoint Services",
+      icon: Laptop,
+      items: ["PC & Laptop Management", "Patch Updates", "Antivirus / EDR", "Device Monitoring", "Remote Management", "OS & App Deployment"]
+    },
+    {
+      title: "Managed Server Services",
+      icon: Server,
+      items: ["Windows Server", "Linux Server", "Active Directory / DNS", "Virtualization (VMware/Hyper-V)", "Backup & Disaster Recovery", "Server Health Telemetry"]
+    },
+    {
+      title: "Managed Network Services",
+      icon: Network,
+      items: ["Routers & Switches", "Access Points", "Firewalls & VPNs", "Bandwidth Monitoring", "Network Health Audits", "24/7 Outage Alerts"]
+    },
+    {
+      title: "Microsoft Services",
+      icon: Zap,
+      items: ["Microsoft 365", "Exchange Online", "SharePoint & OneDrive", "Microsoft Teams", "Azure AD / Entra ID", "License Management"]
+    },
+    {
+      title: "Backup & Disaster Recovery",
+      icon: ShieldCheck,
+      items: ["Immutable Cloud Backup", "Local NAS Backup", "Database Backup", "Disaster Recovery Testing", "Ransomware Rollback", "Business Continuity"]
+    },
+    {
+      title: "IT Asset Management",
+      icon: Boxes,
+      items: ["Asset Registration & QR", "Employee Tracking", "Warranty Management", "Repair History", "Hardware Lifecycle", "Secure E-Waste Disposal"]
+    },
+    {
+      title: "24/7 NOC Monitoring",
+      icon: Headphones,
+      items: ["24/7 Infrastructure NOC", "Application Monitoring", "Server Load Alerts", "Firewall Uptime", "Automated Escalation", "Incident Reports"]
+    }
+  ];
+
+  // 12 Industries
+  const industries = [
+    { title: "Corporate Offices", icon: Building2, desc: "End-to-end IT, Wi-Fi 6, 365 & helpdesk" },
+    { title: "Hospitality & Hotels", icon: Hotel, desc: "High-density guest Wi-Fi, IP-PBX & POS" },
+    { title: "Healthcare & Clinics", icon: HeartPulse, desc: "DHA compliance, PACS & immutable backup" },
+    { title: "Retail & Multi-Branch", icon: Store, desc: "Central SD-WAN, POS & remote CCTV" },
+    { title: "Education & Campus", icon: GraduationCap, desc: "Smart classroom Wi-Fi & content filters" },
+    { title: "Warehousing & Logistics", icon: Warehouse, desc: "Industrial Wi-Fi & handheld scanners" },
+    { title: "Construction & Sites", icon: HardHat, desc: "Site trailer trailers & CAD workstations" },
+    { title: "Manufacturing", icon: Wrench, desc: "Factory network resilience & SCADA security" },
+    { title: "Real Estate", icon: Building2, desc: "Cloud ERP, VPN & smart showroom displays" },
+    { title: "Restaurants & F&B", icon: UtensilsCrossed, desc: "Cloud POS, kitchen displays & guest portal" },
+    { title: "Financial & Banking", icon: Landmark, desc: "ISO 27001, DLP, zero trust & audit trails" },
+    { title: "Public & Enterprise", icon: Scale, desc: "TDRA aligned, sovereign & high availability" }
+  ];
+
+  // Animated Counter Helper
+  const CounterNumber = ({ target, suffix = "" }) => {
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+      if (!countersVisible) return;
+      let start = 0;
+      const duration = 1800;
+      const stepTime = 20;
+      const steps = duration / stepTime;
+      const increment = target / steps;
+
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= target) {
+          setCount(target);
+          clearInterval(timer);
+        } else {
+          setCount(Math.floor(start));
+        }
+      }, stepTime);
+      return () => clearInterval(timer);
+    }, [countersVisible, target]);
+
+    return (
+      <span>
+        {count.toLocaleString()}
+        {suffix}
+      </span>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-emerald-500 selection:text-white">
+      {/* 1. Header with Top Bar, Search, Location, Cart, Sign In, Get Started, Second Nav & Mega Menus */}
+      <UnifiedHeader
+        onOpenQuote={() => setShowAiModal(true)}
+        onOpenVisit={() => setShowVisitModal(true)}
+      />
+
+      <main id="main-content">
+        {/* 2. Hero Section with 5-Slide Slider (Slide 1 visually dominant with dark glass panel) */}
+        <HeroSlider
+          onOpenQuote={() => setShowAiModal(true)}
+          onOpenVisit={() => setShowVisitModal(true)}
+        />
+
+        {/* 3. Horizontal Service Icon Strip (10 across on desktop / scroll on mobile) */}
+        <SupportOverview />
+        <section className="border-y border-slate-200/80 bg-white py-6" aria-label="Quick Service Directory">
+          <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 lg:grid-cols-10">
+              {serviceStripItems.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <a
+                    key={item.title}
+                    href={item.href}
+                    className="group flex flex-col items-center justify-center rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-center transition hover:border-emerald-300 hover:bg-emerald-50/40 hover:shadow-sm"
+                  >
+                    <div className={`grid h-10 w-10 place-items-center rounded-xl ${item.color} group-hover:scale-110 transition-transform shadow-xs`}>
+                      <IconComponent size={20} />
+                    </div>
+                    <span className="mt-2 text-[11px] font-bold leading-tight text-slate-700 group-hover:text-emerald-800 line-clamp-2">
+                      {item.title}
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* 4. Data Center Hero Section (Visually Powerful) */}
+        <section className="relative overflow-hidden bg-gradient-to-r from-[#061a35] via-[#071e3d] to-[#061a35] py-16 text-white lg:py-20">
+          <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px]" />
+          
+          <div className="relative mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
+              {/* Left Copy */}
+              <div className="lg:col-span-7">
+                <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-sky-300">
+                  <Server size={14} /> DATA CENTER SOLUTIONS · DESIGN. BUILD. OPERATE.
+                </div>
+                <h2 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
+                  End-to-End Data Center Services
+                </h2>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+                  From strategy and design to construction, deployment, and ongoing management — Wefyx delivers secure, scalable, and high-performance data center solutions for modern businesses across Dubai and the UAE.
+                </p>
+
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <a
+                    href="/data-center"
+                    className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-xs font-bold text-[#071b4a] shadow-lg transition hover:bg-slate-100 hover:shadow-xl"
+                  >
+                    <span>Explore Data Center Solutions</span>
+                    <ArrowRight size={15} />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setShowVisitModal(true)}
+                    className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-6 py-3.5 text-xs font-bold text-white backdrop-blur transition hover:bg-white/20"
+                  >
+                    <span>Book Site Survey (AED 105)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Feature Panel */}
+              <div className="lg:col-span-5">
+                <div className="rounded-2xl border border-white/15 bg-slate-900/90 p-6 backdrop-blur-md shadow-2xl">
+                  <div className="text-xs font-bold uppercase tracking-widest text-sky-400">
+                    MISSION-CRITICAL CAPABILITIES
+                  </div>
+                  <div className="mt-4 space-y-3">
+                    {[
+                      "Data Center Design & Build (Tier III/IV)",
+                      "Power & Precision Cooling Systems",
+                      "Network & High-Density Fiber Infrastructure",
+                      "24/7 NOC Monitoring & DCIM Management",
+                      "Workload Migration & Modernization"
+                    ].map((item) => (
+                      <div key={item} className="flex items-center gap-2.5 text-xs font-medium text-slate-200">
+                        <CheckCircle2 size={16} className="text-[#00a86b] flex-shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4 text-[11px] font-extrabold tracking-wider text-sky-300">
+                    <span>Scalable.</span>
+                    <span>Secure.</span>
+                    <span>Always On.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. Three Business Division Cards (Managed IT Dominant) */}
+        <section className="py-14 lg:py-18">
+          <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {/* Card 1: Buy Electronics */}
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-blue-50/50 via-white to-slate-50 p-7 shadow-sm transition hover:border-blue-300 hover:shadow-xl">
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-blue-600">
+                    CARD 1 · SALES
+                  </span>
+                  <h3 className="mt-1 text-2xl font-black text-slate-900">BUY ELECTRONICS</h3>
+                  <p className="mt-1 text-xs font-bold text-blue-700">Latest Technology for Your Business</p>
+                  <p className="mt-3 text-xs leading-relaxed text-slate-600">
+                    Laptops, desktops, servers, networking switches, firewalls, CCTV cameras, accessories, and enterprise technology.
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {["Laptops", "Servers", "Networking", "CCTV", "Screens"].map((t) => (
+                      <span key={t} className="rounded-md bg-white border border-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-4">
+                  <a
+                    href="/shop"
+                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700"
+                  >
+                    <span>Shop Now</span>
+                    <ArrowRight size={14} />
+                  </a>
+                </div>
+              </div>
+
+              {/* Card 2: Rent Equipment */}
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-emerald-50/50 via-white to-slate-50 p-7 shadow-sm transition hover:border-emerald-300 hover:shadow-xl">
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600">
+                    CARD 2 · RENTALS
+                  </span>
+                  <h3 className="mt-1 text-2xl font-black text-slate-900">RENT EQUIPMENT</h3>
+                  <p className="mt-1 text-xs font-bold text-emerald-700">Flexible Rentals for Every Need</p>
+                  <p className="mt-3 text-xs leading-relaxed text-slate-600">
+                    Short-term and long-term electronics rentals for companies, remote teams, project offices, and events.
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {["Laptop", "Desktop", "Monitor", "Printer", "Servers"].map((t) => (
+                      <span key={t} className="rounded-md bg-white border border-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-700">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-4">
+                  <a
+                    href="/rent"
+                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-500/20 hover:bg-emerald-700"
+                  >
+                    <span>Rent Now</span>
+                    <ArrowRight size={14} />
+                  </a>
+                </div>
+              </div>
+
+              {/* Card 3: Managed IT Services (Visually Dominant!) */}
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 border-[#0066ff] bg-gradient-to-br from-[#071b4a] to-[#0b2b7a] p-7 text-white shadow-xl transition hover:shadow-2xl">
+                <div className="absolute right-4 top-4 rounded-full bg-[#00a86b] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-white shadow">
+                  PRIMARY IDENTITY
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-cyan-300">
+                    CARD 3 · CORE CAPABILITY
+                  </span>
+                  <h3 className="mt-1 text-2xl font-black text-white">MANAGED IT SERVICES</h3>
+                  <p className="mt-1 text-xs font-bold text-cyan-300">Your Complete IT Department</p>
+                  <p className="mt-3 text-xs leading-relaxed text-slate-200">
+                    Proactive, secure, and reliable IT infrastructure management at a predictable flat-rate monthly cost. Full 24/7 SLA backing.
+                  </p>
+                  <div className="mt-4 space-y-1.5 border-t border-white/15 pt-3">
+                    {["24/7 Helpdesk & Ticket Management", "Certified On-Site Engineers UAE Wide", "Endpoint & Server Maintenance", "Enterprise Cybersecurity & Backup"].map((f) => (
+                      <div key={f} className="flex items-center gap-2 text-[11px] text-slate-200">
+                        <CheckCircle2 size={13} className="text-[#00a86b]" />
+                        <span>{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-4">
+                  <a
+                    href="/services"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#00a86b] px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-500/25 hover:bg-[#008c59]"
+                  >
+                    <span>Learn More &amp; Get Started</span>
+                    <ArrowRight size={14} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 6. Business Trust Section with Animated Counters & Partner Logos */}
+        <section
+          ref={trustSectionRef}
+          className="border-y border-slate-200 bg-slate-50 py-14"
+          aria-label="Business Trust and Credentials"
+        >
+          <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 gap-6 text-center sm:grid-cols-3 lg:grid-cols-5">
+              <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-200/80">
+                <div className="text-3xl font-black text-[#071b4a] sm:text-4xl">
+                  <CounterNumber target={250} suffix="+" />
+                </div>
+                <div className="mt-1 text-xs font-bold text-slate-600">Business Clients</div>
+                <div className="text-[10px] text-slate-400">Across UAE Enterprises</div>
+              </div>
+
+              <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-200/80">
+                <div className="text-3xl font-black text-[#071b4a] sm:text-4xl">
+                  <CounterNumber target={150} suffix="+" />
+                </div>
+                <div className="mt-1 text-xs font-bold text-slate-600">IT Projects Delivered</div>
+                <div className="text-[10px] text-slate-400">On Time &amp; On Budget</div>
+              </div>
+
+              <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-200/80">
+                <div className="text-3xl font-black text-[#0066ff] sm:text-4xl">
+                  <span>99.9%</span>
+                </div>
+                <div className="mt-1 text-xs font-bold text-slate-600">Uptime Commitment</div>
+                <div className="text-[10px] text-slate-400">SLA-Backed Infrastructure</div>
+              </div>
+
+              <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-200/80">
+                <div className="text-3xl font-black text-[#00a86b] sm:text-4xl">
+                  <span>24/7</span>
+                </div>
+                <div className="mt-1 text-xs font-bold text-slate-600">Support Available</div>
+                <div className="text-[10px] text-slate-400">15-Min Response Guarantee</div>
+              </div>
+
+              <div className="col-span-2 sm:col-span-1 rounded-xl bg-white p-5 shadow-sm border border-slate-200/80">
+                <div className="text-3xl font-black text-[#071b4a] sm:text-4xl">
+                  <span>UAE</span>
+                </div>
+                <div className="mt-1 text-xs font-bold text-slate-600">Nationwide Coverage</div>
+                <div className="text-[10px] text-slate-400">Dubai, Abu Dhabi &amp; Emirates</div>
+              </div>
+            </div>
+
+            {/* Enterprise Technology Ecosystem */}
+            <div className="mt-10 border-t border-slate-200/80 pt-6">
+              <div className="text-center text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                Enterprise Technology Ecosystem &amp; Supported Vendor Architecture
+              </div>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-bold text-slate-500">
+                {["Microsoft Azure", "Cisco Systems", "Dell Technologies", "Fortinet Security", "HP Enterprise", "Lenovo Think", "VMware Cloud", "Ubiquiti UniFi", "Hikvision CCTV", "AWS Cloud"].map((partner) => (
+                  <span key={partner} className="rounded-md bg-white border border-slate-200 px-3 py-1.5 shadow-xs">
+                    {partner}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 7. Core Managed IT Services (Major Homepage Section - 6 Cards) */}
+        <section className="py-16 lg:py-24">
+          <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
+                END-TO-END CAPABILITIES
+              </span>
+              <h2 className="mt-2 text-3xl font-extrabold text-[#071b4a] sm:text-4xl">
+                Our Core Managed IT Services
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
+                End-to-end IT management to keep your business running, secure, and future-ready.
+              </p>
+            </div>
+
+            <div className="mt-14 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {coreServices.map((srv) => {
+                const IconComponent = srv.icon;
+                return (
+                  <div
+                    key={srv.title}
+                    className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-blue-400 hover:shadow-xl"
+                  >
+                    <div>
+                      <div className={`grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br ${srv.color} text-white shadow-md`}>
+                        <IconComponent size={22} />
+                      </div>
+                      <h3 className="mt-5 text-lg font-extrabold text-slate-900 group-hover:text-blue-600 transition">
+                        {srv.title}
+                      </h3>
+                      <p className="mt-2 text-xs text-slate-500 leading-relaxed">
+                        {srv.desc}
+                      </p>
+
+                      <ul className="mt-5 space-y-2 border-t border-slate-100 pt-4">
+                        {srv.items.map((it) => (
+                          <li key={it} className="flex items-center gap-2 text-xs text-slate-700">
+                            <CheckCircle2 size={14} className="text-emerald-600 flex-shrink-0" />
+                            <span>{it}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="mt-8 border-t border-slate-100 pt-4">
+                      <a
+                        href="/services#requirement"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+                      >
+                        <span>Request Service Details</span>
+                        <ArrowRight size={13} />
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* 8. Extended Managed Services (One Technology Partner. Every IT Requirement.) */}
+        <section className="bg-slate-50 border-y border-slate-200 py-16 lg:py-24">
+          <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
+                FULL-SPECTRUM COVERAGE
+              </span>
+              <h2 className="mt-2 text-3xl font-extrabold text-[#071b4a] sm:text-4xl">
+                One Technology Partner. Every IT Requirement.
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
+                Modular service categories designed to seamlessly integrate with your existing workflows.
+              </p>
+            </div>
+
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {extendedCategories.map((cat) => {
+                const IconComponent = cat.icon;
+                return (
+                  <div
+                    key={cat.title}
+                    className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition hover:border-emerald-300 hover:shadow-md"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600">
+                        <IconComponent size={20} />
+                      </div>
+                      <h3 className="text-sm font-bold text-slate-900">{cat.title}</h3>
+                    </div>
+
+                    <ul className="mt-4 space-y-1.5 border-t border-slate-100 pt-3">
+                      {cat.items.map((it) => (
+                        <li key={it} className="flex items-center gap-2 text-xs text-slate-600">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                          <span>{it}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* 9. Industries We Support */}
+        <section className="py-16 lg:py-24">
+          <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
+                SECTOR SPECIFIC ARCHITECTURE
+              </span>
+              <h2 className="mt-2 text-3xl font-extrabold text-[#071b4a] sm:text-4xl">
+                Industries We Support Across the UAE
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
+                Tailored IT solutions adhering to UAE regulations and operational standards.
+              </p>
+            </div>
+
+            <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+              {industries.map((ind) => {
+                const IconComponent = ind.icon;
+                return (
+                  <a
+                    key={ind.title}
+                    href="/industries"
+                    className="group flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-400 hover:shadow-md"
+                  >
+                    <div>
+                      <div className="grid h-9 w-9 place-items-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
+                        <IconComponent size={18} />
+                      </div>
+                      <h3 className="mt-3 text-xs font-bold text-slate-900 group-hover:text-blue-600 transition">
+                        {ind.title}
+                      </h3>
+                      <p className="mt-1 text-[11px] text-slate-500 line-clamp-2">
+                        {ind.desc}
+                      </p>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* 10. Dual Action Banners: Site Visit Booking (AED 105) & AI Quotation */}
+        <section className="border-t border-slate-200 bg-slate-50 py-14">
+          <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {/* Site Visit Banner */}
+              <div className="relative overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/50 p-8 shadow-sm">
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">
+                  <Wrench size={12} /> ON-SITE UAE ENGINEERING
+                </div>
+                <h3 className="mt-3 text-2xl font-black text-slate-900">
+                  Need an IT Expert at Your Office?
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                  Book a site visit with our certified engineer for just <strong>AED 100</strong> (+ 5% VAT = <strong>AED 105</strong>). Get professional advice, physical inspection, network testing, and a detailed recommendation report.
+                </p>
+
+                <div className="mt-6 flex items-center justify-between border-t border-emerald-200/60 pt-4">
+                  <div>
+                    <div className="text-[10px] text-slate-500">Inspection Fee:</div>
+                    <div className="text-xl font-black text-emerald-800">AED 105 <span className="text-[10px] font-normal text-slate-500">(incl. VAT)</span></div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowVisitModal(true)}
+                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-700"
+                  >
+                    <span>Book Site Visit</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* AI Quotation Banner */}
+              <div className="relative overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/50 p-8 shadow-sm">
+                <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-blue-800">
+                  <Sparkles size={12} /> INSTANT AI ESTIMATOR
+                </div>
+                <h3 className="mt-3 text-2xl font-black text-slate-900">
+                  Get an Instant AI Quotation
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                  Tell us your requirements and get an AI-assisted IT solution with itemized estimated pricing in minutes. Smart recommendations tailored to your exact user and server count.
+                </p>
+
+                <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-700">
+                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-blue-600" /> Smart Recommendations</div>
+                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-blue-600" /> Instant Estimates</div>
+                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-blue-600" /> Tailored Solutions</div>
+                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-blue-600" /> Save Time &amp; Cost</div>
+                </div>
+
+                <div className="mt-6 border-t border-blue-200/60 pt-4 text-right">
+                  <button
+                    type="button"
+                    onClick={() => setShowAiModal(true)}
+                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-xs font-bold text-white shadow-lg shadow-blue-500/25 transition hover:bg-blue-700"
+                  >
+                    <span>Try AI Quotation</span>
+                    <Sparkles size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Unified Global Footer */}
+      <PublicFooter />
+
+      {/* Global Action Modals */}
+      <AIQuotationModal isOpen={showAiModal} onClose={() => setShowAiModal(false)} />
+      <SiteVisitModal isOpen={showVisitModal} onClose={() => setShowVisitModal(false)} />
+    </div>
+  );
 }

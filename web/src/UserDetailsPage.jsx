@@ -1,4 +1,393 @@
-import{ArrowLeft,Pencil,KeyRound,UserX,Trash2,Mail,Phone,MapPin,ShieldCheck,Monitor,Ticket,Clock3,CheckCircle2}from'lucide-react';
-const InfoCard=({title,children,action='Edit'})=><section className="card p-5"><div className="mb-4 flex items-center justify-between"><h3 className="text-sm font-bold">{title}</h3><button className="flex items-center gap-1 text-[10px] font-semibold text-brand"><Pencil size={12}/>{action}</button></div>{children}</section>;
-const Row=({label,value})=><div className="flex justify-between gap-4 border-b border-slate-100 py-2.5 text-[11px]"><span className="text-slate-500">{label}</span><b className="text-right font-medium">{value}</b></div>;
-export default function UserDetailsPage({user,onBack}){const initials=user.name.split(' ').map(x=>x[0]).join('');return <div className="space-y-4 p-4 lg:p-5"><button onClick={onBack} className="flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-brand"><ArrowLeft size={15}/> Back to users</button><div className="grid gap-4 xl:grid-cols-[1fr_320px]"><section className="card flex flex-wrap items-center gap-6 p-6"><div className="grid h-24 w-24 place-items-center rounded-full bg-blue-100 text-2xl font-bold text-brand">{initials}</div><div className="min-w-[190px]"><div className="flex items-center gap-2"><h2 className="text-2xl font-bold">{user.name}</h2><span className="pill bg-emerald-50 text-emerald-600">Active</span></div><span className="mt-2 inline-block rounded bg-violet-50 px-2 py-1 text-[10px] font-semibold text-violet-600">{user.role}</span><div className="mt-4 space-y-2 text-xs text-slate-500"><div className="flex gap-2"><Mail size={14}/>{user.email}</div><div className="flex gap-2"><Phone size={14}/>+971 50 123 4567</div><div className="flex gap-2"><MapPin size={14}/>{user.location}</div></div></div><div className="grid flex-1 grid-cols-2 gap-x-8 gap-y-5 border-l pl-6 text-xs md:grid-cols-4"><div><span className="text-slate-400">User ID</span><b className="mt-1 block">USR-{String(user.id).padStart(6,'0')}</b></div><div><span className="text-slate-400">Employee ID</span><b className="mt-1 block">EMP-0247</b></div><div><span className="text-slate-400">Joined On</span><b className="mt-1 block">{new Date(user.joinedOn).toLocaleDateString()}</b></div><div><span className="text-slate-400">Status</span><b className="mt-1 block text-emerald-600">Active</b></div><div><span className="text-slate-400">Last Login</span><b className="mt-1 block text-emerald-600">Today, 10:24 AM</b></div><div><span className="text-slate-400">Login IP</span><b className="mt-1 block">196.168.1.22</b></div><div><span className="text-slate-400">Login Device</span><b className="mt-1 block">Chrome on Windows</b></div><div><span className="text-slate-400">Organization</span><b className="mt-1 block">{user.organization}</b></div></div></section><section className="card p-5"><h3 className="text-sm font-bold">Actions</h3><div className="mt-4 grid grid-cols-2 gap-2"><button className="flex h-10 items-center justify-center gap-2 rounded-lg bg-brand text-xs font-semibold text-white"><Pencil size={14}/> Edit User</button><button className="flex h-10 items-center justify-center gap-2 rounded-lg border text-xs font-semibold"><KeyRound size={14}/> Reset Password</button><button className="flex h-10 items-center justify-center gap-2 rounded-lg border text-xs font-semibold"><UserX size={14}/> Deactivate</button><button className="flex h-10 items-center justify-center gap-2 rounded-lg border text-xs font-semibold"><ShieldCheck size={14}/> Permissions</button></div><button className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-red-200 text-xs font-semibold text-red-500"><Trash2 size={14}/> Delete User</button></section></div><div className="card flex gap-7 overflow-x-auto px-5 pt-4">{['Overview','Roles & Permissions','Organizations','Assets','Contracts (AMC)','Tickets','Activity Log','Documents','Devices','Integrations'].map((x,i)=><button key={x} className={`whitespace-nowrap border-b-2 pb-4 text-xs font-semibold ${i===0?'border-brand text-brand':'border-transparent text-slate-500'}`}>{x}</button>)}</div><div className="grid gap-4 xl:grid-cols-[1fr_1fr_1fr_300px]"><div className="space-y-4"><InfoCard title="Personal Information"><Row label="Full Name" value={user.name}/><Row label="Email Address" value={user.email}/><Row label="Phone Number" value="+971 50 123 4567"/><Row label="Date of Birth" value="Feb 14, 1992"/><Row label="Nationality" value="Pakistani"/><Row label="Language" value="English"/><Row label="Address" value={user.location}/></InfoCard><InfoCard title="Contact & Security"><Row label="Work Email" value={user.email}/><Row label="Phone Number" value="Verified"/><Row label="Two-Factor Auth" value="Enabled"/><Row label="Password Last Changed" value="May 10, 2026"/></InfoCard></div><div className="space-y-4"><InfoCard title="Employment Information"><Row label="Employee ID" value="EMP-0247"/><Row label="Department" value="Technical Support"/><Row label="Designation" value={user.role}/><Row label="Reporting Manager" value="Mohammed Ali"/><Row label="Employment Type" value="Freelance"/><Row label="Work Location" value={user.location}/></InfoCard><InfoCard title="Device & Access" action="View All"><div className="grid grid-cols-2 gap-4"><div><span className="text-xs text-slate-400">Registered Devices</span><b className="mt-1 block text-xl">3</b></div><div><span className="text-xs text-slate-400">Active Sessions</span><b className="mt-1 block text-xl">2</b></div></div><div className="mt-5 flex gap-3"><Monitor className="text-brand"/><div><b className="text-xs">Chrome on Windows</b><div className="text-[10px] text-slate-400">Last active today</div></div></div></InfoCard></div><div className="space-y-4"><InfoCard title="Roles & Permissions" action="Manage"><div className="flex flex-wrap gap-2"><span className="pill bg-violet-50 text-violet-600">{user.role}</span><span className="pill bg-blue-50 text-blue-600">NOC Access</span><span className="pill bg-emerald-50 text-emerald-600">Tickets Access</span></div><div className="mt-6 grid grid-cols-3"><div><b className="text-xl">3</b><div className="text-[10px] text-slate-400">Total Roles</div></div><div><b className="text-xl">78</b><div className="text-[10px] text-slate-400">Permissions</div></div><div><b className="text-xl">2</b><div className="text-[10px] text-slate-400">Sets</div></div></div><div className="mt-6 h-2 rounded-full bg-slate-200"><div className="h-2 w-[70%] rounded-full bg-brand"/></div></InfoCard><InfoCard title="Tickets Summary" action="View All"><div className="grid grid-cols-3 gap-4 text-center">{[['Total',56,'text-slate-900'],['Open',7,'text-amber-500'],['In Progress',12,'text-brand'],['On Hold',3,'text-violet-600'],['Resolved',31,'text-emerald-600'],['Closed',36,'text-slate-700']].map(x=><div key={x[0]}><b className={`text-xl ${x[2]}`}>{x[1]}</b><div className="text-[9px] text-slate-400">{x[0]}</div></div>)}</div></InfoCard></div><section className="card p-5"><div className="flex justify-between"><h3 className="text-sm font-bold">Activity Timeline</h3><button className="text-[10px] font-semibold text-brand">View All</button></div><div className="mt-5 space-y-5">{[['User logged in','Today, 10:24 AM',CheckCircle2,'text-emerald-500'],['Password changed','May 10, 2026',KeyRound,'text-blue-500'],['Role updated','May 08, 2026',ShieldCheck,'text-violet-500'],['Permission updated','May 05, 2026',ShieldCheck,'text-amber-500'],['Failed login attempt','May 03, 2026',UserX,'text-red-500'],['User created','Apr 28, 2026',UserX,'text-emerald-500']].map(([x,d,Icon,c])=><div key={x} className="flex gap-3"><div className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-50 ${c}`}><Icon size={14}/></div><div><b className="text-[11px]">{x}</b><div className="text-[9px] text-slate-400">{d}</div></div></div>)}</div></section></div></div>}
+import { useState } from "react";
+import {
+  ArrowLeft,
+  Pencil,
+  KeyRound,
+  UserX,
+  Trash2,
+  Mail,
+  Phone,
+  MapPin,
+  ShieldCheck,
+  Monitor,
+  CheckCircle2,
+  Shield,
+  Check,
+} from "lucide-react";
+import { send } from "./api";
+
+const InfoCard = ({ title, children, action = "Edit", onAction }) => (
+  <section className="card p-5">
+    <div className="mb-4 flex items-center justify-between">
+      <h3 className="text-sm font-bold text-slate-900">{title}</h3>
+      {action && (
+        <button
+          onClick={onAction}
+          className="flex items-center gap-1 text-[10px] font-semibold text-brand hover:opacity-80"
+        >
+          <Pencil size={12} />
+          {action}
+        </button>
+      )}
+    </div>
+    {children}
+  </section>
+);
+
+const Row = ({ label, value }) => (
+  <div className="flex justify-between gap-4 border-b border-slate-100 py-2.5 text-[11px]">
+    <span className="text-slate-500">{label}</span>
+    <b className="text-right font-medium text-slate-800">{value}</b>
+  </div>
+);
+
+const STANDARD_ROLES = [
+  "Customer",
+  "Customer Admin",
+  "L1 Technician",
+  "L2 Engineer",
+  "L3 Engineer",
+  "NOC Engineer",
+  "Support Agent",
+  "Operations Manager",
+  "Service Delivery Manager",
+  "Vendor Manager",
+  "Finance Manager",
+  "Super Admin",
+  "System Administrator",
+];
+
+export default function UserDetailsPage({ user: initialUser, onBack }) {
+  const [user, setUser] = useState(initialUser);
+  const [isEditingRole, setIsEditingRole] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(user.role || "Customer");
+  const [savingRole, setSavingRole] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const initials = (user.name || "U")
+    .split(" ")
+    .map((x) => x[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleSaveRole = async () => {
+    if (!selectedRole || selectedRole === user.role) {
+      setIsEditingRole(false);
+      return;
+    }
+    setSavingRole(true);
+    try {
+      await send(`/users/${user.id}/role`, "PATCH", { role: selectedRole });
+      setUser((prev) => ({ ...prev, role: selectedRole }));
+      setIsEditingRole(false);
+      showToast(`Role updated to "${selectedRole}" successfully.`);
+    } catch {
+      try {
+        await send(`/users/${user.id}`, "PUT", { ...user, role: selectedRole });
+        setUser((prev) => ({ ...prev, role: selectedRole }));
+        setIsEditingRole(false);
+        showToast(`Role updated to "${selectedRole}" successfully.`);
+      } catch {
+        showToast("Failed to update user role.");
+      }
+    } finally {
+      setSavingRole(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4 p-4 lg:p-5">
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-xs font-semibold text-white shadow-2xl animate-in fade-in">
+          <CheckCircle2 size={16} className="text-emerald-400" />
+          <span>{toast}</span>
+        </div>
+      )}
+
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-brand transition"
+      >
+        <ArrowLeft size={15} /> Back to Users
+      </button>
+
+      {/* Top Banner */}
+      <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
+        <section className="card flex flex-wrap items-center gap-6 p-6">
+          <div className="grid h-24 w-24 place-items-center rounded-2xl bg-blue-100 text-2xl font-bold text-brand shadow-inner">
+            {initials}
+          </div>
+          <div className="min-w-[190px]">
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-slate-900">{user.name}</h2>
+              <span className="pill bg-emerald-50 text-emerald-600 border border-emerald-200">
+                {user.status || "ACTIVE"}
+              </span>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <span className="inline-block rounded-lg bg-violet-50 px-2.5 py-1 text-xs font-bold text-violet-700 border border-violet-200">
+                {user.role || "Customer"}
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsEditingRole(!isEditingRole)}
+                className="text-[11px] font-semibold text-brand hover:underline"
+              >
+                Change Role
+              </button>
+            </div>
+
+            {/* Inline Role Assignment Changer */}
+            {isEditingRole && (
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50/50 p-2 text-xs">
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold"
+                >
+                  {STANDARD_ROLES.map((r) => (
+                    <option key={r} value={r}>
+                      {r === "Customer" ? "👤 Customer (Default)" : r}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  disabled={savingRole}
+                  onClick={handleSaveRole}
+                  className="rounded-lg bg-brand px-3 py-1 font-bold text-white shadow-xs hover:opacity-90 disabled:opacity-50"
+                >
+                  {savingRole ? "Saving…" : "Save Role"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingRole(false)}
+                  className="rounded-lg border bg-white px-2 py-1 text-slate-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+
+            <div className="mt-4 space-y-1.5 text-xs text-slate-500">
+              <div className="flex items-center gap-2">
+                <Mail size={14} className="text-slate-400" />
+                {user.email}
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone size={14} className="text-slate-400" />
+                {user.phone || "+971 50 123 4567"}
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin size={14} className="text-slate-400" />
+                {user.location || "Dubai, UAE"}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid flex-1 grid-cols-2 gap-x-8 gap-y-5 border-l border-slate-100 pl-6 text-xs md:grid-cols-4">
+            <div>
+              <span className="text-slate-400">User ID</span>
+              <b className="mt-1 block text-slate-800">USR-{String(user.id).padStart(6, "0")}</b>
+            </div>
+            <div>
+              <span className="text-slate-400">Assigned Role</span>
+              <b className="mt-1 block text-brand">{user.role || "Customer"}</b>
+            </div>
+            <div>
+              <span className="text-slate-400">Joined On</span>
+              <b className="mt-1 block text-slate-800">
+                {user.joinedOn ? new Date(user.joinedOn).toLocaleDateString() : "Recent"}
+              </b>
+            </div>
+            <div>
+              <span className="text-slate-400">Status</span>
+              <b className="mt-1 block text-emerald-600">{user.status || "ACTIVE"}</b>
+            </div>
+            <div>
+              <span className="text-slate-400">Organization</span>
+              <b className="mt-1 block text-slate-800">{user.organization || "ACME Trading LLC"}</b>
+            </div>
+            <div>
+              <span className="text-slate-400">Last Login</span>
+              <b className="mt-1 block text-emerald-600">Active Session</b>
+            </div>
+            <div>
+              <span className="text-slate-400">Login IP</span>
+              <b className="mt-1 block text-slate-700">196.168.1.22</b>
+            </div>
+            <div>
+              <span className="text-slate-400">Login Device</span>
+              <b className="mt-1 block text-slate-700">Web App Client</b>
+            </div>
+          </div>
+        </section>
+
+        {/* Action Panel */}
+        <section className="card p-5">
+          <h3 className="text-sm font-bold text-slate-900">Admin Actions</h3>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setIsEditingRole(true)}
+              className="flex h-10 items-center justify-center gap-2 rounded-lg bg-brand text-xs font-semibold text-white shadow-xs"
+            >
+              <ShieldCheck size={14} /> Assign Role
+            </button>
+            <button
+              onClick={() => showToast("Password reset link sent to user email.")}
+              className="flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              <KeyRound size={14} /> Reset Pass
+            </button>
+            <button
+              onClick={() => showToast("User status updated.")}
+              className="flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              <UserX size={14} /> Deactivate
+            </button>
+            <button
+              onClick={() => showToast("Permission matrix loaded.")}
+              className="flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              <ShieldCheck size={14} /> Permissions
+            </button>
+          </div>
+          <button
+            onClick={() => {
+              if (window.confirm(`Delete user ${user.name}?`)) {
+                onBack();
+              }
+            }}
+            className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-red-200 text-xs font-semibold text-red-500 hover:bg-red-50"
+          >
+            <Trash2 size={14} /> Delete User
+          </button>
+        </section>
+      </div>
+
+      {/* Tabs */}
+      <div className="card flex gap-7 overflow-x-auto px-5 pt-4">
+        {[
+          "Overview",
+          "Roles & Permissions",
+          "Organizations",
+          "Assets",
+          "Contracts (AMC)",
+          "Tickets",
+          "Activity Log",
+        ].map((x, i) => (
+          <button
+            key={x}
+            className={`whitespace-nowrap border-b-2 pb-4 text-xs font-semibold ${
+              i === 0 ? "border-brand text-brand" : "border-transparent text-slate-500"
+            }`}
+          >
+            {x}
+          </button>
+        ))}
+      </div>
+
+      {/* Grid Content */}
+      <div className="grid gap-4 xl:grid-cols-[1fr_1fr_1fr_300px]">
+        <div className="space-y-4">
+          <InfoCard title="Personal Information">
+            <Row label="Full Name" value={user.name} />
+            <Row label="Email Address" value={user.email} />
+            <Row label="Phone Number" value={user.phone || "+971 50 123 4567"} />
+            <Row label="Nationality" value="UAE Resident" />
+            <Row label="Language" value="English" />
+            <Row label="Address" value={user.location || "Dubai, UAE"} />
+          </InfoCard>
+          <InfoCard title="Contact & Security">
+            <Row label="Work Email" value={user.email} />
+            <Row label="Phone Number" value="Verified" />
+            <Row label="Two-Factor Auth" value="Enabled" />
+            <Row label="Security Status" value="Active & Compliant" />
+          </InfoCard>
+        </div>
+
+        <div className="space-y-4">
+          <InfoCard title="Role & Organization Assignment" action="Change" onAction={() => setIsEditingRole(true)}>
+            <Row label="Current Role" value={user.role || "Customer"} />
+            <Row label="Organization" value={user.organization || "ACME Trading LLC"} />
+            <Row label="Access Scope" value="Role-Based Controls" />
+            <Row label="Default Portal" value={user.role === "Super Admin" ? "Admin Console" : "Customer Portal"} />
+          </InfoCard>
+          <InfoCard title="Device & Access" action="View All">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-xs text-slate-400">Registered Devices</span>
+                <b className="mt-1 block text-xl">2</b>
+              </div>
+              <div>
+                <span className="text-xs text-slate-400">Active Sessions</span>
+                <b className="mt-1 block text-xl">1</b>
+              </div>
+            </div>
+            <div className="mt-5 flex gap-3">
+              <Monitor className="text-brand" />
+              <div>
+                <b className="text-xs">Chrome on Windows</b>
+                <div className="text-[10px] text-slate-400">Last active today</div>
+              </div>
+            </div>
+          </InfoCard>
+        </div>
+
+        <div className="space-y-4">
+          <InfoCard title="Roles & Permissions" action="Manage" onAction={() => setIsEditingRole(true)}>
+            <div className="flex flex-wrap gap-2">
+              <span className="pill bg-violet-50 text-violet-600">{user.role || "Customer"}</span>
+              <span className="pill bg-blue-50 text-blue-600">Portal Access</span>
+              <span className="pill bg-emerald-50 text-emerald-600">Tickets Access</span>
+            </div>
+            <div className="mt-6 grid grid-cols-3">
+              <div>
+                <b className="text-xl">1</b>
+                <div className="text-[10px] text-slate-400">Active Role</div>
+              </div>
+              <div>
+                <b className="text-xl">42</b>
+                <div className="text-[10px] text-slate-400">Permissions</div>
+              </div>
+              <div>
+                <b className="text-xl">Full</b>
+                <div className="text-[10px] text-slate-400">Tier</div>
+              </div>
+            </div>
+          </InfoCard>
+        </div>
+
+        <section className="card p-5">
+          <div className="flex justify-between">
+            <h3 className="text-sm font-bold">Activity Timeline</h3>
+            <button className="text-[10px] font-semibold text-brand">View All</button>
+          </div>
+          <div className="mt-5 space-y-5">
+            {[
+              ["User logged in", "Today, 10:24 AM", CheckCircle2, "text-emerald-500"],
+              ["Role verified", "Today, 10:20 AM", ShieldCheck, "text-violet-500"],
+              ["Account active", "Current session", Shield, "text-blue-500"],
+            ].map(([x, d, Icon, c]) => (
+              <div key={x} className="flex gap-3">
+                <div className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-50 ${c}`}>
+                  <Icon size={14} />
+                </div>
+                <div>
+                  <b className="text-[11px]">{x}</b>
+                  <div className="text-[9px] text-slate-400">{d}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}

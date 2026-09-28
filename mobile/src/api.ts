@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import * as Keychain from 'react-native-keychain';
@@ -21,7 +22,7 @@ export async function clearSessionToken() {
 }
 
 export const API_BASE = __DEV__
-  ? 'http://10.0.2.2:8082/api'
+  ? `http://${Platform.OS === 'android' ? '10.0.2.2' : 'localhost'}:8080/api`
   : 'https://wefyx.pro/api';
 
 let unauthorizedHandler: (() => void) | undefined;
@@ -72,6 +73,7 @@ async function read<T>(response: Response): Promise<T> {
       response.status,
     );
   }
+  if (response.status === 204) return undefined as T;
   return response.json();
 }
 
@@ -109,4 +111,14 @@ export async function apiSend<T>(
       body: body ? JSON.stringify(body) : undefined,
     }),
   );
+}
+
+export async function apiUpload(path: string, files: { uri?: string; fileName?: string; type?: string }[]) {
+  await ensureConnected();
+  const body = new FormData();
+  files.forEach((file, index) => {
+    if (!file.uri) throw new Error('The selected photo is unavailable. Please select it again.');
+    body.append('files', { uri: file.uri, name: file.fileName || `photo-${index}.jpg`, type: file.type || 'image/jpeg' } as unknown as Blob);
+  });
+  return read(await fetch(`${API_BASE}${path}`, { method: 'POST', headers: await headers(), body }));
 }

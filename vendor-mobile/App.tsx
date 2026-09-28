@@ -7,6 +7,7 @@ import {
   FlatList,
   Image,
   LogBox,
+  Linking,
   Modal,
   Pressable,
   ScrollView,
@@ -96,6 +97,7 @@ type Item = {
   estimatedAmount?: number;
   quotationStatus?: string;
   vendorQuoteStatus?: string;
+  vendorName?: string;
 };
 const money = (n: number) => `AED ${n.toLocaleString()}`;
 function Header({ title, onBell }: { title: string; onBell: () => void }) {
@@ -233,8 +235,12 @@ function HomePage({
 function OrdersPage({
   items,
   reload,
+  initialId,
+  onOpened,
 }: {
   items: Item[];
+  initialId?: number;
+  onOpened?: () => void;
   reload: () => Promise<void>;
 }) {
   let [q, setQ] = useState(""),
@@ -244,24 +250,60 @@ function OrdersPage({
     [leadTimeDays, setLeadTimeDays] = useState(""),
     [messages,setMessages]=useState<any[]>([]),
     [message,setMessage]=useState(""),
-    [resolution, setResolution] = useState("");
-  let list = items.filter(x=>{const history=["RESOLVED","CLOSED","REJECTED"].includes(x.status)||x.vendorQuoteStatus==="NOT_SELECTED";return (view==="HISTORY"?history:!history)&&`${x.name}${x.owner}${x.status}`.toLowerCase().includes(q.toLowerCase())});
-  async function openOrder(item:Item){setSelected(item);setMessages(await apiGet<any[]>(`/requirements/${item.id}/messages`).catch(()=>[]))}
-  async function sendChat(){if(!selected||!message.trim())return;await apiSend(`/requirements/${selected.id}/messages`,"POST",{message:message.trim(),senderName:"Vendor Team",senderRole:"VENDOR"});setMessage("");setMessages(await apiGet<any[]>(`/requirements/${selected.id}/messages`))}
-  async function update(action: "quote" | "start" | "resolve") {
+    [resolution, setResolution] = useState(""),
+    [busy, setBusy] = useState(false);
+  useEffect(() => {
+    const item = items.find(row => row.id === initialId);
+    if (item) { openOrder(item); onOpened?.(); }
+  }, [initialId, items, onOpened]);
+  let list = items.filter(x=>{const history=["RESOLVED","CLOSED","REJECTED","DECLINED"].includes(x.status)||["NOT_SELECTED","DECLINED","REJECTED","RESOLVED","CLOSED"].includes(x.vendorQuoteStatus || "");return (view==="HISTORY"?history:!history)&&`${x.name}${x.owner}${x.status}`.toLowerCase().includes(q.toLowerCase())});
+  async function openOrder(item: Item) {
+    setSelected(item); setMessage(""); setMessages([]); setResolution(""); setQuoteAmount(""); setLeadTimeDays("");
+    try {
+      const quotes = await apiGet<any[]>(`/requirements/${item.id}/quotations?view=vendor`);
+      const quote = [...quotes].sort((a, b) => (b.version || 1) - (a.version || 1))[0];
+      setSelected({...item, vendorQuoteStatus: quote?.status, vendorName: quote?.vendorName});
+      setQuoteAmount(quote?.amount ? String(quote.amount) : "");
+      setLeadTimeDays(quote?.leadTimeDays ? String(quote.leadTimeDays) : "");
+      setResolution(quote?.notes || "");
+      setMessages(await apiGet<any[]>(`/requirements/${item.id}/messages`));
+    } catch (error) { Alert.alert("Unable to load details", error instanceof Error ? error.message : "Please retry."); }
+  }
+  useEffect(() => {
     if (!selected) return;
-    if (action === "quote") {
-      if (!Number(quoteAmount) || !Number(leadTimeDays)) { Alert.alert("Quotation details required", "Enter the amount and delivery time in days."); return; }
-      await apiSend(`/requirements/${selected.id}/quotations/submit`, "PATCH", { amount: quoteAmount, leadTimeDays, notes: resolution });
+    let active = true;
+    const timer = setInterval(() => {
+      apiGet<any[]>(`/requirements/${selected.id}/messages`).then(rows => { if (active) setMessages(rows); }).catch(() => {});
+    }, 3000);
+    return () => { active = false; clearInterval(timer); };
+  }, [selected?.id]);
+  async function sendChat() {
+    if (!selected || !message.trim() || busy) return;
+    setBusy(true);
+    try {
+      await apiSend(`/requirements/${selected.id}/messages`, "POST", {message: message.trim()});
+      setMessage(""); setMessages(await apiGet<any[]>(`/requirements/${selected.id}/messages`));
+    } catch (error) { Alert.alert("Message not sent", error instanceof Error ? error.message : "Please retry."); }
+    finally { setBusy(false); }
+  }
+  async function update(action: "accept" | "decline" | "quote" | "start" | "resolve") {
+    if (!selected || busy) return;
+    if (action === "quote" && (!Number.isFinite(Number(quoteAmount)) || Number(quoteAmount) <= 0 || !Number.isInteger(Number(leadTimeDays)) || Number(leadTimeDays) <= 0)) {
+      Alert.alert("Quotation details required", "Enter a positive amount and a whole number of delivery days."); return;
     }
-    if (action === "start") await apiSend(`/requirements/${selected.id}/start`, "PATCH");
-    if (action === "resolve") {
-      if (!resolution.trim()) { Alert.alert("Resolution required", "Describe how the customer requirement was resolved."); return; }
-      await apiSend(`/requirements/${selected.id}/resolve`, "PATCH", { resolution });
+    if (["decline", "resolve"].includes(action) && !resolution.trim()) {
+      Alert.alert("Notes required", "Enter a decline reason or resolution notes."); return;
     }
-    setSelected(undefined);
-    setResolution(""); setQuoteAmount(""); setLeadTimeDays("");
-    await reload();
+    setBusy(true);
+    try {
+      if (action === "accept" || action === "decline") await apiSend(`/requirements/${selected.id}/vendor-decision`, "PATCH", {accepted: action === "accept", notes: action === "decline" ? resolution.trim() : ""});
+      if (action === "quote") await apiSend(`/requirements/${selected.id}/quotations/submit`, "PATCH", {amount: quoteAmount, leadTimeDays, notes: resolution});
+      if (action === "start") await apiSend(`/requirements/${selected.id}/start`, "PATCH");
+      if (action === "resolve") await apiSend(`/requirements/${selected.id}/resolve`, "PATCH", {resolution});
+      setSelected(undefined); setResolution(""); setQuoteAmount(""); setLeadTimeDays("");
+      await reload();
+    } catch (error) { Alert.alert("Unable to update requirement", error instanceof Error ? error.message : "Please retry."); }
+    finally { setBusy(false); }
   }
   return (
     <View style={{ flex: 1 }}>
@@ -286,9 +328,9 @@ function OrdersPage({
         onRefresh={reload}
         refreshing={false}
       />
-      <Modal visible={!!selected} transparent animationType="slide">
+      <Modal visible={!!selected} transparent animationType="slide" onRequestClose={() => setSelected(undefined)}>
         <View style={s.shade}>
-          <View style={s.sheet}>
+          <ScrollView style={[s.sheet, {maxHeight: "90%"}]} keyboardShouldPersistTaps="handled">
             <View style={s.sectionHead}>
             <Text style={s.sheetTitle}>Customer requirement</Text>
               <Pressable onPress={() => setSelected(undefined)}>
@@ -300,14 +342,15 @@ function OrdersPage({
             <Text style={s.detail}>{selected?.details}</Text>
             {selected?.quotationRequested && <><TextInput style={s.input} value={quoteAmount} onChangeText={setQuoteAmount} placeholder="Your quotation amount (AED)" keyboardType="numeric" /><TextInput style={s.input} value={leadTimeDays} onChangeText={setLeadTimeDays} placeholder="Delivery / completion time (days)" keyboardType="numeric" /></>}
             <TextInput style={s.input} value={resolution} onChangeText={setResolution} placeholder="Offer terms, scope or resolution notes" multiline />
-            <Text style={s.label}>Requirement chat</Text><ScrollView style={{maxHeight:140}}>{messages.map(m=><View key={m.id} style={s.card}><Text style={s.ref}>{m.senderName} · {m.senderRole}</Text><Text style={s.detail}>{m.message}</Text></View>)}</ScrollView><TextInput style={s.input} value={message} onChangeText={setMessage} placeholder="Reply to Wefyx employee"/><Pressable style={s.outline} onPress={sendChat}><Text style={s.outlineT}>SEND MESSAGE</Text></Pressable>
+            <Text style={s.label}>Requirement chat</Text><Text style={s.ref}>Vendor: {selected?.vendorName||"Selected vendor"}</Text><Text style={s.detail}>Live conversation with the customer and Wefyx staff.</Text><ScrollView style={{maxHeight:140}}>{messages.map(m=><View key={m.id} style={s.card}><Text style={s.ref}>{m.senderName} · {m.senderRole}</Text><Text style={s.detail}>{m.message}</Text></View>)}</ScrollView><TextInput style={s.input} value={message} onChangeText={setMessage} placeholder="Write a message"/><Pressable disabled={busy || !message.trim()} style={s.outline} onPress={sendChat}><Text style={s.outlineT}>SEND MESSAGE</Text></Pressable>
             <Text style={s.label}>Workflow action</Text>
+            {selected?.vendorQuoteStatus === "INVITED" && <View style={s.actions}><Pressable disabled={busy} style={s.outline} onPress={() => update("accept")}><Text style={s.outlineT}>ACCEPT REQUIREMENT</Text></Pressable><Pressable disabled={busy} style={s.outline} onPress={() => update("decline")}><Text style={s.outlineT}>DECLINE REQUIREMENT</Text></Pressable></View>}
             <View style={s.actions}>
-              {selected?.status === "SENT_TO_VENDOR" && selected?.quotationRequested && <Pressable style={s.outline} onPress={() => update("quote")}><Text style={s.outlineT}>SUBMIT QUOTATION</Text></Pressable>}
-              {selected?.status === "VENDOR_ACCEPTED" && selected?.vendorQuoteStatus === "SELECTED" && <Pressable style={s.outline} onPress={() => update("start")}><Text style={s.outlineT}>START WORK</Text></Pressable>}
-              {selected?.status === "IN_PROGRESS" && <Pressable style={s.outline} onPress={() => update("resolve")}><Text style={s.outlineT}>RESOLVE</Text></Pressable>}
+              {["ACCEPTED", "REVISION_REQUESTED"].includes(selected?.vendorQuoteStatus || "") && <Pressable disabled={busy} style={s.outline} onPress={() => update("quote")}><Text style={s.outlineT}>SUBMIT QUOTATION</Text></Pressable>}
+              {selected?.status === "VENDOR_ACCEPTED" && selected?.vendorQuoteStatus === "SELECTED" && <Pressable disabled={busy} style={s.outline} onPress={() => update("start")}><Text style={s.outlineT}>START WORK</Text></Pressable>}
+              {selected?.status === "IN_PROGRESS" && <Pressable disabled={busy} style={s.outline} onPress={() => update("resolve")}><Text style={s.outlineT}>RESOLVE</Text></Pressable>}
             </View>
-          </View>
+          </ScrollView>
         </View>
       </Modal>
     </View>
@@ -429,6 +472,7 @@ function ProfilePage({ user, logout }: { user: User; logout: () => void }) {
     network.isConnected !== false && network.isInternetReachable !== false;
   return (
     <ScrollView contentContainerStyle={s.content}>
+      <Pressable style={s.outline} onPress={() => Linking.openURL('https://wefyx.pro/portal').catch(() => Alert.alert('Unable to open website', 'Please try again.'))}><Text style={s.outlineT}>FULL WEB PORTAL</Text><Text style={s.muted}>Opens in your browser; sign in to continue.</Text></Pressable>
       <View style={s.profile}>
         <Pressable
           style={s.avatarWrap}
@@ -532,7 +576,7 @@ function ProfilePage({ user, logout }: { user: User; logout: () => void }) {
 function Notices({ close, open }: { close: () => void; open:(requirementId?:number)=>void }) {
   const [items,setItems]=useState<any[]>([]);
   useEffect(()=>{apiGet<any[]>('/notifications').then(setItems).catch(()=>setItems([]))},[]);
-  async function select(item:any){await apiSend(`/notifications/${item.id}/read`,'PATCH').catch(()=>{});open(item.requirementId)}
+  async function select(item:any){try{await apiSend(`/notifications/${item.id}/read`,'PATCH');open(item.requirementId);}catch(error){Alert.alert('Unable to open notification', error instanceof Error ? error.message : 'Please retry.');}}
   return (
     <Modal animationType="slide">
       <SafeAreaView style={s.page}>
@@ -625,6 +669,7 @@ function Login({ done }: { done: (u: User) => void }) {
             <Text style={s.primaryT}>Sign in as Vendor</Text>
           )}
         </Pressable>
+        <Pressable style={{paddingVertical:12}} onPress={() => Linking.openURL('https://wefyx.pro/forgot-password').catch(() => Alert.alert('Unable to open recovery', 'Please try again.'))}><Text style={s.link}>Forgot password? Open website</Text></Pressable>
         <Pressable onPress={()=>setRegistering(true)} style={{alignItems:'center',marginTop:18}}><Text style={{color:'#0443A4',fontWeight:'600'}}>New vendor? Create account</Text></Pressable>
         <Text style={s.secure}>
           Secure access for approved Wefyx vendor partners
@@ -640,6 +685,7 @@ function VendorApp() {
     [orders, setOrders] = useState<Item[]>([]),
     [products, setProducts] = useState<Item[]>([]),
     [notice, setNotice] = useState(false),
+    [notificationId, setNotificationId] = useState<number>(),
     [fetching, setFetching] = useState(false);
   async function logout() {
     await Promise.all([
@@ -655,7 +701,7 @@ function VendorApp() {
         apiGet<any[]>("/requirements?view=vendor"),
         apiGet<Item[]>("/resources/vendor-products"),
       ]);
-      const enriched=await Promise.all(requirements.map(async r=>{const quotes=await apiGet<any[]>(`/requirements/${r.id}/quotations?view=vendor`).catch(()=>[]);return {id:r.id,name:r.reference,owner:r.organization||r.customerName,details:`${r.title} · ${r.category}${r.agreedAmount?` · AED ${r.agreedAmount}`:""}`,status:r.status,quotationRequested:r.quotationRequested,estimatedAmount:r.estimatedAmount,quotationStatus:r.quotationStatus,vendorQuoteStatus:quotes[0]?.status}}));
+      const enriched=await Promise.all(requirements.map(async r=>{const quotes=(await apiGet<any[]>(`/requirements/${r.id}/quotations?view=vendor`).catch(()=>[])).sort((a,b)=>(b.version||1)-(a.version||1));return {id:r.id,name:r.reference,owner:r.organization||r.customerName,details:`${r.title} · ${r.category}${r.agreedAmount?` · AED ${r.agreedAmount}`:""}`,status:r.status,quotationRequested:r.quotationRequested,estimatedAmount:r.estimatedAmount,quotationStatus:r.quotationStatus,vendorQuoteStatus:quotes[0]?.status,vendorName:quotes[0]?.vendorName}}));
       setOrders(enriched);
       setProducts(p);
     } catch (e) {
@@ -703,7 +749,10 @@ function VendorApp() {
     };
   }, []);
   useEffect(() => {
-    if (user) reload();
+    if (!user) return;
+    reload();
+    const timer = setInterval(reload, 15000);
+    return () => clearInterval(timer);
   }, [user]);
   if (loading)
     return (
@@ -729,7 +778,7 @@ function VendorApp() {
               toOrders={() => setTab("Orders")}
             />
           ) : tab === "Orders" ? (
-            <OrdersPage items={orders} reload={reload} />
+            <OrdersPage items={orders} reload={reload} initialId={notificationId} onOpened={() => setNotificationId(undefined)} />
           ) : tab === "Products" ? (
             <ProductsPage items={products} reload={reload} />
           ) : (
@@ -771,7 +820,7 @@ function VendorApp() {
             </Pressable>
           ))}
         </View>
-      {notice && <Notices close={() => setNotice(false)} open={()=>{setNotice(false);setTab("Orders")}} />}
+      {notice && <Notices close={() => setNotice(false)} open={id=>{setNotice(false);setNotificationId(id);setTab("Orders")}} />}
       </View>
     </SafeAreaView>
   );

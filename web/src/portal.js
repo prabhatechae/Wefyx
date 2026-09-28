@@ -1,4 +1,8 @@
-export const PORTAL_URL = (import.meta.env.VITE_PORTAL_URL || (import.meta.env.DEV ? "http://127.0.0.1:4175" : "https://wefyx.pro/portal")).replace(/\/$/, "");
+// Keep the portal in this application unless a separate portal deployment was
+// explicitly configured. The previous development fallback pointed at port
+// 4175, which is not served by this project and caused sign-in to fail after
+// registration.
+export const PORTAL_URL = (import.meta.env.VITE_PORTAL_URL || `${window.location.origin}/portal`).replace(/\/$/, "");
 
 export function portalSessionUrl() {
   const token = localStorage.getItem("wefyx-token");

@@ -6,6 +6,7 @@ import {
   FlatList,
   Image,
   LogBox,
+  Linking,
   Modal,
   Pressable,
   ScrollView,
@@ -210,8 +211,12 @@ function HomePage({
 function TicketsPage({
   items,
   reload,
+  initialId,
+  onOpened,
 }: {
   items: Item[];
+  initialId?: number;
+  onOpened?: () => void;
   reload: () => Promise<void>;
 }) {
   let [q, setQ] = useState(""),
@@ -221,34 +226,75 @@ function TicketsPage({
     [quotes, setQuotes] = useState<any[]>([]),
     [messages, setMessages] = useState<any[]>([]),
     [message, setMessage] = useState(""),
-    [notes, setNotes] = useState("");
+    [notes, setNotes] = useState(""),
+    [busy, setBusy] = useState(false),
+    [amount, setAmount] = useState(""),
+    [days, setDays] = useState("");
+  useEffect(() => {
+    const item = items.find(row => row.id === initialId);
+    if (item) { openRequirement(item); onOpened?.(); }
+  }, [initialId, items, onOpened]);
   let list = items.filter((x) =>
     `${x.name}${x.owner}${x.status}`.toLowerCase().includes(q.toLowerCase())
   );
   async function openRequirement(item: Item) {
-    setSelected(item);
+    setSelected(item); setSelectedVendorIds([]); setNotes(""); setMessage(""); setAmount(""); setDays("");
     const [quoteRows,chatRows,vendors] = await Promise.all([apiGet<any[]>(`/requirements/${item.id}/quotations`).catch(()=>[]),apiGet<any[]>(`/requirements/${item.id}/messages`).catch(()=>[]),apiGet<any[]>(`/users?role=VENDOR&status=ACTIVE`).catch(()=>[])]);
     setQuotes(quoteRows); setMessages(chatRows); setVendorOptions(vendors);
   }
-  async function sendChat(){if(!selected||!message.trim())return;await apiSend(`/requirements/${selected.id}/messages`,"POST",{message:message.trim(),senderName:"Wefyx Support Team",senderRole:"EMPLOYEE"});setMessage("");setMessages(await apiGet<any[]>(`/requirements/${selected.id}/messages`));}
-  async function update(action: "review" | "invite" | "share" | "paid") {
+  useEffect(() => {
     if (!selected) return;
-    if (action === "review") {
-      await apiSend(`/requirements/${selected.id}/review`, "PATCH", {
-        employeeName: "Wefyx Support Team",
-        notes,
-      });
-    } else if (action === "invite") {
-      if (!selectedVendorIds.length) { Alert.alert("Vendors required", "Select one or more registered vendors."); return; }
-      await apiSend(`/requirements/${selected.id}/quotations/invite`, "POST", { vendorIds:selectedVendorIds });
-    } else if (action === "share") {
-      await apiSend(`/requirements/${selected.id}/quotations/share`, "PATCH");
-    } else {
-      await apiSend(`/requirements/${selected.id}/paid`, "PATCH");
+    let active = true;
+    const timer = setInterval(() => {
+      apiGet<any[]>(`/requirements/${selected.id}/messages`).then(rows => { if (active) setMessages(rows); }).catch(() => {});
+    }, 3000);
+    return () => { active = false; clearInterval(timer); };
+  }, [selected?.id]);
+  async function run(work: () => Promise<void>) {
+    if (busy) return;
+    setBusy(true);
+    try { await work(); }
+    catch (error) { Alert.alert("Unable to update requirement", error instanceof Error ? error.message : "Please try again."); }
+    finally { setBusy(false); }
+  }
+  async function sendChat() {
+    if (!selected || !message.trim()) return;
+    await run(async () => {
+      await apiSend(`/requirements/${selected.id}/messages`, "POST", {message: message.trim()});
+      setMessage("");
+      setMessages(await apiGet<any[]>(`/requirements/${selected.id}/messages`));
+    });
+  }
+  async function reviewQuote(quote: any, action: string) {
+    if (!selected) return;
+    if (action !== "APPROVE" && !notes.trim()) { Alert.alert("Review notes required", "Enter a reason or revision instructions."); return; }
+    await run(async () => {
+      await apiSend(`/requirements/${selected.id}/quotations/${quote.id}/review`, "PATCH", {action, notes});
+      setQuotes(await apiGet<any[]>(`/requirements/${selected.id}/quotations`));
+      await reload();
+    });
+  }
+  async function directQuote() {
+    if (!selected) return;
+    if (!Number.isFinite(Number(amount)) || Number(amount) <= 0 || !Number.isInteger(Number(days)) || Number(days) <= 0 || !notes.trim()) {
+      Alert.alert("Quotation details required", "Enter a positive amount, whole delivery days, and scope or terms."); return;
     }
-    setSelected(undefined);
-    setNotes(""); setQuotes([]);
-    await reload();
+    await run(async () => {
+      await apiSend(`/requirements/${selected.id}/quotations/employee`, "POST", {amount, leadTimeDays: days, notes});
+      setQuotes(await apiGet<any[]>(`/requirements/${selected.id}/quotations`));
+      await reload();
+    });
+  }
+  async function update(action: "accept" | "decline" | "review" | "invite" | "share" | "paid") {
+    if (!selected) return;
+    if (action === "decline" && !notes.trim()) { Alert.alert("Reason required", "Enter the reason for declining."); return; }
+    if (action === "invite" && !selectedVendorIds.length) { Alert.alert("Vendors required", "Select one or more registered vendors."); return; }
+    await run(async () => {
+      const path = action === "invite" || action === "share" ? `quotations/${action}` : action;
+      await apiSend(`/requirements/${selected.id}/${path}`, action === "invite" ? "POST" : "PATCH", action === "invite" ? {vendorIds: selectedVendorIds} : {notes});
+      setSelected(undefined); setNotes(""); setQuotes([]);
+      await reload();
+    });
   }
   return (
     <View style={{ flex: 1 }}>
@@ -272,9 +318,9 @@ function TicketsPage({
         onRefresh={reload}
         refreshing={false}
       />
-      <Modal visible={!!selected} transparent animationType="slide">
+      <Modal visible={!!selected} transparent animationType="slide" onRequestClose={() => setSelected(undefined)}>
         <View style={s.shade}>
-          <View style={s.sheet}>
+          <ScrollView style={[s.sheet, {maxHeight: "90%"}]} keyboardShouldPersistTaps="handled">
             <View style={s.sectionHead}>
             <Text style={s.sheetTitle}>Requirement review</Text>
               <Pressable onPress={() => setSelected(undefined)}>
@@ -286,19 +332,33 @@ function TicketsPage({
             <Text style={s.detail}>{selected?.details}</Text>
             <TextInput style={s.input} value={notes} onChangeText={setNotes} placeholder="Add analysis and instructions for vendor" multiline />
             {selected?.quotationRequested && <><Text style={s.label}>Select vendors</Text>{vendorOptions.map(v=><Pressable key={v.id} style={[s.card,selectedVendorIds.includes(v.id)&&{borderColor:purple,borderWidth:2}]} onPress={()=>setSelectedVendorIds(ids=>ids.includes(v.id)?ids.filter(id=>id!==v.id):[...ids,v.id])}><Text style={s.heroSmall}>{v.name}</Text><Text style={s.detail}>{v.organization} · {selectedVendorIds.includes(v.id)?"Selected":"Tap to select"}</Text></Pressable>)}</>}
-            {quotes.map(q => <View key={q.id} style={s.card}><Text style={s.heroSmall}>{q.vendorName} · AED {q.amount || "Awaiting quote"}</Text><Text style={s.detail}>{q.leadTimeDays ? `${q.leadTimeDays} days · ` : ""}{q.status}</Text></View>)}
+            {quotes.map(q => <View key={q.id} style={s.card}>
+              <Text style={s.heroSmall}>{q.vendorName} - AED {q.amount || "Awaiting quote"}</Text>
+              <Text style={s.detail}>{q.leadTimeDays || "-"} days - {q.status}</Text>
+              {!!q.notes && <Text style={s.detail}>{q.notes}</Text>}
+              {!!q.reviewNotes && <Text style={s.detail}>Review: {q.reviewNotes}</Text>}
+              {["SUBMITTED", "UNDER_REVIEW"].includes(q.status) && <View style={s.actions}>{["APPROVE", "REQUEST_REVISION", "REJECT"].map(action => <Pressable key={action} disabled={busy} style={s.outline} onPress={() => reviewQuote(q, action)}><Text style={s.outlineT}>{action.replace(/_/g, " ")}</Text></Pressable>)}</View>}
+            </View>)}
             <Text style={s.label}>Support chat</Text>
-            <ScrollView style={{maxHeight:150}}>{messages.map(m=><View key={m.id} style={s.card}><Text style={s.ref}>{m.senderName} · {m.senderRole}</Text><Text style={s.detail}>{m.message}</Text></View>)}</ScrollView>
-            <TextInput style={s.input} value={message} onChangeText={setMessage} placeholder="Message customer or vendor" />
-            <Pressable style={s.outline} onPress={sendChat}><Text style={s.outlineT}>SEND MESSAGE</Text></Pressable>
+            <Text style={s.detail}>Live conversation with the customer, Wefyx staff and assigned vendors.</Text>
+            {messages.map(m => <View key={m.id} style={s.card}><Text style={s.ref}>{m.senderName} ? {m.senderRole}</Text><Text style={s.detail}>{m.message}</Text></View>)}
+            <TextInput style={s.input} value={message} onChangeText={setMessage} placeholder="Write a message" />
+            <Pressable disabled={busy || !message.trim()} style={s.outline} onPress={sendChat}><Text style={s.outlineT}>SEND MESSAGE</Text></Pressable>
+            {selected && !["SUBMITTED", "DECLINED", "REJECTED", "CLOSED"].includes(selected.status) && <>
+              <Text style={s.label}>Direct quotation</Text>
+              <TextInput style={s.input} value={amount} onChangeText={setAmount} keyboardType="decimal-pad" placeholder="Amount (AED)" />
+              <TextInput style={s.input} value={days} onChangeText={setDays} keyboardType="number-pad" placeholder="Delivery days" />
+              <Pressable disabled={busy} style={s.outline} onPress={directQuote}><Text style={s.outlineT}>SEND DIRECT QUOTATION</Text></Pressable>
+            </>}
             <Text style={s.label}>Workflow action</Text>
             <View style={s.actions}>
-              <Pressable style={s.outline} onPress={() => update("review")}><Text style={s.outlineT}>MARK REVIEWED</Text></Pressable>
-              <Pressable style={s.outline} onPress={() => update("invite")}><Text style={s.outlineT}>INVITE VENDORS</Text></Pressable>
-              {quotes.some(q => q.status === "SUBMITTED") && <Pressable style={s.outline} onPress={() => update("share")}><Text style={s.outlineT}>SHARE QUOTES WITH CUSTOMER</Text></Pressable>}
-              {selected?.quotationStatus === "VENDOR_ACCEPTED" && <Pressable style={s.outline} onPress={() => update("paid")}><Text style={s.outlineT}>MARK PAID</Text></Pressable>}
+              {selected?.status === "SUBMITTED" && <><Pressable disabled={busy} style={s.outline} onPress={() => update("accept")}><Text style={s.outlineT}>ACCEPT REQUEST</Text></Pressable><Pressable disabled={busy} style={s.outline} onPress={() => update("decline")}><Text style={s.outlineT}>RETURN / DECLINE</Text></Pressable></>}
+              {selected?.status === "ACCEPTED" && <Pressable disabled={busy} style={s.outline} onPress={() => update("review")}><Text style={s.outlineT}>MARK REVIEWED</Text></Pressable>}
+              <Pressable disabled={busy} style={s.outline} onPress={() => update("invite")}><Text style={s.outlineT}>INVITE VENDORS</Text></Pressable>
+              {quotes.some(q => q.status === "SUBMITTED") && <Pressable disabled={busy} style={s.outline} onPress={() => update("share")}><Text style={s.outlineT}>SHARE QUOTES WITH CUSTOMER</Text></Pressable>}
+              {selected?.quotationStatus === "VENDOR_ACCEPTED" && <Pressable disabled={busy} style={s.outline} onPress={() => update("paid")}><Text style={s.outlineT}>MARK PAID</Text></Pressable>}
             </View>
-          </View>
+          </ScrollView>
         </View>
       </Modal>
     </View>
@@ -417,6 +477,7 @@ function ProfilePage({ user, logout }: { user: User; logout: () => void }) {
     network.isConnected !== false && network.isInternetReachable !== false;
   return (
     <ScrollView contentContainerStyle={s.content}>
+      <Pressable style={s.outline} onPress={() => Linking.openURL('https://wefyx.pro/portal').catch(() => Alert.alert('Unable to open website', 'Please try again.'))}><Text style={s.outlineT}>FULL WEB PORTAL</Text><Text style={s.muted}>Opens in your browser; sign in to continue.</Text></Pressable>
       <View style={s.profile}>
         <Pressable
           style={s.avatarWrap}
@@ -517,40 +578,28 @@ function ProfilePage({ user, logout }: { user: User; logout: () => void }) {
     </ScrollView>
   );
 }
-function Notices({ close }: { close: () => void }) {
-  return (
-    <Modal animationType="slide">
-      <SafeAreaView style={s.page}>
-        <View style={s.modalHead}>
-          <Pressable onPress={close}>
-            <X color={navy} />
-          </Pressable>
-          <Text style={s.section}>Notifications</Text>
-          <View style={{ width: 24 }} />
-        </View>
-        <View style={s.content}>
-          {["New ticket assigned", "Schedule updated", "Customer added a note"].map(
-            (x, i) => (
-              <View style={s.notice} key={x}>
-                <View style={s.noticeIcon}>
-                  <Bell color={purple} size={18} />
-                </View>
-                <View>
-                  <Text style={s.cardTitle}>{x}</Text>
-                  <Text style={s.muted}>
-                    {i
-                      ? "Your employee account has a new update."
-                      : "Ticket #ORD-1048 was placed by ABC Trading LLC"}
-                  </Text>
-                </View>
-              </View>
-            )
-          )}
-        </View>
-      </SafeAreaView>
-    </Modal>
-  );
+function Notices({ close, open }: { close: () => void; open: (id?: number) => void }) {
+  const [items, setItems] = useState<any[]>([]);
+  const [error, setError] = useState('');
+  const load = () => apiGet<any[]>('/notifications').then(setItems).catch(e => setError(e.message));
+  useEffect(() => { load(); }, []);
+  async function markRead(item: any) {
+    try {
+      await apiSend(`/notifications/${item.id}/read`, 'PATCH');
+      setItems(rows => rows.map(row => row.id === item.id ? {...row, read: true} : row));
+      if (item.requirementId) open(item.requirementId);
+    } catch (e) { setError(e instanceof Error ? e.message : 'Unable to mark notification read.'); }
+  }
+  return <Modal animationType="slide" onRequestClose={close}><SafeAreaView style={s.page}>
+    <View style={s.modalHead}><Pressable onPress={close}><X color={navy}/></Pressable><Text style={s.section}>Notifications</Text><Pressable onPress={load}><Text>Refresh</Text></Pressable></View>
+    <ScrollView contentContainerStyle={s.content}>
+      {!!error && <Text>{error}</Text>}
+      {items.map(item => <Pressable style={s.notice} key={item.id} onPress={() => markRead(item)}><View style={{flex:1}}><Text style={s.cardTitle}>{item.read ? '' : '? '}{item.title}</Text><Text style={s.muted}>{item.message}</Text></View></Pressable>)}
+      {!items.length && !error && <Text style={s.muted}>No notifications.</Text>}
+    </ScrollView>
+  </SafeAreaView></Modal>;
 }
+
 function Login({ done }: { done: (u: User) => void }) {
   let [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
@@ -615,6 +664,7 @@ function Login({ done }: { done: (u: User) => void }) {
             <Text style={s.primaryT}>Sign in as Employee</Text>
           )}
         </Pressable>
+        <Pressable style={{paddingVertical:12}} onPress={() => Linking.openURL('https://wefyx.pro/forgot-password').catch(() => Alert.alert('Unable to open recovery', 'Please try again.'))}><Text style={s.link}>Forgot password? Open website</Text></Pressable>
         <Pressable onPress={()=>setRegistering(true)} style={{alignItems:'center',marginTop:18}}><Text style={{color:'#0443A4',fontWeight:'600'}}>New employee? Register for approval</Text></Pressable>
         <Text style={s.secure}>
           Secure access for Wefyx employees
@@ -630,6 +680,7 @@ function EmployeeApp() {
     [tickets, setTickets] = useState<Item[]>([]),
     [products, setSchedule] = useState<Item[]>([]),
     [notice, setNotice] = useState(false),
+    [notificationId, setNotificationId] = useState<number>(),
     [fetching, setFetching] = useState(false);
   async function logout() {
     await Promise.all([
@@ -729,7 +780,7 @@ function EmployeeApp() {
               toTickets={() => setTab("Tickets")}
             />
           ) : tab === "Tickets" ? (
-            <TicketsPage items={tickets} reload={reload} />
+            <TicketsPage items={tickets} reload={reload} initialId={notificationId} onOpened={() => setNotificationId(undefined)} />
           ) : tab === "Schedule" ? (
             <SchedulePage items={products} reload={reload} />
           ) : (
@@ -765,7 +816,7 @@ function EmployeeApp() {
             </Pressable>
           ))}
         </View>
-        {notice && <Notices close={() => setNotice(false)} />}
+        {notice && <Notices close={() => setNotice(false)} open={id => {setNotice(false); setNotificationId(id); setTab("Tickets");}} />}
       </View>
     </SafeAreaView>
   );
