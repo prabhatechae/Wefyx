@@ -107,7 +107,7 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
       items: [
         { title: "Annual Maintenance Contracts (AMC)", desc: "Comprehensive & preventive SLA coverage", href: "/amc", icon: FileText },
         { title: "24/7 Infrastructure NOC", desc: "Continuous uptime and server health alerts", href: "/services#noc", icon: Zap },
-        { title: "Backup & Disaster Recovery", desc: "Cloud & local immutable backup solutions", href: "/services#backup", icon: ShieldCheck },
+        { title: "Backup & Disaster Recovery", desc: "Cloud & local immutable backup solutions", href: "/services#aaccbekup", icon: ShieldCheck },
         { title: "IT Asset Management", desc: "Hardware lifecycle, tags & warranty tracking", href: "/services#assets", icon: Boxes },
         { title: "Dedicated On-Site Engineer", desc: "Resident certified engineer at your office", href: "/services#resident", icon: UsersRound }
       ],
@@ -253,24 +253,24 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
     <>
       <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white shadow-sm transition-all">
         {/* Top Header Bar */}
-        <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-4 py-2.5 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-2 px-4 py-2.5 sm:px-6 lg:px-8">
           {/* Logo */}
           <div className="flex items-center gap-6">
             <a href="/" className="flex items-center gap-1.5 font-extrabold tracking-tight text-slate-900 transition hover:opacity-95">
-              <span className="text-2xl font-black tracking-tighter text-[#071b4a] sm:text-3xl">
+              <span className="text-2xl font-black tracking-tighter text-[#09482e] sm:text-3xl">
                 Wefy<span className="text-[#00a86b]">x</span>
               </span>
               <span className="hidden rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 sm:inline-block">
                 .PRO
               </span>
             </a>
-            <span className="hidden text-xs text-slate-400 xl:inline-block">
+            <span className="hidden text-xs text-slate-400 2xl:inline-block">
               Smarter IT. Stronger Business.
             </span>
           </div>
 
           {/* Center Search Bar */}
-          <div className="relative hidden max-w-md flex-1 md:block">
+          <div className="relative hidden min-w-0 max-w-md flex-1 md:block">
             <div
               onClick={() => setSearchOpen(true)}
               className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 text-xs text-slate-400 transition hover:border-slate-300 hover:bg-white"
@@ -284,9 +284,9 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
           </div>
 
           {/* Right Action Tools */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             {/* UAE Location Dropdown */}
-            <div className="relative hidden sm:block">
+            <div className="relative hidden lg:block">
               <button
                 type="button"
                 onClick={() => setLocationOpen(!locationOpen)}
@@ -321,9 +321,9 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
             {/* Support Link */}
             <a
               href="/contact"
-              className="hidden items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 md:flex"
+              className="hidden items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 xl:flex"
             >
-              <Headphones size={14} className="text-blue-600" />
+              <Headphones size={14} className="text-emerald-600" />
               <span>Support</span>
             </a>
 
@@ -334,9 +334,9 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
                 if (onOpenQuote) onOpenQuote();
                 else setShowAiModal(true);
               }}
-              className="hidden items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/70 px-3 py-1.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100 lg:flex"
+              className="hidden items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50/70 px-3 py-1.5 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100 xl:flex"
             >
-              <Sparkles size={13} className="text-blue-600" />
+              <Sparkles size={13} className="text-emerald-600" />
               <span>Request Quote</span>
             </button>
 
@@ -376,8 +376,10 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="grid h-9 w-9 place-items-center rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden"
+              className="grid h-9 w-9 place-items-center rounded-xl text-slate-600 hover:bg-slate-100 xl:hidden"
               aria-label="Toggle Navigation Menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation"
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -385,7 +387,7 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
         </div>
 
         {/* Secondary Navigation Bar with Dropdowns / Mega Menus (Desktop) */}
-        <div className="hidden border-t border-slate-100 bg-slate-50/70 lg:block">
+        <div className="relative hidden border-t border-slate-100 bg-slate-50/70 xl:block">
           <div className="mx-auto flex max-w-[1500px] items-center justify-between px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center gap-1">
               {navLinks.map((item) => {
@@ -396,7 +398,10 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
                 return (
                   <div
                     key={item.label}
-                    className="relative"
+                    className="static"
+                    onFocus={() => isMega && setActiveMega(item.mega)}
+                    onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setActiveMega(null); }}
+                    onKeyDown={(event) => { if (event.key === "Escape") setActiveMega(null); }}
                     onMouseEnter={() => isMega && setActiveMega(item.mega)}
                     onMouseLeave={() => isMega && setActiveMega(null)}
                   >
@@ -414,7 +419,7 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
 
                     {/* Mega Menu Popup */}
                     {isMega && activeMega === item.mega && (
-                      <div className="absolute left-0 top-full z-50 mt-0.5 w-[650px] rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl transition-all">
+                      <div className="absolute left-1/2 top-full z-50 w-[min(900px,calc(100vw-48px))] -translate-x-1/2 rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl transition-all">
                         <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3">
                           <div>
                             <h4 className="font-bold text-slate-900">{megaMenus[item.mega].title}</h4>
@@ -456,7 +461,7 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
 
                         {/* Mega Menu Footer Callout */}
                         {megaMenus[item.mega].featured && (
-                          <div className="mt-4 flex items-center justify-between rounded-xl bg-gradient-to-r from-slate-900 to-blue-950 p-3 text-white">
+                          <div className="mt-4 flex items-center justify-between rounded-xl bg-gradient-to-r from-slate-900 to-emerald-950 p-3 text-white">
                             <div>
                               <div className="text-xs font-bold text-white">{megaMenus[item.mega].featured.title}</div>
                               <div className="text-[10px] text-slate-300">{megaMenus[item.mega].featured.desc}</div>
@@ -495,7 +500,7 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="fixed inset-x-0 top-[60px] z-50 max-h-[calc(100vh-60px)] overflow-y-auto border-b border-slate-200 bg-white p-5 shadow-2xl lg:hidden">
+          <div className="fixed inset-x-0 top-[60px] z-50 max-h-[calc(100vh-60px)] overflow-y-auto border-b border-slate-200 bg-white p-5 shadow-2xl xl:hidden">
             {/* Search Input */}
             <div className="mb-4 flex h-10 w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-xs text-slate-600">
               <Search size={16} className="text-slate-400" />
@@ -515,7 +520,7 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
                   setMobileMenuOpen(false);
                   setShowAiModal(true);
                 }}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 py-2 text-xs font-bold text-blue-700"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 py-2 text-xs font-bold text-emerald-700"
               >
                 <Sparkles size={14} /> AI Quotation
               </button>
@@ -529,7 +534,7 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
             </div>
 
             {/* Mobile Nav Links */}
-            <nav className="space-y-1">
+            <nav id="mobile-navigation" className="space-y-1">
               {navLinks.map((link) => (
                 <a
                   key={link.label}

@@ -122,19 +122,19 @@ export default function DataCenterPage() {
       />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#071b4a] via-[#0b245e] to-[#071b4a] py-16 text-white lg:py-24">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:20px_20px]" />
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#09482e] via-[#0c5d3b] to-[#09482e] py-16 text-white lg:py-24">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#008553_1px,transparent_1px)] [background-size:20px_20px]" />
         
         <div className="relative mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-cyan-300">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300">
                 <Sparkles size={13} /> MISSION-CRITICAL DATA CENTER ENGINEERING
               </div>
               <h1 className="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-5xl">
                 Data Center Design &amp; Construction
               </h1>
-              <p className="mt-2 text-xl font-medium text-cyan-300">
+              <p className="mt-2 text-xl font-medium text-emerald-300">
                 From Concept to Mission-Critical Infrastructure.
               </p>
               <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
@@ -185,7 +185,7 @@ export default function DataCenterPage() {
                   className="h-56 w-full rounded-xl object-cover object-center shadow"
                 />
                 <div className="mt-5 space-y-3">
-                  <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                  <div className="text-xs font-bold uppercase tracking-wider text-emerald-400">
                     Core Technical Systems:
                   </div>
                   {[
@@ -212,10 +212,10 @@ export default function DataCenterPage() {
       <section className="py-16 lg:py-24">
         <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
               TURNKEY LIFECYCLE METHODOLOGY
             </span>
-            <h2 className="mt-2 text-3xl font-extrabold text-[#071b4a] sm:text-4xl">
+            <h2 className="mt-2 text-3xl font-extrabold text-[#09482e] sm:text-4xl">
               Complete Data Center Project Lifecycle
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
@@ -229,13 +229,13 @@ export default function DataCenterPage() {
               return (
                 <div
                   key={phase.step}
-                  className="group relative rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-blue-400 hover:shadow-xl"
+                  className="group relative rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-emerald-400 hover:shadow-xl"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="grid h-12 w-12 place-items-center rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
+                    <div className="grid h-12 w-12 place-items-center rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition">
                       <Icon size={22} />
                     </div>
-                    <span className="font-mono text-2xl font-black text-slate-200 group-hover:text-blue-200 transition">
+                    <span className="font-mono text-2xl font-black text-slate-200 group-hover:text-emerald-200 transition">
                       {phase.step}
                     </span>
                   </div>
@@ -243,7 +243,7 @@ export default function DataCenterPage() {
                   <h3 className="mt-5 text-base font-extrabold text-slate-900">
                     {phase.title}
                   </h3>
-                  <p className="mt-1 text-xs font-semibold text-blue-600">
+                  <p className="mt-1 text-xs font-semibold text-emerald-600">
                     {phase.subtitle}
                   </p>
 
@@ -268,7 +268,7 @@ export default function DataCenterPage() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {standards.map(std => (
               <div key={std.title} className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm">
-                <div className="text-sm font-extrabold text-[#071b4a]">{std.title}</div>
+                <div className="text-sm font-extrabold text-[#09482e]">{std.title}</div>
                 <div className="mt-2 text-xs text-slate-600 leading-relaxed">{std.desc}</div>
               </div>
             ))}
@@ -277,7 +277,7 @@ export default function DataCenterPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-[#071b4a] py-14 text-white">
+      <section className="bg-[#09482e] py-14 text-white">
         <div className="mx-auto max-w-4xl px-4 text-center">
           <h2 className="text-2xl font-extrabold sm:text-3xl">
             Planning a Server Room or Data Center Facility?

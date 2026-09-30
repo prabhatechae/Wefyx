@@ -46,13 +46,13 @@ const STANDARD_ROLES = [
 function getRoleBadgeStyle(role) {
   const r = (role || "").toUpperCase();
   if (r.includes("CUSTOMER") || r.includes("CLIENT"))
-    return "bg-blue-50 text-blue-700 border border-blue-200";
+    return "bg-emerald-50 text-emerald-700 border border-emerald-200";
   if (r.includes("SUPER") || r.includes("ADMIN"))
     return "bg-purple-50 text-purple-700 border border-purple-200";
   if (r.includes("VENDOR") || r.includes("PARTNER"))
     return "bg-amber-50 text-amber-800 border border-amber-200";
   if (r.includes("TECH") || r.includes("ENGINEER") || r.includes("NOC") || r.includes("AGENT"))
-    return "bg-indigo-50 text-indigo-700 border border-indigo-200";
+    return "bg-emerald-50 text-emerald-700 border border-emerald-200";
   return "bg-slate-100 text-slate-700 border border-slate-200";
 }
 
@@ -234,9 +234,9 @@ export default function DynamicUsersPage() {
       )}
 
       {/* Role & Org Context Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-white px-5 py-3.5 text-xs shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50/90 via-emerald-50/70 to-white px-5 py-3.5 text-xs shadow-sm">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-7 w-7 place-items-center rounded-lg bg-blue-600 font-bold text-white">
+          <span className="grid h-7 w-7 place-items-center rounded-lg bg-emerald-600 font-bold text-white">
             <Shield size={14} />
           </span>
           <div>
@@ -257,8 +257,8 @@ export default function DynamicUsersPage() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {[
           { label: "All Users", count: users.length, icon: Users, cat: "ALL", tone: "bg-slate-100 text-slate-700" },
-          { label: "Customers (Default)", count: countRoleCat("CUSTOMER"), icon: UserCheck, cat: "CUSTOMER", tone: "bg-blue-100 text-blue-700" },
-          { label: "Engineers & Staff", count: countRoleCat("EMPLOYEE"), icon: Headphones, cat: "EMPLOYEE", tone: "bg-indigo-100 text-indigo-700" },
+          { label: "Customers (Default)", count: countRoleCat("CUSTOMER"), icon: UserCheck, cat: "CUSTOMER", tone: "bg-emerald-100 text-emerald-700" },
+          { label: "Engineers & Staff", count: countRoleCat("EMPLOYEE"), icon: Headphones, cat: "EMPLOYEE", tone: "bg-emerald-100 text-emerald-700" },
           { label: "Vendors & Partners", count: countRoleCat("VENDOR"), icon: Building2, cat: "VENDOR", tone: "bg-amber-100 text-amber-800" },
           { label: "Administrators", count: countRoleCat("ADMIN"), icon: ShieldCheck, cat: "ADMIN", tone: "bg-purple-100 text-purple-700" },
         ].map((item) => {
@@ -271,7 +271,7 @@ export default function DynamicUsersPage() {
               onClick={() => setRoleCategory(item.cat)}
               className={`flex items-center justify-between rounded-2xl border p-4 text-left transition-all ${
                 isSelected
-                  ? "border-blue-500 bg-blue-50/50 shadow-md ring-2 ring-blue-500/20"
+                  ? "border-emerald-500 bg-emerald-50/50 shadow-md ring-2 ring-emerald-500/20"
                   : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
               }`}
             >
@@ -300,7 +300,7 @@ export default function DynamicUsersPage() {
                 onClick={() => setStatus(s)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${
                   status === s
-                    ? "bg-[#0b579f] text-white shadow-sm"
+                    ? "bg-[#139760] text-white shadow-sm"
                     : "bg-slate-50 text-slate-600 hover:bg-slate-100"
                 }`}
               >
@@ -311,7 +311,7 @@ export default function DynamicUsersPage() {
 
           {/* Search & Add User */}
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-3 transition focus-within:border-blue-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500/10">
+            <div className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/50 px-3 transition focus-within:border-emerald-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/10">
               <Search size={15} className="text-slate-400" />
               <input
                 value={q}
@@ -361,7 +361,7 @@ export default function DynamicUsersPage() {
                     {/* User Profile */}
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="grid h-9 w-9 place-items-center rounded-xl bg-blue-100 font-bold text-blue-800 shadow-sm">
+                        <div className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-100 font-bold text-emerald-800 shadow-sm">
                           {initials}
                         </div>
                         <div>
@@ -392,7 +392,7 @@ export default function DynamicUsersPage() {
                           disabled={isAssigning}
                           value={u.role || "Customer"}
                           onChange={(e) => handleAssignRole(u, e.target.value)}
-                          className="h-8.5 w-full cursor-pointer rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-800 outline-none transition hover:border-slate-300 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/15 disabled:opacity-50"
+                          className="h-8.5 w-full cursor-pointer rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-800 outline-none transition hover:border-slate-300 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/15 disabled:opacity-50"
                         >
                           <optgroup label="Standard Roles">
                             <option value="Customer">👤 Customer (Default)</option>
@@ -446,7 +446,7 @@ export default function DynamicUsersPage() {
                           type="button"
                           onClick={() => setSelected(u)}
                           title="View user details"
-                          className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                          className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700"
                         >
                           <Eye size={14} />
                         </button>
@@ -510,7 +510,7 @@ export default function DynamicUsersPage() {
                   onClick={() => setPage(p)}
                   className={`grid h-8 w-8 place-items-center rounded-lg border text-xs font-bold transition ${
                     page === p
-                      ? "border-blue-600 bg-blue-600 text-white shadow-xs"
+                      ? "border-emerald-600 bg-emerald-600 text-white shadow-xs"
                       : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
                   }`}
                 >

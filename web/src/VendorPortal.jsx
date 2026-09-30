@@ -47,7 +47,7 @@ const current = (rows) =>
 const styles = {
   INVITED: "bg-amber-50 text-amber-700 border border-amber-200",
   ACCEPTED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  SUBMITTED: "bg-blue-50 text-blue-700 border border-blue-200",
+  SUBMITTED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   REVISION_REQUESTED: "bg-orange-50 text-orange-700 border border-orange-200",
   SENT_TO_VENDOR: "bg-amber-50 text-amber-800 border border-amber-200",
   DECLINED: "bg-slate-100 text-slate-600 border border-slate-200",
@@ -249,7 +249,7 @@ export default function VendorPortal({ user, onLogout }) {
   const state = quote?.status || selected?.vendorQuote?.status || "INVITED";
 
   return (
-    <div className="flex min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
+    <div className="flex min-h-screen bg-[#f8fcfa] text-slate-900 font-sans">
       {notice && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-xs font-semibold text-white shadow-2xl animate-in fade-in">
           <CheckCircle2 size={16} className="text-[#00a86b]" />
@@ -263,7 +263,7 @@ export default function VendorPortal({ user, onLogout }) {
       <aside
         className={`${
           sidebarOpen ? "w-[240px]" : "w-0 lg:w-[72px]"
-        } fixed inset-y-0 left-0 z-40 flex flex-col bg-[#071b4a] text-white transition-all duration-300 ease-in-out lg:static shadow-xl`}
+        } fixed inset-y-0 left-0 z-40 flex flex-col bg-[#09482e] text-white transition-all duration-300 ease-in-out lg:static shadow-xl`}
       >
         <div className="flex h-20 items-center justify-between border-b border-white/10 px-5">
           <div className="flex items-center gap-2.5 overflow-hidden">
@@ -412,9 +412,9 @@ export default function VendorPortal({ user, onLogout }) {
           {/* Summary Metric Cards (Matches Screenshot Running Theme) */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { label: "Total RFQs", count: orders.length, icon: Zap, tone: "bg-cyan-50 text-cyan-600" },
+              { label: "Total RFQs", count: orders.length, icon: Zap, tone: "bg-emerald-50 text-emerald-600" },
               { label: "Active Orders", count: activeOrders.length, icon: CheckCircle2, tone: "bg-emerald-50 text-[#00a86b]" },
-              { label: "Pending Quotes", count: orders.filter((x) => x.vendorQuote?.status === "INVITED" || !x.vendorQuote).length, icon: Clock3, tone: "bg-blue-50 text-blue-600" },
+              { label: "Pending Quotes", count: orders.filter((x) => x.vendorQuote?.status === "INVITED" || !x.vendorQuote).length, icon: Clock3, tone: "bg-emerald-50 text-emerald-600" },
               { label: "Completed Orders", count: historyOrders.length, icon: Store, tone: "bg-teal-50 text-teal-600" },
             ].map((item) => {
               const Icon = item.icon;
@@ -692,8 +692,8 @@ export default function VendorPortal({ user, onLogout }) {
                 </div>
 
                 {/* Chat */}
-                <div className="rounded-2xl border border-blue-100 p-5 bg-blue-50/30">
-                  <div className="flex items-center justify-between border-b border-blue-100 pb-2.5">
+                <div className="rounded-2xl border border-emerald-100 p-5 bg-emerald-50/30">
+                  <div className="flex items-center justify-between border-b border-emerald-100 pb-2.5">
                     <h4 className="flex items-center gap-2 text-xs font-bold text-slate-900 uppercase tracking-wider">
                       <MessageCircle size={15} className="text-[#00a86b]" />
                       <span>Live Multi-Party Conversation</span>
@@ -711,7 +711,7 @@ export default function VendorPortal({ user, onLogout }) {
                       const rolePills = {
                         SUPER_ADMIN: "bg-amber-100 text-amber-800 border border-amber-300",
                         EMPLOYEE: "bg-emerald-100 text-emerald-800 border border-emerald-300",
-                        CUSTOMER: "bg-blue-100 text-blue-800 border border-blue-300",
+                        CUSTOMER: "bg-emerald-100 text-emerald-800 border border-emerald-300",
                         VENDOR: "bg-purple-100 text-purple-800 border border-purple-300",
                       };
                       const niceRoleLabel = (r = "") => {

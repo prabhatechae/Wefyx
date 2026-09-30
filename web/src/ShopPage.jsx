@@ -192,11 +192,11 @@ export default function ShopPage() {
       <UnifiedHeader onOpenQuote={() => setShowQuoteModal(true)} />
 
       {/* Hero */}
-      <section className="bg-gradient-to-b from-[#071b4a] via-[#0b245e] to-[#071b4a] py-12 text-white sm:py-16">
+      <section className="bg-gradient-to-b from-[#09482e] via-[#0c5d3b] to-[#09482e] py-12 text-white sm:py-16">
         <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-blue-300">
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300">
                 <Package size={13} /> AUTHORIZED UAE IT HARDWARE DISTRIBUTOR
               </span>
               <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
@@ -230,7 +230,7 @@ export default function ShopPage() {
               onClick={() => setFilter(c.name)}
               className={`rounded-xl px-4 py-2.5 text-xs font-bold whitespace-nowrap transition ${
                 filter === c.name
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/25"
                   : "border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
               }`}
             >
@@ -247,7 +247,7 @@ export default function ShopPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search products by model, brand, or specification..."
-              className="h-10 w-full rounded-xl border border-slate-200 pl-10 pr-4 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500"
+              className="h-10 w-full rounded-xl border border-slate-200 pl-10 pr-4 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-emerald-500"
             />
           </div>
           <div className="flex items-center gap-3 text-xs text-slate-500 w-full sm:w-auto justify-between sm:justify-end">
@@ -257,7 +257,7 @@ export default function ShopPage() {
                 setFilter("All");
                 setSearch("");
               }}
-              className="text-xs font-semibold text-blue-600 hover:underline"
+              className="text-xs font-semibold text-emerald-600 hover:underline"
             >
               Reset Filters
             </button>
@@ -269,7 +269,7 @@ export default function ShopPage() {
           {filtered.map((prod) => (
             <div
               key={prod.name}
-              className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-400 hover:shadow-xl"
+              className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-400 hover:shadow-xl"
             >
               <div className="relative flex h-48 w-full items-center justify-center rounded-xl bg-slate-50 p-4">
                 <img
@@ -286,10 +286,10 @@ export default function ShopPage() {
               </div>
 
               <div className="mt-4 flex-1 flex flex-col">
-                <div className="text-[11px] font-semibold text-blue-600 uppercase tracking-wider">
+                <div className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wider">
                   {prod.category}
                 </div>
-                <h3 className="mt-1 text-sm font-extrabold text-slate-900 group-hover:text-blue-600 transition line-clamp-1">
+                <h3 className="mt-1 text-sm font-extrabold text-slate-900 group-hover:text-emerald-600 transition line-clamp-1">
                   {prod.name}
                 </h3>
                 <p className="mt-2 text-xs text-slate-500 line-clamp-2 flex-1 leading-relaxed">
@@ -300,7 +300,7 @@ export default function ShopPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-[10px] text-slate-400">Selling Price</div>
-                      <div className="text-base font-extrabold text-[#071b4a]">
+                      <div className="text-base font-extrabold text-[#09482e]">
                         {money(prod.price)} <span className="text-[10px] font-normal text-slate-400">+ VAT</span>
                       </div>
                     </div>

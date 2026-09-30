@@ -120,7 +120,7 @@ export default function UserDetailsPage({ user: initialUser, onBack }) {
       {/* Top Banner */}
       <div className="grid gap-4 xl:grid-cols-[1fr_320px]">
         <section className="card flex flex-wrap items-center gap-6 p-6">
-          <div className="grid h-24 w-24 place-items-center rounded-2xl bg-blue-100 text-2xl font-bold text-brand shadow-inner">
+          <div className="grid h-24 w-24 place-items-center rounded-2xl bg-emerald-100 text-2xl font-bold text-brand shadow-inner">
             {initials}
           </div>
           <div className="min-w-[190px]">
@@ -131,7 +131,7 @@ export default function UserDetailsPage({ user: initialUser, onBack }) {
               </span>
             </div>
             <div className="mt-2 flex items-center gap-2">
-              <span className="inline-block rounded-lg bg-violet-50 px-2.5 py-1 text-xs font-bold text-violet-700 border border-violet-200">
+              <span className="inline-block rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700 border border-emerald-200">
                 {user.role || "Customer"}
               </span>
               <button
@@ -145,7 +145,7 @@ export default function UserDetailsPage({ user: initialUser, onBack }) {
 
             {/* Inline Role Assignment Changer */}
             {isEditingRole && (
-              <div className="mt-3 flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50/50 p-2 text-xs">
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50/50 p-2 text-xs">
                 <select
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value)}
@@ -343,8 +343,8 @@ export default function UserDetailsPage({ user: initialUser, onBack }) {
         <div className="space-y-4">
           <InfoCard title="Roles & Permissions" action="Manage" onAction={() => setIsEditingRole(true)}>
             <div className="flex flex-wrap gap-2">
-              <span className="pill bg-violet-50 text-violet-600">{user.role || "Customer"}</span>
-              <span className="pill bg-blue-50 text-blue-600">Portal Access</span>
+              <span className="pill bg-emerald-50 text-emerald-600">{user.role || "Customer"}</span>
+              <span className="pill bg-emerald-50 text-emerald-600">Portal Access</span>
               <span className="pill bg-emerald-50 text-emerald-600">Tickets Access</span>
             </div>
             <div className="mt-6 grid grid-cols-3">
@@ -372,8 +372,8 @@ export default function UserDetailsPage({ user: initialUser, onBack }) {
           <div className="mt-5 space-y-5">
             {[
               ["User logged in", "Today, 10:24 AM", CheckCircle2, "text-emerald-500"],
-              ["Role verified", "Today, 10:20 AM", ShieldCheck, "text-violet-500"],
-              ["Account active", "Current session", Shield, "text-blue-500"],
+              ["Role verified", "Today, 10:20 AM", ShieldCheck, "text-emerald-500"],
+              ["Account active", "Current session", Shield, "text-emerald-500"],
             ].map(([x, d, Icon, c]) => (
               <div key={x} className="flex gap-3">
                 <div className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-50 ${c}`}>

@@ -82,7 +82,7 @@ export default function AMCPage() {
       <UnifiedHeader onOpenQuote={() => setShowQuoteModal(true)} />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-[#071b4a] via-[#0b245e] to-[#071b4a] py-16 text-white lg:py-24">
+      <section className="bg-gradient-to-b from-[#09482e] via-[#0c5d3b] to-[#09482e] py-16 text-white lg:py-24">
         <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300">
@@ -138,7 +138,7 @@ export default function AMCPage() {
                   {tier.badge}
                 </div>
                 <h3 className="mt-2 text-xl font-extrabold text-slate-900">{tier.name}</h3>
-                <div className="mt-3 text-lg font-bold text-blue-700">{tier.price}</div>
+                <div className="mt-3 text-lg font-bold text-emerald-700">{tier.price}</div>
                 <p className="mt-3 text-xs text-slate-600 leading-relaxed">{tier.desc}</p>
 
                 <div className="mt-6 flex-1 space-y-3 border-t border-slate-200/80 pt-6">
@@ -173,7 +173,7 @@ export default function AMCPage() {
       <section className="bg-slate-50 border-t border-slate-200 py-16">
         <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-2xl font-extrabold text-[#071b4a] sm:text-3xl">
+            <h2 className="text-2xl font-extrabold text-[#09482e] sm:text-3xl">
               Equipment &amp; Assets Covered Under AMC
             </h2>
             <p className="mt-2 text-xs text-slate-600">
@@ -191,7 +191,7 @@ export default function AMCPage() {
               [Boxes, "Printers & Scanners", "Canon, HP, Epson Network"]
             ].map(([Icon, title, sub]) => (
               <div key={title} className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-                <div className="mx-auto grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-blue-600">
+                <div className="mx-auto grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600">
                   <Icon size={20} />
                 </div>
                 <div className="mt-3 text-xs font-bold text-slate-900">{title}</div>

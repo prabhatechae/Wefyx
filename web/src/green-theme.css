@@ -1,0 +1,82 @@
+/* Shared finishing layer. Component layouts retain their own responsive rules. */
+:root {
+  --wf-green: #008553;
+  --wf-green-hover: #006b43;
+  --wf-navy: #073b2e;
+  --wf-muted: #52675b;
+  --wf-line: #dce6e0;
+  --wf-soft: #e8f8f1;
+  --wf-bg: #f7faf8;
+  --rblue: var(--wf-green);
+  --sblue: var(--wf-green);
+  --site-blue: var(--wf-green);
+}
+html { scroll-padding-top: 120px; }
+body { background: var(--wf-bg); -webkit-font-smoothing: antialiased; }
+#root { min-width: 0; }
+::selection { background: #b8e7cf; color: #073b2e; }
+:is(input, select, textarea, button) { accent-color: var(--wf-green); }
+:is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--wf-green);
+  outline-offset: 2px;
+  border-color: var(--wf-green);
+}
+:is(a, button, summary):focus-visible {
+  outline: 2px solid var(--wf-green);
+  outline-offset: 4px;
+}
+:is(main, section, article, form, nav, aside) { min-width: 0; }
+:is(input, select, textarea) { max-width: 100%; }
+button, a { -webkit-tap-highlight-color: #b8e7cf66; }
+button:not(:disabled), summary { cursor: pointer; }
+:where(h1, h2, h3) { text-wrap: balance; }
+:where(p, li, dd) { overflow-wrap: break-word; }
+:where(img, video) { max-width: 100%; }
+
+/* Public components share one readable content width and rhythm. */
+:is(.store-shell, .wp-shell, .sr-shell) { max-width: 1440px; }
+:is(.service-card, .product-card, .wf-service-options > a, .sr-core article) {
+  border-color: var(--wf-line);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px #073b2e05;
+}
+:is(.service-card, .product-card, .wf-service-options > a):hover {
+  border-color: #83d4af;
+  box-shadow: 0 12px 32px #073b2e12;
+}
+:is(.primary, .sr-actions a, .sr-submit, .wp-form-foot button, .wh-button) {
+  min-height: 44px;
+  border-radius: 10px;
+}
+:is(.storefront, .wefyx-public, .rental-site, .info-site, .services-reference) {
+  --blue: var(--wf-green);
+  --site-blue: var(--wf-green);
+  --rblue: var(--wf-green);
+  --sblue: var(--wf-green);
+}
+
+/* Dialog backdrops fill the viewport; only their panels scroll. */
+[role='dialog'] > .relative {
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.overflow-x-auto { max-width: 100%; overscroll-behavior-x: contain; }
+
+@media (max-width: 767px) {
+  :is(input, select, textarea) { font-size: 16px; }
+  :is(.hero-actions, .wp-hero-buttons, .wp-contact-mini) { flex-wrap: wrap; }
+  :is(.wf-auth, .wf-registration-fields) { min-width: 0; }
+  .sr-forms.sr-single-form { width: calc(100% - 28px); }
+  .services-reference .sr-copy { width: 100%; }
+  .services-reference .sr-hero { height: auto; min-height: 0; padding: 36px 0; }
+  .services-reference .sr-copy h1 { font-size: clamp(28px, 7vw, 36px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

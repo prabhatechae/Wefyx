@@ -60,12 +60,12 @@ const initialRequest = {
 };
 
 const statusStyle = {
-  SUBMITTED: "bg-blue-50 text-blue-700 border border-blue-200",
+  SUBMITTED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   ACCEPTED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   UNDER_REVIEW: "bg-amber-50 text-amber-700 border border-amber-200",
   SENT_TO_VENDOR: "bg-purple-50 text-purple-700 border border-purple-200",
-  VENDOR_ACCEPTED: "bg-indigo-50 text-indigo-700 border border-indigo-200",
-  IN_PROGRESS: "bg-cyan-50 text-cyan-700 border border-cyan-200",
+  VENDOR_ACCEPTED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  IN_PROGRESS: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   RESOLVED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   CLOSED: "bg-slate-100 text-slate-600 border border-slate-200",
   DECLINED: "bg-red-50 text-red-700 border border-red-200",
@@ -75,14 +75,14 @@ const statusStyle = {
 const priorityColors = {
   Urgent: "bg-red-50 text-red-700 border border-red-200",
   High: "bg-amber-50 text-amber-700 border border-amber-200",
-  Medium: "bg-blue-50 text-blue-700 border border-blue-200",
+  Medium: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   Low: "bg-slate-100 text-slate-600 border border-slate-200",
 };
 
 const roleStyles = {
   SUPER_ADMIN: "bg-amber-100 text-amber-800 border border-amber-300",
   EMPLOYEE: "bg-emerald-100 text-emerald-800 border border-emerald-300",
-  CUSTOMER: "bg-blue-100 text-blue-800 border border-blue-300",
+  CUSTOMER: "bg-emerald-100 text-emerald-800 border border-emerald-300",
   VENDOR: "bg-purple-100 text-purple-800 border border-purple-300",
 };
 
@@ -200,8 +200,8 @@ export default function CustomerPortal({ user, onLogout }) {
   const pieData = useMemo(() => {
     return [
       { name: "In Progress", value: Math.max(1, stats.inProgress), color: "#00a86b" },
-      { name: "Under Review", value: Math.max(1, stats.underReview), color: "#3b82f6" },
-      { name: "Quotes Ready", value: Math.max(1, stats.quotes), color: "#8b5cf6" },
+      { name: "Under Review", value: Math.max(1, stats.underReview), color: "#008553" },
+      { name: "Quotes Ready", value: Math.max(1, stats.quotes), color: "#66ecb4" },
       { name: "Resolved", value: Math.max(1, stats.resolved), color: "#10b981" },
     ];
   }, [stats]);
@@ -318,7 +318,7 @@ export default function CustomerPortal({ user, onLogout }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
+    <div className="flex min-h-screen bg-[#f8fcfa] text-slate-900 font-sans">
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-xs font-semibold text-white shadow-2xl animate-in fade-in">
           <CheckCircle2 size={16} className="text-[#00a86b]" />
@@ -332,7 +332,7 @@ export default function CustomerPortal({ user, onLogout }) {
       <aside
         className={`${
           sidebarOpen ? "w-[220px]" : "w-0 lg:w-[70px]"
-        } fixed inset-y-0 left-0 z-40 flex flex-col bg-[#071b4a] text-white transition-all duration-300 ease-in-out lg:static shadow-xl`}
+        } fixed inset-y-0 left-0 z-40 flex flex-col bg-[#09482e] text-white transition-all duration-300 ease-in-out lg:static shadow-xl`}
       >
         <div className="flex h-20 min-w-[220px] items-center border-b border-white/10 px-5">
           <div className="leading-tight">
@@ -476,7 +476,7 @@ export default function CustomerPortal({ user, onLogout }) {
             </div>
 
             {/* Org Badge */}
-            <div className="hidden items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-slate-700 lg:flex">
+            <div className="hidden items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-slate-700 lg:flex">
               <Building2 size={15} className="text-[#00a86b]" />
               <span>{user?.organization || "Acme Trading LLC"}</span>
             </div>
@@ -517,7 +517,7 @@ export default function CustomerPortal({ user, onLogout }) {
 
             {/* Profile & Logout */}
             <div className="flex items-center gap-2 border-l border-slate-200 pl-3">
-              <div className="grid h-9 w-9 place-items-center rounded-full bg-blue-100 font-bold text-[#00a86b]">
+              <div className="grid h-9 w-9 place-items-center rounded-full bg-emerald-100 font-bold text-[#00a86b]">
                 {(user?.name || "Customer")[0].toUpperCase()}
               </div>
               <div className="hidden text-left xl:block">
@@ -548,7 +548,7 @@ export default function CustomerPortal({ user, onLogout }) {
               <div className="flex gap-3 overflow-x-auto pb-1">
                 {/* Total Requests */}
                 <div className="flex min-w-[200px] flex-1 items-center gap-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-sm">
-                  <div className="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-blue-600">
+                  <div className="grid h-11 w-11 place-items-center rounded-xl bg-emerald-50 text-emerald-600">
                     <ClipboardList size={21} />
                   </div>
                   <div>
@@ -590,7 +590,7 @@ export default function CustomerPortal({ user, onLogout }) {
 
                 {/* In Progress */}
                 <div className="flex min-w-[200px] flex-1 items-center gap-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-sm">
-                  <div className="grid h-11 w-11 place-items-center rounded-xl bg-cyan-50 text-cyan-600">
+                  <div className="grid h-11 w-11 place-items-center rounded-xl bg-emerald-50 text-emerald-600">
                     <Headphones size={21} />
                   </div>
                   <div>
@@ -632,16 +632,16 @@ export default function CustomerPortal({ user, onLogout }) {
                   <div className="h-52">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={chartData}>
-                        <CartesianGrid stroke="#edf2f7" vertical={false} />
+                        <CartesianGrid stroke="#edf7f3" vertical={false} />
                         <XAxis dataKey="m" tick={{ fontSize: 10 }} />
                         <YAxis tick={{ fontSize: 10 }} />
                         <Tooltip />
                         <Line
                           type="monotone"
                           dataKey="v"
-                          stroke="#1767df"
+                          stroke="#008553"
                           strokeWidth={3}
-                          dot={{ fill: "white", stroke: "#1767df", strokeWidth: 2 }}
+                          dot={{ fill: "white", stroke: "#008553", strokeWidth: 2 }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -774,13 +774,13 @@ export default function CustomerPortal({ user, onLogout }) {
                         >
                           <td className="px-4 py-3.5">
                             <div className="flex items-center gap-3">
-                              <div className="grid h-8 w-8 place-items-center rounded-lg bg-blue-50 text-[#00a86b] font-bold shrink-0">
+                              <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-50 text-[#00a86b] font-bold shrink-0">
                                 <ClipboardList size={16} />
                               </div>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2">
                                   <b className="truncate font-semibold text-slate-900">{item.title}</b>
-                                  <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold text-blue-700">
+                                  <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
                                     {item.reference}
                                   </span>
                                 </div>
@@ -843,7 +843,7 @@ export default function CustomerPortal({ user, onLogout }) {
                               <button
                                 onClick={() => view(item)}
                                 title="Messages"
-                                className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-blue-600 hover:border-blue-300"
+                                className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-emerald-600 hover:border-emerald-300"
                               >
                                 <MessageCircle size={14} />
                               </button>
@@ -932,13 +932,13 @@ export default function CustomerPortal({ user, onLogout }) {
                     className="flex cursor-pointer items-center justify-between gap-4 p-4 transition hover:bg-slate-50/80 rounded-xl"
                   >
                     <div className="flex items-center gap-4 min-w-0 flex-1">
-                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-[#00a86b]">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-[#00a86b]">
                         <ClipboardList size={20} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <b className="truncate text-sm font-bold text-slate-900">{item.title}</b>
-                          <span className="rounded bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700">
+                          <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
                             {item.reference}
                           </span>
                         </div>
@@ -1007,7 +1007,7 @@ export default function CustomerPortal({ user, onLogout }) {
                   <div
                     key={i}
                     className={`flex items-center justify-between p-3.5 rounded-xl border ${
-                      n.unread ? "bg-blue-50/50 border-blue-100" : "bg-white border-slate-100"
+                      n.unread ? "bg-emerald-50/50 border-emerald-100" : "bg-white border-slate-100"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -1175,7 +1175,7 @@ export default function CustomerPortal({ user, onLogout }) {
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-2xl animate-in fade-in space-y-5">
             <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
               <div>
-                <span className="rounded bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700">
+                <span className="rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
                   {selected.reference}
                 </span>
                 <h2 className="mt-1.5 text-lg font-bold text-slate-900">{selected.title}</h2>
@@ -1239,8 +1239,8 @@ export default function CustomerPortal({ user, onLogout }) {
             {/* ======================================================== */}
             {/* LIVE CONVERSATION (Admin + Employee + Vendor + Customer) */}
             {/* ======================================================== */}
-            <section className="rounded-xl border border-blue-100 bg-blue-50/30 p-4">
-              <div className="flex items-center justify-between border-b border-blue-100 pb-2.5">
+            <section className="rounded-xl border border-emerald-100 bg-emerald-50/30 p-4">
+              <div className="flex items-center justify-between border-b border-emerald-100 pb-2.5">
                 <h3 className="flex items-center gap-2 text-xs font-bold text-slate-900">
                   <MessageCircle size={16} className="text-[#00a86b]" />
                   <span>Live Multi-Party Conversation</span>

@@ -42,9 +42,9 @@ export default function IndustriesPage() {
       <UnifiedHeader onOpenQuote={() => setShowQuoteModal(true)} />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-[#071b4a] via-[#0b245e] to-[#071b4a] py-16 text-white lg:py-24">
+      <section className="bg-gradient-to-b from-[#09482e] via-[#0c5d3b] to-[#09482e] py-16 text-white lg:py-24">
         <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-blue-300">
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300">
             <Sparkles size={13} /> UAE REGULATORY &amp; OPERATIONAL EXPERTISE
           </span>
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
@@ -75,12 +75,12 @@ export default function IndustriesPage() {
               return (
                 <div
                   key={ind.title}
-                  className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-blue-400 hover:shadow-xl"
+                  className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-emerald-400 hover:shadow-xl"
                 >
-                  <div className="grid h-12 w-12 place-items-center rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
+                  <div className="grid h-12 w-12 place-items-center rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition">
                     <Icon size={22} />
                   </div>
-                  <h3 className="mt-4 text-base font-extrabold text-slate-900 group-hover:text-blue-600 transition">
+                  <h3 className="mt-4 text-base font-extrabold text-slate-900 group-hover:text-emerald-600 transition">
                     {ind.title}
                   </h3>
                   <p className="mt-2 text-xs leading-relaxed text-slate-600">
@@ -89,7 +89,7 @@ export default function IndustriesPage() {
                   <div className="mt-4 border-t border-slate-100 pt-3">
                     <a
                       href="/services#requirement"
-                      className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 hover:text-emerald-700"
                     >
                       <span>Explore Stack</span>
                       <ArrowRight size={13} />

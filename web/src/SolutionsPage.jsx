@@ -99,9 +99,9 @@ export default function SolutionsPage() {
       />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-[#071b4a] via-[#0b245e] to-[#071b4a] py-16 text-white lg:py-24">
+      <section className="bg-gradient-to-b from-[#09482e] via-[#0c5d3b] to-[#09482e] py-16 text-white lg:py-24">
         <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-blue-300">
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300">
             <Sparkles size={13} /> TURNKEY ENTERPRISE BLUEPRINTS
           </span>
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
@@ -139,15 +139,15 @@ export default function SolutionsPage() {
               <div
                 key={sol.id}
                 id={sol.id}
-                className="grid grid-cols-1 items-center gap-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:border-blue-300 hover:shadow-xl lg:grid-cols-12 lg:gap-12"
+                className="grid grid-cols-1 items-center gap-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:border-emerald-300 hover:shadow-xl lg:grid-cols-12 lg:gap-12"
               >
                 <div className={`lg:col-span-7 ${isEven ? "lg:order-2" : ""}`}>
                   <div className="flex items-center gap-3">
-                    <div className="grid h-12 w-12 place-items-center rounded-xl bg-blue-50 text-blue-600">
+                    <div className="grid h-12 w-12 place-items-center rounded-xl bg-emerald-50 text-emerald-600">
                       <Icon size={24} />
                     </div>
                     <div>
-                      <h2 className="text-xl font-extrabold text-[#071b4a] sm:text-2xl">{sol.title}</h2>
+                      <h2 className="text-xl font-extrabold text-[#09482e] sm:text-2xl">{sol.title}</h2>
                       <p className="text-xs font-semibold text-emerald-600">{sol.subtitle}</p>
                     </div>
                   </div>
@@ -169,14 +169,14 @@ export default function SolutionsPage() {
                     <button
                       type="button"
                       onClick={() => setShowQuoteModal(true)}
-                      className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-blue-700"
+                      className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow hover:bg-emerald-700"
                     >
                       <span>Request Proposal</span>
                       <ArrowRight size={14} />
                     </button>
                     <a
                       href="/services#requirement"
-                      className="text-xs font-bold text-slate-700 hover:text-blue-600"
+                      className="text-xs font-bold text-slate-700 hover:text-emerald-600"
                     >
                       Custom Specs &rarr;
                     </a>

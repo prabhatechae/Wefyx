@@ -196,7 +196,7 @@ export default function HeroSlider({ onOpenQuote, onOpenVisit }) {
 
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-b from-[#f0f7ff] via-[#f8fbfe] to-white"
+      className="relative overflow-hidden bg-gradient-to-b from-[#f2fdf8] via-[#f8fefc] to-white"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -208,15 +208,15 @@ export default function HeroSlider({ onOpenQuote, onOpenVisit }) {
           {/* Left Hero Content (7 Cols) */}
           <div className="lg:col-span-7 xl:col-span-7">
             {/* Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-200/80 bg-blue-100/60 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-[#0066ff]">
-              <Sparkles size={12} className="text-[#0066ff]" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200/80 bg-emerald-100/60 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-[#008553]">
+              <Sparkles size={12} className="text-[#008553]" />
               <span>{current.badge}</span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="mt-4 text-3xl font-extrabold leading-[1.15] tracking-tight text-[#071b4a] sm:text-4xl lg:text-5xl">
+            <h1 className="mt-4 text-3xl font-extrabold leading-[1.15] tracking-tight text-[#09482e] sm:text-4xl lg:text-5xl">
               {current.headlinePrefix}{" "}
-              <span className="bg-gradient-to-r from-[#0066ff] to-[#0284c7] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#008553] to-[#008553] bg-clip-text text-transparent">
                 {current.headlineHighlight}
               </span>
             </h1>
@@ -233,10 +233,10 @@ export default function HeroSlider({ onOpenQuote, onOpenVisit }) {
                 return (
                   <div
                     key={b.label}
-                    className="flex flex-col rounded-xl border border-slate-200/80 bg-white/90 p-3 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+                    className="flex flex-col rounded-xl border border-slate-200/80 bg-white/90 p-3 shadow-sm transition hover:border-emerald-300 hover:shadow-md"
                   >
                     <div className="flex items-center gap-2">
-                      <div className="grid h-7 w-7 place-items-center rounded-lg bg-blue-50 text-[#0066ff]">
+                      <div className="grid h-7 w-7 place-items-center rounded-lg bg-emerald-50 text-[#008553]">
                         <IconComponent size={15} />
                       </div>
                       <span className="text-xs font-bold text-slate-800">{b.label}</span>
@@ -253,7 +253,7 @@ export default function HeroSlider({ onOpenQuote, onOpenVisit }) {
                 <button
                   type="button"
                   onClick={onOpenQuote}
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#0066ff] px-6 py-3.5 text-xs font-bold text-white shadow-lg shadow-blue-500/25 transition hover:bg-blue-700 hover:shadow-xl"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#008553] px-6 py-3.5 text-xs font-bold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-700 hover:shadow-xl"
                 >
                   <span>{current.primaryBtn.text}</span>
                   <ArrowRight size={15} />
@@ -270,7 +270,7 @@ export default function HeroSlider({ onOpenQuote, onOpenVisit }) {
               ) : (
                 <a
                   href={current.primaryBtn.href}
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#0066ff] px-6 py-3.5 text-xs font-bold text-white shadow-lg shadow-blue-500/25 transition hover:bg-blue-700 hover:shadow-xl"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#008553] px-6 py-3.5 text-xs font-bold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-700 hover:shadow-xl"
                 >
                   <span>{current.primaryBtn.text}</span>
                   <ArrowRight size={15} />
@@ -312,7 +312,7 @@ export default function HeroSlider({ onOpenQuote, onOpenVisit }) {
               {/* Right Side Glass Panel Overlay (Matches Reference Design) */}
               <div className="relative z-10 flex w-full flex-col justify-between p-6 text-white sm:p-7">
                 <div>
-                  <div className="inline-block rounded-md bg-blue-600/90 px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white shadow">
+                  <div className="inline-block rounded-md bg-emerald-600/90 px-2.5 py-1 font-mono text-[10px] font-bold tracking-widest text-white shadow">
                     WEFYX ENTERPRISE
                   </div>
                   <h3 className="mt-3 text-lg font-black tracking-tight text-white sm:text-xl">
@@ -328,7 +328,7 @@ export default function HeroSlider({ onOpenQuote, onOpenVisit }) {
                   </div>
                 </div>
 
-                <div className="mt-6 border-t border-white/10 pt-3 text-[10px] font-bold tracking-wider text-blue-300">
+                <div className="mt-6 border-t border-white/10 pt-3 text-[10px] font-bold tracking-wider text-emerald-300">
                   {current.footerText}
                 </div>
               </div>
@@ -349,7 +349,7 @@ export default function HeroSlider({ onOpenQuote, onOpenVisit }) {
                 aria-label={`Go to slide ${idx + 1}`}
                 className={`h-2.5 rounded-full transition-all ${
                   currentSlide === idx
-                    ? "w-8 bg-[#0066ff]"
+                    ? "w-8 bg-[#008553]"
                     : "w-2.5 bg-slate-300 hover:bg-slate-400"
                 }`}
               />

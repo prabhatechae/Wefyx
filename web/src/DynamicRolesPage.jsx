@@ -216,7 +216,7 @@ export default function DynamicRolesPage() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         {cards.map(([label, value, Icon]) => (
           <div className="card flex items-center gap-3 p-4" key={label}>
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-brand">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-brand">
               <Icon size={19} />
             </div>
             <div>
@@ -274,7 +274,7 @@ export default function DynamicRolesPage() {
                 <tr key={role.id} className="border-t hover:bg-slate-50">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="grid h-9 w-9 place-items-center rounded-lg bg-violet-50 text-violet-600">
+                      <div className="grid h-9 w-9 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
                         <ShieldCheck size={17} />
                       </div>
                       <div>
@@ -287,7 +287,7 @@ export default function DynamicRolesPage() {
                   </td>
                   <td>
                     <span
-                      className={`pill ${role.type === "System" ? "bg-blue-50 text-brand" : "bg-violet-50 text-violet-600"}`}
+                      className={`pill ${role.type === "System" ? "bg-emerald-50 text-brand" : "bg-emerald-50 text-emerald-600"}`}
                     >
                       {role.type}
                     </span>

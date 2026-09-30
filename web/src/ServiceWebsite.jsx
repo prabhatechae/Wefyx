@@ -102,16 +102,16 @@ export default function ServiceWebsite() {
 
   // 10 Horizontal Service Icons
   const serviceStripItems = [
-    { title: "Managed IT Services", href: "/services", icon: Building2, color: "text-blue-600 bg-blue-50" },
-    { title: "Data Center Construction", href: "/data-center", icon: Server, color: "text-indigo-600 bg-indigo-50" },
+    { title: "Managed IT Services", href: "/services", icon: Building2, color: "text-emerald-600 bg-emerald-50" },
+    { title: "Data Center Construction", href: "/data-center", icon: Server, color: "text-emerald-600 bg-emerald-50" },
     { title: "IT Support & Helpdesk", href: "/services#helpdesk", icon: Headphones, color: "text-emerald-600 bg-emerald-50" },
-    { title: "Cloud & Infrastructure", href: "/services#cloud", icon: Zap, color: "text-sky-600 bg-sky-50" },
+    { title: "Cloud & Infrastructure", href: "/services#cloud", icon: Zap, color: "text-emerald-600 bg-emerald-50" },
     { title: "Cybersecurity", href: "/services#cybersecurity", icon: ShieldCheck, color: "text-rose-600 bg-rose-50" },
-    { title: "Network & Wi-Fi", href: "/services#network", icon: Network, color: "text-cyan-600 bg-cyan-50" },
+    { title: "Network & Wi-Fi", href: "/services#network", icon: Network, color: "text-emerald-600 bg-emerald-50" },
     { title: "CCTV & Security", href: "/services#cctv", icon: Lock, color: "text-amber-600 bg-amber-50" },
-    { title: "Biometric & Access", href: "/services#biometric", icon: UserCheck, color: "text-violet-600 bg-violet-50" },
+    { title: "Biometric & Access", href: "/services#biometric", icon: UserCheck, color: "text-emerald-600 bg-emerald-50" },
     { title: "Rent IT Equipment", href: "/rent", icon: Laptop, color: "text-teal-600 bg-teal-50" },
-    { title: "Shop Electronics", href: "/shop", icon: ShoppingCart, color: "text-blue-600 bg-blue-50" }
+    { title: "Shop Electronics", href: "/shop", icon: ShoppingCart, color: "text-emerald-600 bg-emerald-50" }
   ];
 
   // Core Managed Services (6 Cards)
@@ -120,7 +120,7 @@ export default function ServiceWebsite() {
       title: "IT Support & Helpdesk",
       desc: "Comprehensive remote and on-site user support with strict SLA commitments.",
       icon: Headphones,
-      color: "from-blue-600 to-indigo-700",
+      color: "from-emerald-600 to-emerald-700",
       items: [
         "Remote & On-Site Certified Engineers",
         "24/7/365 Multi-Tier IT Helpdesk",
@@ -133,7 +133,7 @@ export default function ServiceWebsite() {
       title: "Network & Infrastructure",
       desc: "Robust high-performance connectivity engineered for zero downtime.",
       icon: Network,
-      color: "from-cyan-600 to-blue-700",
+      color: "from-emerald-600 to-emerald-700",
       items: [
         "Enterprise SD-WAN & Multi-WAN Failover",
         "Cisco, Aruba & Fortinet Switch Stacking",
@@ -146,7 +146,7 @@ export default function ServiceWebsite() {
       title: "Cloud & Microsoft 365",
       desc: "Modern cloud environments providing scalability and secure remote collaboration.",
       icon: Zap,
-      color: "from-sky-600 to-blue-600",
+      color: "from-emerald-600 to-emerald-600",
       items: [
         "Microsoft 365 & Exchange Online Migration",
         "Azure & AWS Cloud Infrastructure Setup",
@@ -159,7 +159,7 @@ export default function ServiceWebsite() {
       title: "Cybersecurity & EDR",
       desc: "Multi-layered defense protecting endpoints, networks, and confidential data.",
       icon: ShieldCheck,
-      color: "from-rose-600 to-indigo-800",
+      color: "from-rose-600 to-emerald-800",
       items: [
         "Next-Generation Firewalls (Fortinet / Sophos)",
         "Endpoint Detection & Response (EDR / XDR)",
@@ -172,7 +172,7 @@ export default function ServiceWebsite() {
       title: "Data Center Services",
       desc: "Turnkey design, civil execution, cooling, and 24/7 mission-critical operations.",
       icon: Server,
-      color: "from-indigo-600 to-slate-900",
+      color: "from-emerald-600 to-slate-900",
       items: [
         "Tier III/IV Server Room Civil Architecture",
         "In-Row Precision Cooling & Hot/Cold Aisles",
@@ -324,14 +324,14 @@ export default function ServiceWebsite() {
         </section>
 
         {/* 4. Data Center Hero Section (Visually Powerful) */}
-        <section className="relative overflow-hidden bg-gradient-to-r from-[#061a35] via-[#071e3d] to-[#061a35] py-16 text-white lg:py-20">
-          <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px]" />
+        <section className="relative overflow-hidden bg-gradient-to-r from-[#063521] via-[#073d26] to-[#063521] py-16 text-white lg:py-20">
+          <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#008553_1px,transparent_1px)] [background-size:24px_24px]" />
           
           <div className="relative mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
               {/* Left Copy */}
               <div className="lg:col-span-7">
-                <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-sky-300">
+                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-emerald-300">
                   <Server size={14} /> DATA CENTER SOLUTIONS · DESIGN. BUILD. OPERATE.
                 </div>
                 <h2 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -344,7 +344,7 @@ export default function ServiceWebsite() {
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                   <a
                     href="/data-center"
-                    className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-xs font-bold text-[#071b4a] shadow-lg transition hover:bg-slate-100 hover:shadow-xl"
+                    className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-xs font-bold text-[#09482e] shadow-lg transition hover:bg-slate-100 hover:shadow-xl"
                   >
                     <span>Explore Data Center Solutions</span>
                     <ArrowRight size={15} />
@@ -362,7 +362,7 @@ export default function ServiceWebsite() {
               {/* Right Feature Panel */}
               <div className="lg:col-span-5">
                 <div className="rounded-2xl border border-white/15 bg-slate-900/90 p-6 backdrop-blur-md shadow-2xl">
-                  <div className="text-xs font-bold uppercase tracking-widest text-sky-400">
+                  <div className="text-xs font-bold uppercase tracking-widest text-emerald-400">
                     MISSION-CRITICAL CAPABILITIES
                   </div>
                   <div className="mt-4 space-y-3">
@@ -380,7 +380,7 @@ export default function ServiceWebsite() {
                     ))}
                   </div>
 
-                  <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4 text-[11px] font-extrabold tracking-wider text-sky-300">
+                  <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4 text-[11px] font-extrabold tracking-wider text-emerald-300">
                     <span>Scalable.</span>
                     <span>Secure.</span>
                     <span>Always On.</span>
@@ -396,13 +396,13 @@ export default function ServiceWebsite() {
           <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {/* Card 1: Buy Electronics */}
-              <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-blue-50/50 via-white to-slate-50 p-7 shadow-sm transition hover:border-blue-300 hover:shadow-xl">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-emerald-50/50 via-white to-slate-50 p-7 shadow-sm transition hover:border-emerald-300 hover:shadow-xl">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-blue-600">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600">
                     CARD 1 · SALES
                   </span>
                   <h3 className="mt-1 text-2xl font-black text-slate-900">BUY ELECTRONICS</h3>
-                  <p className="mt-1 text-xs font-bold text-blue-700">Latest Technology for Your Business</p>
+                  <p className="mt-1 text-xs font-bold text-emerald-700">Latest Technology for Your Business</p>
                   <p className="mt-3 text-xs leading-relaxed text-slate-600">
                     Laptops, desktops, servers, networking switches, firewalls, CCTV cameras, accessories, and enterprise technology.
                   </p>
@@ -418,7 +418,7 @@ export default function ServiceWebsite() {
                 <div className="mt-8 pt-4">
                   <a
                     href="/shop"
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700"
+                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-500/20 hover:bg-emerald-700"
                   >
                     <span>Shop Now</span>
                     <ArrowRight size={14} />
@@ -458,17 +458,17 @@ export default function ServiceWebsite() {
               </div>
 
               {/* Card 3: Managed IT Services (Visually Dominant!) */}
-              <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border-2 border-[#0066ff] bg-gradient-to-br from-[#071b4a] to-[#0b2b7a] p-7 text-white shadow-xl transition hover:shadow-2xl">
+              <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-emerald-700 bg-gradient-to-br from-emerald-950 to-emerald-900 p-7 pt-14 text-white shadow-xl transition hover:shadow-2xl">
                 <div className="absolute right-4 top-4 rounded-full bg-[#00a86b] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-white shadow">
                   PRIMARY IDENTITY
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-cyan-300">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-300">
                     CARD 3 · CORE CAPABILITY
                   </span>
                   <h3 className="mt-1 text-2xl font-black text-white">MANAGED IT SERVICES</h3>
-                  <p className="mt-1 text-xs font-bold text-cyan-300">Your Complete IT Department</p>
+                  <p className="mt-1 text-xs font-bold text-emerald-300">Your Complete IT Department</p>
                   <p className="mt-3 text-xs leading-relaxed text-slate-200">
                     Proactive, secure, and reliable IT infrastructure management at a predictable flat-rate monthly cost. Full 24/7 SLA backing.
                   </p>
@@ -505,7 +505,7 @@ export default function ServiceWebsite() {
           <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 gap-6 text-center sm:grid-cols-3 lg:grid-cols-5">
               <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-200/80">
-                <div className="text-3xl font-black text-[#071b4a] sm:text-4xl">
+                <div className="text-3xl font-black text-[#09482e] sm:text-4xl">
                   <CounterNumber target={250} suffix="+" />
                 </div>
                 <div className="mt-1 text-xs font-bold text-slate-600">Business Clients</div>
@@ -513,7 +513,7 @@ export default function ServiceWebsite() {
               </div>
 
               <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-200/80">
-                <div className="text-3xl font-black text-[#071b4a] sm:text-4xl">
+                <div className="text-3xl font-black text-[#09482e] sm:text-4xl">
                   <CounterNumber target={150} suffix="+" />
                 </div>
                 <div className="mt-1 text-xs font-bold text-slate-600">IT Projects Delivered</div>
@@ -521,7 +521,7 @@ export default function ServiceWebsite() {
               </div>
 
               <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-200/80">
-                <div className="text-3xl font-black text-[#0066ff] sm:text-4xl">
+                <div className="text-3xl font-black text-[#008553] sm:text-4xl">
                   <span>99.9%</span>
                 </div>
                 <div className="mt-1 text-xs font-bold text-slate-600">Uptime Commitment</div>
@@ -537,7 +537,7 @@ export default function ServiceWebsite() {
               </div>
 
               <div className="col-span-2 sm:col-span-1 rounded-xl bg-white p-5 shadow-sm border border-slate-200/80">
-                <div className="text-3xl font-black text-[#071b4a] sm:text-4xl">
+                <div className="text-3xl font-black text-[#09482e] sm:text-4xl">
                   <span>UAE</span>
                 </div>
                 <div className="mt-1 text-xs font-bold text-slate-600">Nationwide Coverage</div>
@@ -565,10 +565,10 @@ export default function ServiceWebsite() {
         <section className="py-16 lg:py-24">
           <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
                 END-TO-END CAPABILITIES
               </span>
-              <h2 className="mt-2 text-3xl font-extrabold text-[#071b4a] sm:text-4xl">
+              <h2 className="mt-2 text-3xl font-extrabold text-[#09482e] sm:text-4xl">
                 Our Core Managed IT Services
               </h2>
               <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
@@ -582,13 +582,13 @@ export default function ServiceWebsite() {
                 return (
                   <div
                     key={srv.title}
-                    className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-blue-400 hover:shadow-xl"
+                    className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition hover:border-emerald-400 hover:shadow-xl"
                   >
                     <div>
                       <div className={`grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br ${srv.color} text-white shadow-md`}>
                         <IconComponent size={22} />
                       </div>
-                      <h3 className="mt-5 text-lg font-extrabold text-slate-900 group-hover:text-blue-600 transition">
+                      <h3 className="mt-5 text-lg font-extrabold text-slate-900 group-hover:text-emerald-600 transition">
                         {srv.title}
                       </h3>
                       <p className="mt-2 text-xs text-slate-500 leading-relaxed">
@@ -608,7 +608,7 @@ export default function ServiceWebsite() {
                     <div className="mt-8 border-t border-slate-100 pt-4">
                       <a
                         href="/services#requirement"
-                        className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 hover:text-emerald-700"
                       >
                         <span>Request Service Details</span>
                         <ArrowRight size={13} />
@@ -628,7 +628,7 @@ export default function ServiceWebsite() {
               <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
                 FULL-SPECTRUM COVERAGE
               </span>
-              <h2 className="mt-2 text-3xl font-extrabold text-[#071b4a] sm:text-4xl">
+              <h2 className="mt-2 text-3xl font-extrabold text-[#09482e] sm:text-4xl">
                 One Technology Partner. Every IT Requirement.
               </h2>
               <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
@@ -670,10 +670,10 @@ export default function ServiceWebsite() {
         <section className="py-16 lg:py-24">
           <div className="mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
                 SECTOR SPECIFIC ARCHITECTURE
               </span>
-              <h2 className="mt-2 text-3xl font-extrabold text-[#071b4a] sm:text-4xl">
+              <h2 className="mt-2 text-3xl font-extrabold text-[#09482e] sm:text-4xl">
                 Industries We Support Across the UAE
               </h2>
               <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
@@ -688,13 +688,13 @@ export default function ServiceWebsite() {
                   <a
                     key={ind.title}
                     href="/industries"
-                    className="group flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-400 hover:shadow-md"
+                    className="group flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-emerald-400 hover:shadow-md"
                   >
                     <div>
-                      <div className="grid h-9 w-9 place-items-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
+                      <div className="grid h-9 w-9 place-items-center rounded-lg bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition">
                         <IconComponent size={18} />
                       </div>
-                      <h3 className="mt-3 text-xs font-bold text-slate-900 group-hover:text-blue-600 transition">
+                      <h3 className="mt-3 text-xs font-bold text-slate-900 group-hover:text-emerald-600 transition">
                         {ind.title}
                       </h3>
                       <p className="mt-1 text-[11px] text-slate-500 line-clamp-2">
@@ -741,8 +741,8 @@ export default function ServiceWebsite() {
               </div>
 
               {/* AI Quotation Banner */}
-              <div className="relative overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-white to-blue-50/50 p-8 shadow-sm">
-                <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-blue-800">
+              <div className="relative overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/50 p-8 shadow-sm">
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-emerald-800">
                   <Sparkles size={12} /> INSTANT AI ESTIMATOR
                 </div>
                 <h3 className="mt-3 text-2xl font-black text-slate-900">
@@ -753,17 +753,17 @@ export default function ServiceWebsite() {
                 </p>
 
                 <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] font-semibold text-slate-700">
-                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-blue-600" /> Smart Recommendations</div>
-                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-blue-600" /> Instant Estimates</div>
-                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-blue-600" /> Tailored Solutions</div>
-                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-blue-600" /> Save Time &amp; Cost</div>
+                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-emerald-600" /> Smart Recommendations</div>
+                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-emerald-600" /> Instant Estimates</div>
+                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-emerald-600" /> Tailored Solutions</div>
+                  <div className="flex items-center gap-1.5"><CheckCircle2 size={13} className="text-emerald-600" /> Save Time &amp; Cost</div>
                 </div>
 
-                <div className="mt-6 border-t border-blue-200/60 pt-4 text-right">
+                <div className="mt-6 border-t border-emerald-200/60 pt-4 text-right">
                   <button
                     type="button"
                     onClick={() => setShowAiModal(true)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-xs font-bold text-white shadow-lg shadow-blue-500/25 transition hover:bg-blue-700"
+                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-xs font-bold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-700"
                   >
                     <span>Try AI Quotation</span>
                     <Sparkles size={14} />

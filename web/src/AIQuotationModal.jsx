@@ -72,10 +72,10 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
       <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 px-6 py-4 text-white">
+        <div className="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 px-6 py-4 text-white">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-500/20 text-blue-400 ring-1 ring-blue-400/30">
-              <Sparkles size={20} className="animate-pulse text-cyan-300" />
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-400/30">
+              <Sparkles size={20} className="animate-pulse text-emerald-300" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -101,11 +101,11 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
         <div className="max-h-[calc(85vh-120px)] overflow-y-auto p-6">
           {step === 1 && (
             <div className="space-y-5">
-              <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4">
-                <div className="flex items-center gap-2 text-xs font-semibold text-blue-900">
-                  <Bot size={16} className="text-blue-600" /> Step 1: Tell us about your organization
+              <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-emerald-900">
+                  <Bot size={16} className="text-emerald-600" /> Step 1: Tell us about your organization
                 </div>
-                <p className="mt-1 text-xs text-blue-700/80">
+                <p className="mt-1 text-xs text-emerald-700/80">
                   Our AI engine uses UAE industry standards to optimize coverage and cost.
                 </p>
               </div>
@@ -130,7 +130,7 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
                       onClick={() => setBusinessType(t)}
                       className={`rounded-xl border p-2.5 text-left text-xs font-medium transition ${
                         businessType === t
-                          ? "border-blue-600 bg-blue-50/80 font-bold text-blue-900 ring-1 ring-blue-500"
+                          ? "border-emerald-600 bg-emerald-50/80 font-bold text-emerald-900 ring-1 ring-emerald-500"
                           : "border-slate-200 text-slate-600 hover:bg-slate-50"
                       }`}
                     >
@@ -143,7 +143,7 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
               <div>
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold text-slate-700">Number of Users / Laptops / Workstations</label>
-                  <span className="rounded-lg bg-blue-100 px-2.5 py-1 text-xs font-bold text-blue-700">
+                  <span className="rounded-lg bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">
                     {usersCount} Users
                   </span>
                 </div>
@@ -154,7 +154,7 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
                   step="5"
                   value={usersCount}
                   onChange={(e) => setUsersCount(Number(e.target.value))}
-                  className="mt-3 w-full accent-blue-600"
+                  className="mt-3 w-full accent-emerald-600"
                 />
                 <div className="flex justify-between text-[11px] text-slate-400">
                   <span>5 Users (Startup)</span>
@@ -177,7 +177,7 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
                       onClick={() => setHasServer(val)}
                       className={`rounded-xl border p-2.5 text-center text-xs transition ${
                         hasServer === val
-                          ? "border-blue-600 bg-blue-50 font-bold text-blue-900 ring-1 ring-blue-500"
+                          ? "border-emerald-600 bg-emerald-50 font-bold text-emerald-900 ring-1 ring-emerald-500"
                           : "border-slate-200 text-slate-600 hover:bg-slate-50"
                       }`}
                     >
@@ -191,7 +191,7 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-700"
                 >
                   Next: Select Services <ArrowRight size={15} />
                 </button>
@@ -201,11 +201,11 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
 
           {step === 2 && (
             <div className="space-y-5">
-              <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4">
-                <div className="flex items-center gap-2 text-xs font-semibold text-blue-900">
-                  <Layers size={16} className="text-blue-600" /> Step 2: Select required IT modules & SLA
+              <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold text-emerald-900">
+                  <Layers size={16} className="text-emerald-600" /> Step 2: Select required IT modules & SLA
                 </div>
-                <p className="mt-1 text-xs text-blue-700/80">
+                <p className="mt-1 text-xs text-emerald-700/80">
                   Select the services you require. You can adjust these anytime.
                 </p>
               </div>
@@ -231,13 +231,13 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
                         onClick={() => toggleService(srv)}
                         className={`flex items-center justify-between rounded-xl border p-3 text-left text-xs transition ${
                           active
-                            ? "border-blue-600 bg-blue-50/70 font-semibold text-blue-900 ring-1 ring-blue-500"
+                            ? "border-emerald-600 bg-emerald-50/70 font-semibold text-emerald-900 ring-1 ring-emerald-500"
                             : "border-slate-200 text-slate-600 hover:bg-slate-50"
                         }`}
                       >
                         <span>{srv}</span>
                         <div className={`grid h-5 w-5 place-items-center rounded-md border ${
-                          active ? "border-blue-600 bg-blue-600 text-white" : "border-slate-300 bg-white"
+                          active ? "border-emerald-600 bg-emerald-600 text-white" : "border-slate-300 bg-white"
                         }`}>
                           {active && <Check size={13} strokeWidth={3} />}
                         </div>
@@ -261,7 +261,7 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
                       onClick={() => setSlaSpeed(val)}
                       className={`rounded-xl border p-2.5 text-left text-xs transition ${
                         slaSpeed === val
-                          ? "border-blue-600 bg-blue-50 font-bold text-blue-900 ring-1 ring-blue-500"
+                          ? "border-emerald-600 bg-emerald-50 font-bold text-emerald-900 ring-1 ring-emerald-500"
                           : "border-slate-200 text-slate-600 hover:bg-slate-50"
                       }`}
                     >
@@ -284,7 +284,7 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
                   type="button"
                   disabled={generating || selectedServices.length === 0}
                   onClick={handleGenerate}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-500/20 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-500/20 hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50"
                 >
                   {generating ? (
                     <>
@@ -302,7 +302,7 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
 
           {step === 3 && estimatedQuote && (
             <div className="space-y-5">
-              <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/70 via-white to-blue-50/50 p-5">
+              <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/50 p-5">
                 <div className="flex items-start justify-between">
                   <div>
                     <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
@@ -317,7 +317,7 @@ export default function AIQuotationModal({ isOpen, onClose, onOpenRequirement })
                   </div>
                   <div className="text-right">
                     <div className="text-[11px] font-medium text-slate-500">Estimated Monthly</div>
-                    <div className="text-2xl font-black text-blue-700">
+                    <div className="text-2xl font-black text-emerald-700">
                       AED {estimatedQuote.total.toLocaleString()}
                     </div>
                     <div className="text-[10px] text-slate-400">

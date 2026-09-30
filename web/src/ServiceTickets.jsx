@@ -130,7 +130,7 @@ export default function ServiceTickets({ employee = false, notification = false 
                   onClick={() => setShowNotificationModal(true)}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                 >
-                  <Smartphone size={14} className="text-blue-600" />
+                  <Smartphone size={14} className="text-emerald-600" />
                   <span>Preview Notification</span>
                 </button>
                 <button
@@ -187,7 +187,7 @@ export default function ServiceTickets({ employee = false, notification = false 
                           <span className="font-mono text-sm font-bold text-slate-900">
                             {t.reference}
                           </span>
-                          <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700">
+                          <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
                             {supportNames[t.supportType] || "Site Visit"}
                           </span>
                         </div>
@@ -306,7 +306,7 @@ export default function ServiceTickets({ employee = false, notification = false 
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-800">
+                  <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
                     Site Visit
                   </span>
                   <h3 className="mt-2 text-lg font-black text-slate-900">

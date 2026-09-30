@@ -3,12 +3,12 @@ import { CheckCircle2, Download, MessageCircle, Paperclip, RefreshCw, Search, Se
 import { downloadFile, get, send } from "./api";
 
 const badge = {
-  SUBMITTED: "bg-blue-50 text-blue-700 border border-blue-200",
+  SUBMITTED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   ACCEPTED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   UNDER_REVIEW: "bg-amber-50 text-amber-700 border border-amber-200",
-  SENT_TO_VENDOR: "bg-violet-50 text-violet-700 border border-violet-200",
-  VENDOR_ACCEPTED: "bg-indigo-50 text-indigo-700 border border-indigo-200",
-  IN_PROGRESS: "bg-cyan-50 text-cyan-700 border border-cyan-200",
+  SENT_TO_VENDOR: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  VENDOR_ACCEPTED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  IN_PROGRESS: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   RESOLVED: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   CLOSED: "bg-slate-100 text-slate-600 border border-slate-200",
   DECLINED: "bg-red-50 text-red-700 border border-red-200",
@@ -18,7 +18,7 @@ const badge = {
 const roleStyles = {
   SUPER_ADMIN: "bg-amber-100 text-amber-800 border border-amber-300",
   EMPLOYEE: "bg-emerald-100 text-emerald-800 border border-emerald-300",
-  CUSTOMER: "bg-blue-100 text-blue-800 border border-blue-300",
+  CUSTOMER: "bg-emerald-100 text-emerald-800 border border-emerald-300",
   VENDOR: "bg-purple-100 text-purple-800 border border-purple-300",
 };
 
@@ -505,7 +505,7 @@ export default function RequirementsPage({ user }) {
                           </span>
                           <span
                             className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                              invited ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-600"
+                              invited ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"
                             }`}
                           >
                             {invited ? "Invited" : "Registered"}
@@ -585,8 +585,8 @@ export default function RequirementsPage({ user }) {
               {/* ======================================================== */}
               {/* LIVE CONVERSATION (Admin + Customer + Employee + Vendor) */}
               {/* ======================================================== */}
-              <section id="live-conversation" className="rounded-xl border border-blue-100 bg-blue-50/30 p-5">
-                <div className="flex items-center justify-between border-b border-blue-100 pb-3">
+              <section id="live-conversation" className="rounded-xl border border-emerald-100 bg-emerald-50/30 p-5">
+                <div className="flex items-center justify-between border-b border-emerald-100 pb-3">
                   <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900">
                     <MessageCircle size={18} className="text-[#00a86b]" />
                     <span>Live Multi-Party Conversation</span>

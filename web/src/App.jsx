@@ -167,7 +167,7 @@ function Sidebar({ page, setPage, open, setOpen }) {
       <div className="flex h-20 min-w-[220px] items-center border-b border-white/10 px-5">
         <div>
           <div className="text-2xl font-bold tracking-tight">
-            wefyx<span className="text-blue-400">.</span>pro
+            wefyx<span className="text-emerald-400">.</span>pro
           </div>
           <div className="text-[10px] text-slate-300">
             IT Support | Asset Rental | NOC
@@ -250,7 +250,7 @@ function Header({
             placeholder="Search everything..."
           />
         </div>
-        <div className="hidden items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-2 lg:flex">
+        <div className="hidden items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-2 lg:flex">
           <Building2 size={15} className="text-brand" />
           <select
             value={org}
@@ -293,7 +293,7 @@ function Header({
           <HelpCircle size={18} />
         </button>
         <div className="hidden items-center gap-2 border-l pl-4 sm:flex">
-          <button onClick={onProfile} title="View profile" className="grid h-9 w-9 place-items-center rounded-full bg-blue-100 font-bold text-brand hover:ring-2 hover:ring-brand/30">
+          <button onClick={onProfile} title="View profile" className="grid h-9 w-9 place-items-center rounded-full bg-emerald-100 font-bold text-brand hover:ring-2 hover:ring-brand/30">
             SA
           </button>
           <button onClick={onProfile} className="hidden text-left 2xl:block">
@@ -321,12 +321,12 @@ const statusStyle = {
   DELETED: "bg-slate-100 text-slate-400",
 };
 const roleColors = [
-  "bg-blue-50 text-blue-600",
   "bg-emerald-50 text-emerald-600",
-  "bg-violet-50 text-violet-600",
+  "bg-emerald-50 text-emerald-600",
+  "bg-emerald-50 text-emerald-600",
   "bg-red-50 text-red-500",
   "bg-amber-50 text-amber-600",
-  "bg-cyan-50 text-cyan-600",
+  "bg-emerald-50 text-emerald-600",
 ];
 function StatCard({
   label,
@@ -336,11 +336,11 @@ function StatCard({
   delta = "+ 8.6%",
 }) {
   const c = {
-    blue: "bg-blue-50 text-blue-600",
+    blue: "bg-emerald-50 text-emerald-600",
     green: "bg-emerald-50 text-emerald-600",
     red: "bg-red-50 text-red-500",
     amber: "bg-amber-50 text-amber-600",
-    cyan: "bg-cyan-50 text-cyan-600",
+    cyan: "bg-emerald-50 text-emerald-600",
   }[color];
   return (
     <div className="card flex min-w-[190px] flex-1 items-center gap-3 p-4">
@@ -541,10 +541,10 @@ function Dashboard() {
   }));
   const pie = [
     { name: "Active", value: s.activeUsers, color: "#13b981" },
-    { name: "Inactive", value: s.inactiveUsers, color: "#3b82f6" },
+    { name: "Inactive", value: s.inactiveUsers, color: "#008553" },
     { name: "Pending", value: s.pendingUsers, color: "#fbbf24" },
     { name: "Suspended", value: s.suspendedUsers, color: "#f04444" },
-    { name: "Deleted", value: s.deletedUsers, color: "#94a3b8" },
+    { name: "Deleted", value: s.deletedUsers, color: "#94b8a9" },
   ];
   return (
     <div className="space-y-4 p-4 lg:p-5">
@@ -572,16 +572,16 @@ function Dashboard() {
           <div className="h-52">
             <ResponsiveContainer>
               <LineChart data={line}>
-                <CartesianGrid stroke="#edf2f7" vertical={false} />
+                <CartesianGrid stroke="#edf7f3" vertical={false} />
                 <XAxis dataKey="m" tick={{ fontSize: 10 }} />
                 <YAxis tick={{ fontSize: 10 }} />
                 <Tooltip />
                 <Line
                   type="monotone"
                   dataKey="v"
-                  stroke="#1767df"
+                  stroke="#008553"
                   strokeWidth={3}
-                  dot={{ fill: "white", stroke: "#1767df", strokeWidth: 2 }}
+                  dot={{ fill: "white", stroke: "#008553", strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -917,7 +917,7 @@ function RolesPage() {
                     </td>
                     <td>
                       <span
-                        className={`pill ${r.type === "System" ? "bg-violet-50 text-violet-600" : "bg-emerald-50 text-emerald-600"}`}
+                        className={`pill ${r.type === "System" ? "bg-emerald-50 text-emerald-600" : "bg-emerald-50 text-emerald-600"}`}
                       >
                         {r.type}
                       </span>
@@ -1012,9 +1012,9 @@ function WefyxMark({ className = "h-12 w-14" }) {
     <svg className={className} viewBox="0 0 72 58" role="img" aria-label="Wefyx W logo">
       <defs>
         <linearGradient id="wefyx-mark-gradient" x1="4" y1="5" x2="68" y2="53" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#9B4DFF" />
-          <stop offset="0.52" stopColor="#645CFF" />
-          <stop offset="1" stopColor="#2E8BFF" />
+          <stop stopColor="#61ebb2" />
+          <stop offset="0.52" stopColor="#6eedb8" />
+          <stop offset="1" stopColor="#008553" />
         </linearGradient>
       </defs>
       <path d="M6 9h13l10 24 8-18 7 16-10 19H23L6 9Z" fill="url(#wefyx-mark-gradient)" />
@@ -1025,13 +1025,13 @@ function WefyxMark({ className = "h-12 w-14" }) {
 
 function ProviderIcon({ provider }) {
   if (provider === "Google") {
-    return <span className="text-base font-black text-[#4285F4]">G</span>;
+    return <span className="text-base font-black text-[#008553]">G</span>;
   }
   if (provider === "Microsoft") {
     return (
       <span className="grid h-4 w-4 grid-cols-2 gap-[1px]">
         <i className="bg-[#f35325]" /><i className="bg-[#81bc06]" />
-        <i className="bg-[#05a6f0]" /><i className="bg-[#ffba08]" />
+        <i className="bg-[#008553]" /><i className="bg-[#ffba08]" />
       </span>
     );
   }
@@ -1087,10 +1087,10 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
             <div>
               <h2 className="text-3xl font-bold tracking-tight">Welcome Back</h2>
               <p className="mt-1.5 text-sm text-slate-500">
-                Sign in to continue to your <b className="text-violet-600">Wefyx.pro</b> account
+                Sign in to continue to your <b className="text-emerald-600">Wefyx.pro</b> account
               </p>
             </div>
-            <button type="button" className="flex h-9 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 transition hover:border-violet-300 hover:bg-violet-50">
+            <button type="button" className="flex h-9 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 transition hover:border-emerald-300 hover:bg-emerald-50">
               <Globe2 size={15} strokeWidth={1.8} />
               <span>English</span>
               <ChevronDown size={14} strokeWidth={2} />
@@ -1101,7 +1101,7 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
               type="button"
               aria-pressed={accountType === "vendor"}
               onClick={() => setAccountType("vendor")}
-              className={`order-2 flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
+              className={`order-2 flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "vendor" ? "bg-[#008553] text-white shadow-md shadow-emerald-200" : "text-slate-600 hover:bg-white"}`}
             >
               <Users size={15} /> Vendor
             </button>
@@ -1109,7 +1109,7 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
               type="button"
               aria-pressed={accountType === "customer"}
               onClick={() => setAccountType("customer")}
-              className={`order-1 flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
+              className={`order-1 flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "customer" ? "bg-[#008553] text-white shadow-md shadow-emerald-200" : "text-slate-600 hover:bg-white"}`}
             >
               <CircleUserRound size={15} /> Customer
             </button>
@@ -1117,7 +1117,7 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
               type="button"
               aria-pressed={accountType === "employee"}
               onClick={() => setAccountType("employee")}
-              className={`order-3 flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "employee" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}
+              className={`order-3 flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "employee" ? "bg-[#008553] text-white shadow-md shadow-emerald-200" : "text-slate-600 hover:bg-white"}`}
             >
               <UserRound size={15} /> Employee
             </button>
@@ -1146,7 +1146,7 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
                   Forgot password?
                 </button>
               </div>
-              <div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-blue-50">
+              <div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-emerald-50">
                 <LockKeyhole size={18} className="text-slate-400" />
                 <input
                   value={password}
@@ -1171,7 +1171,7 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
                 <input
                   type="checkbox"
                   defaultChecked
-                  className="accent-blue-600"
+                  className="accent-emerald-600"
                 />{" "}
                 Remember me
               </label>
@@ -1184,7 +1184,7 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
             </div>
             <button
               disabled={loading}
-              className="flex h-12 w-full items-center justify-center rounded-xl bg-[#5b4cf0] text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-[#4d3ee3] disabled:opacity-70"
+              className="flex h-12 w-full items-center justify-center rounded-xl bg-[#008553] text-sm font-semibold text-white shadow-lg shadow-emerald-200 transition hover:bg-[#008553] disabled:opacity-70"
             >
               {loading ? (
                 <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -1195,17 +1195,17 @@ function Login({ onLogin, onRegister, initialEmail = "" }) {
           </form>
           <div className="my-4 flex items-center gap-4 text-[11px] text-slate-400"><span className="h-px flex-1 bg-slate-200" />or continue with<span className="h-px flex-1 bg-slate-200" /></div>
           <div className="grid grid-cols-3 gap-3">
-            {["Google", "Microsoft", "Apple"].map(provider => <button type="button" disabled title={`${provider} sign-in is not configured`} key={provider} className="flex h-11 items-center justify-center gap-2 rounded-xl border text-xs font-semibold text-slate-700 transition hover:border-violet-300 hover:bg-violet-50"><ProviderIcon provider={provider} />{provider}</button>)}
+            {["Google", "Microsoft", "Apple"].map(provider => <button type="button" disabled title={`${provider} sign-in is not configured`} key={provider} className="flex h-11 items-center justify-center gap-2 rounded-xl border text-xs font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50"><ProviderIcon provider={provider} />{provider}</button>)}
           </div>
           <div className="mt-5 text-center text-[11px] text-slate-400">
             By using Wefyx, you agree to our{" "}
-            <a href="/privacy-policy" className="font-semibold text-violet-600 hover:text-violet-700 hover:underline">
+            <a href="/privacy-policy" className="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline">
               Privacy Policy
             </a>
           </div>
           <div className="mt-4 text-center text-xs text-slate-500">
             New to Wefyx?{" "}
-            <button type="button" onClick={onRegister} className="font-semibold text-violet-600 hover:text-violet-700 hover:underline">
+            <button type="button" onClick={onRegister} className="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline">
               Create an account
             </button>
           </div>
@@ -1219,7 +1219,7 @@ function LoginField({ label, icon: Icon, children }) {
   return (
     <div>
       <label className="mb-2 block text-xs font-semibold">{label}</label>
-      <div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-blue-50">
+      <div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-emerald-50">
         <Icon size={18} className="text-slate-400" />
         {children}
       </div>
@@ -1288,8 +1288,8 @@ function Registration({ onBack }) {
       <section className="flex min-h-[calc(100vh-24px)] items-center justify-center px-1 py-4 lg:min-h-0 lg:justify-end lg:pl-10 lg:pr-3 xl:pl-14 xl:pr-4">
         <div className="w-full max-w-[500px] rounded-[26px] bg-white p-6 shadow-2xl shadow-black/20 sm:p-8 lg:min-h-[600px] lg:p-6">
           <div className="mb-7 flex items-center gap-3 lg:hidden"><WefyxMark className="h-11 w-14"/><div><div className="text-3xl font-bold text-navy">Wefyx<span className="text-brand">.</span>pro</div><div className="mt-1 text-xs text-slate-500">IT Support Management Platform</div></div></div>
-          <div className="mb-4 flex items-start justify-between gap-4"><div><h2 className="text-3xl font-bold tracking-tight">Create Account</h2><p className="mt-1.5 text-sm text-slate-500">Join your <b className="text-violet-600">Wefyx.pro</b> support network</p></div><button type="button" className="flex h-9 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600"><Globe2 size={15} strokeWidth={1.8}/><span>English</span><ChevronDown size={14} strokeWidth={2}/></button></div>
-          <div className="mb-2 grid grid-cols-3 rounded-xl border bg-slate-50 p-1"><button type="button" aria-pressed={accountType === "customer"} onClick={() => setAccountType("customer")} className={`flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "customer" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><CircleUserRound size={15}/> Customer</button><button type="button" aria-pressed={accountType === "vendor"} onClick={() => setAccountType("vendor")} className={`flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "vendor" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><Users size={15}/> Vendor</button><button type="button" aria-pressed={accountType === "employee"} onClick={() => setAccountType("employee")} className={`flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "employee" ? "bg-[#5b4cf0] text-white shadow-md shadow-violet-200" : "text-slate-600 hover:bg-white"}`}><UserRound size={15}/> Employee</button></div>
+          <div className="mb-4 flex items-start justify-between gap-4"><div><h2 className="text-3xl font-bold tracking-tight">Create Account</h2><p className="mt-1.5 text-sm text-slate-500">Join your <b className="text-emerald-600">Wefyx.pro</b> support network</p></div><button type="button" className="flex h-9 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600"><Globe2 size={15} strokeWidth={1.8}/><span>English</span><ChevronDown size={14} strokeWidth={2}/></button></div>
+          <div className="mb-2 grid grid-cols-3 rounded-xl border bg-slate-50 p-1"><button type="button" aria-pressed={accountType === "customer"} onClick={() => setAccountType("customer")} className={`flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "customer" ? "bg-[#008553] text-white shadow-md shadow-emerald-200" : "text-slate-600 hover:bg-white"}`}><CircleUserRound size={15}/> Customer</button><button type="button" aria-pressed={accountType === "vendor"} onClick={() => setAccountType("vendor")} className={`flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "vendor" ? "bg-[#008553] text-white shadow-md shadow-emerald-200" : "text-slate-600 hover:bg-white"}`}><Users size={15}/> Vendor</button><button type="button" aria-pressed={accountType === "employee"} onClick={() => setAccountType("employee")} className={`flex h-10 items-center justify-center gap-1 rounded-lg text-[11px] font-semibold transition-all ${accountType === "employee" ? "bg-[#008553] text-white shadow-md shadow-emerald-200" : "text-slate-600 hover:bg-white"}`}><UserRound size={15}/> Employee</button></div>
           <p className="mb-4 text-center text-[11px] text-slate-500">{accountType === "employee" ? "Employee registrations require administrator approval before sign in." : `Create a ${accountType} account to access your Wefyx workspace.`}</p>
           <form onSubmit={submit} className="space-y-3">
             <LoginField label="Full name" icon={UserRound}><input required maxLength={120} value={name} onChange={(event) => setName(event.target.value)} type="text" className="w-full bg-transparent text-sm outline-none" placeholder="Your full name" /></LoginField>
@@ -1297,14 +1297,14 @@ function Registration({ onBack }) {
             <LoginField label="Email address" icon={Mail}><input required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} type="email" className="w-full bg-transparent text-sm outline-none" placeholder="you@company.com"
                 aria-label="Email address" /></LoginField>
             <LoginField label="Phone number" icon={Phone}><input required maxLength={25} value={phone} onChange={(event) => setPhone(event.target.value)} type="tel" className="w-full bg-transparent text-sm outline-none" placeholder="+971 50 123 4567" /></LoginField>
-            <div><label className="mb-2 block text-xs font-semibold">Password</label><div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-blue-50"><LockKeyhole size={18} className="text-slate-400"/><input required minLength={8} maxLength={72} value={password} onChange={(event) => setPassword(event.target.value)} type={showPassword ? "text" : "password"} className="w-full bg-transparent text-sm outline-none" placeholder="At least 8 characters"/><button type="button" aria-label="Show password" onClick={() => setShowPassword(!showPassword)} className="text-slate-400">{showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></div>
-            <div><label className="mb-2 block text-xs font-semibold">Confirm password</label><div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-blue-50"><LockKeyhole size={18} className="text-slate-400"/><input required value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} type={showConfirmPassword ? "text" : "password"} className="w-full bg-transparent text-sm outline-none" placeholder="Repeat your password"/><button type="button" aria-label="Show confirm password" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="text-slate-400">{showConfirmPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></div>
-            <label className="flex items-start gap-2 pt-1 text-xs leading-5 text-slate-600"><input required type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-1 accent-blue-600"/><span>I have read and acknowledge the <a href="/privacy-policy" className="font-semibold text-violet-600 hover:underline">Privacy Policy</a>.</span></label>
+            <div><label className="mb-2 block text-xs font-semibold">Password</label><div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-emerald-50"><LockKeyhole size={18} className="text-slate-400"/><input required minLength={8} maxLength={72} value={password} onChange={(event) => setPassword(event.target.value)} type={showPassword ? "text" : "password"} className="w-full bg-transparent text-sm outline-none" placeholder="At least 8 characters"/><button type="button" aria-label="Show password" onClick={() => setShowPassword(!showPassword)} className="text-slate-400">{showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></div>
+            <div><label className="mb-2 block text-xs font-semibold">Confirm password</label><div className="flex h-12 items-center gap-3 rounded-xl border bg-white px-4 focus-within:border-brand focus-within:ring-4 focus-within:ring-emerald-50"><LockKeyhole size={18} className="text-slate-400"/><input required value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} type={showConfirmPassword ? "text" : "password"} className="w-full bg-transparent text-sm outline-none" placeholder="Repeat your password"/><button type="button" aria-label="Show confirm password" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="text-slate-400">{showConfirmPassword ? <EyeOff size={18}/> : <Eye size={18}/>}</button></div></div>
+            <label className="flex items-start gap-2 pt-1 text-xs leading-5 text-slate-600"><input required type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-1 accent-emerald-600"/><span>I have read and acknowledge the <a href="/privacy-policy" className="font-semibold text-emerald-600 hover:underline">Privacy Policy</a>.</span></label>
             <div className={`flex min-h-9 items-center rounded-lg px-3 text-[11px] ${error ? "bg-red-50 text-red-600" : success ? "bg-emerald-50 text-emerald-700" : "invisible"}`} role="alert">{error || success || "No registration message"}</div>
-            <button disabled={loading} className="flex h-12 w-full items-center justify-center rounded-xl bg-[#5b4cf0] text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-[#4d3ee3] disabled:opacity-70">{loading ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"/> : "Create Account  →"}</button>
+            <button disabled={loading} className="flex h-12 w-full items-center justify-center rounded-xl bg-[#008553] text-sm font-semibold text-white shadow-lg shadow-emerald-200 transition hover:bg-[#008553] disabled:opacity-70">{loading ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white"/> : "Create Account  →"}</button>
           </form>
-          <div className="mt-5 text-center text-[11px] text-slate-400">Already have an account? <button type="button" onClick={() => onBack(email.trim())} className="font-semibold text-violet-600 hover:text-violet-700 hover:underline">Sign in</button></div>
-          <div className="mt-3 text-center text-[11px] text-slate-400">By creating an account, you agree to our <a href="/privacy-policy" className="font-semibold text-violet-600 hover:underline">Privacy Policy</a></div>
+          <div className="mt-5 text-center text-[11px] text-slate-400">Already have an account? <button type="button" onClick={() => onBack(email.trim())} className="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline">Sign in</button></div>
+          <div className="mt-3 text-center text-[11px] text-slate-400">By creating an account, you agree to our <a href="/privacy-policy" className="font-semibold text-emerald-600 hover:underline">Privacy Policy</a></div>
         </div>
       </section>
 
@@ -1322,7 +1322,7 @@ function AppSidebar({ page, setPage, expanded, setExpanded }) {
         {expanded ? (
           <div className="min-w-[180px]">
             <div className="text-2xl font-bold tracking-tight">
-              wefyx<span className="text-blue-400">.</span>pro
+              wefyx<span className="text-emerald-400">.</span>pro
             </div>
             <div className="text-[10px] text-slate-300">
               IT Support | Asset Rental | NOC
@@ -1621,15 +1621,15 @@ function TicketsPage() {
     } catch { }
   }
   const statusClass = {
-    OPEN: "bg-blue-50 text-blue-600",
-    IN_PROGRESS: "bg-violet-50 text-violet-600",
+    OPEN: "bg-emerald-50 text-emerald-600",
+    IN_PROGRESS: "bg-emerald-50 text-emerald-600",
     PENDING: "bg-amber-50 text-amber-600",
     RESOLVED: "bg-emerald-50 text-emerald-600",
     CLOSED: "bg-slate-100 text-slate-500",
   },
     priorityClass = {
       LOW: "text-slate-500",
-      MEDIUM: "text-blue-600",
+      MEDIUM: "text-emerald-600",
       HIGH: "text-orange-500",
       CRITICAL: "text-red-500",
     };

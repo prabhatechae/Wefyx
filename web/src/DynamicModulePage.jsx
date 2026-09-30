@@ -203,7 +203,7 @@ export default function DynamicModulePage({ name }) {
           ],
         ].map(([l, n, Icon]) => (
           <div key={l} className="card flex items-center gap-4 p-5">
-            <div className="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-brand">
+            <div className="grid h-11 w-11 place-items-center rounded-xl bg-emerald-50 text-brand">
               <Icon size={21} />
             </div>
             <div>

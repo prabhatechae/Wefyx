@@ -619,9 +619,9 @@ export default function BookingFlow() {
                 </span>
               </div>
               <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px]">
-                <span className="text-blue-600 font-black">VISA</span>
+                <span className="text-emerald-600 font-black">VISA</span>
                 <span className="text-red-500 font-black">MC</span>
-                <span className="text-blue-400 font-black">AMEX</span>
+                <span className="text-emerald-400 font-black">AMEX</span>
               </div>
             </label>
 

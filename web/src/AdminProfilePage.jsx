@@ -54,7 +54,7 @@ export default function AdminProfilePage({ onBack }) {
       </button>
       <div className="flex flex-col items-start gap-4 xl:flex-row">
         <section className="card flex w-full flex-wrap items-start gap-6 p-6 xl:min-w-0 xl:flex-1">
-          <div className="grid h-24 w-24 place-items-center rounded-full bg-blue-100 text-2xl font-bold text-brand">
+          <div className="grid h-24 w-24 place-items-center rounded-full bg-emerald-100 text-2xl font-bold text-brand">
             SA
           </div>
           <div>
@@ -64,7 +64,7 @@ export default function AdminProfilePage({ onBack }) {
                 Active
               </span>
             </div>
-            <span className="mt-2 inline-flex items-center gap-1 rounded bg-violet-50 px-2 py-1 text-[10px] font-semibold text-violet-600">
+            <span className="mt-2 inline-flex items-center gap-1 rounded bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-600">
               <ShieldCheck size={12} />
               {admin.role}
             </span>
@@ -135,7 +135,7 @@ export default function AdminProfilePage({ onBack }) {
         </section>
         <section className="card p-5">
           <div className="mb-3 flex items-center gap-2">
-            <ShieldCheck size={17} className="text-violet-600" />
+            <ShieldCheck size={17} className="text-emerald-600" />
             <h3 className="text-sm font-bold">Role & Organization</h3>
           </div>
           <Info label="Primary Role" value={admin.role} />
@@ -183,7 +183,7 @@ export default function AdminProfilePage({ onBack }) {
               key={title}
               className="flex items-center gap-3 rounded-lg border p-4"
             >
-              <div className="grid h-9 w-9 place-items-center rounded-full bg-blue-50 text-brand">
+              <div className="grid h-9 w-9 place-items-center rounded-full bg-emerald-50 text-brand">
                 <Icon size={16} />
               </div>
               <div>
