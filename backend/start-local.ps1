@@ -1,3 +1,4 @@
+param([switch]$RealSms)
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath $PSScriptRoot
 $bundledMaven = Join-Path $PSScriptRoot '..\.tools\apache-maven-3.9.9\bin\mvn.cmd'
@@ -7,6 +8,11 @@ if ($env:DATABASE_URL -and -not $env:DATABASE_URL.StartsWith("jdbc:")) {
 }
 # Uses application.yml and the caller's environment, including the persistent
 # local database. Keep this process running while using the Vite frontend.
-& $maven '-q' 'spring-boot:run'
+if ($RealSms) {
+    & $maven '-q' 'spring-boot:run'
+} else {
+    Write-Host 'Free local OTP mode: codes appear in this terminal. No SMS is sent.'
+    & $maven '-q' 'spring-boot:run' '-Dspring-boot.run.profiles=local-otp'
+}
 exit $LASTEXITCODE
 

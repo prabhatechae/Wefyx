@@ -185,29 +185,10 @@ export default function DynamicUsersPage() {
   };
 
   async function save(form) {
-    if (editing?.id) {
-      const next = { ...editing, ...form };
-      setUsers((v) => v.map((x) => (x.id === editing.id ? next : x)));
-      setEditing(undefined);
-      try {
-        const saved = await send(`/users/${editing.id}`, "PUT", next);
-        setUsers((v) => v.map((x) => (x.id === saved.id ? saved : x)));
-        showToast(`User ${saved.name} updated successfully.`);
-      } catch {
-        showToast("Failed to update user.");
-      }
-    } else {
-      const temp = { ...form, id: Date.now(), joinedOn: new Date().toISOString() };
-      setUsers((v) => [temp, ...v]);
-      setEditing(undefined);
-      try {
-        const saved = await send("/users", "POST", form);
-        setUsers((v) => v.map((x) => (x.id === temp.id ? saved : x)));
-        showToast(`New user ${saved.name} created with role "${saved.role}".`);
-      } catch {
-        showToast("Failed to create user.");
-      }
-    }
+    const saved = await send(editing?.id ? `/users/${editing.id}` : "/users", editing?.id ? "PUT" : "POST", form);
+    setUsers((rows) => editing?.id ? rows.map((row) => row.id === saved.id ? saved : row) : [saved, ...rows]);
+    setEditing(undefined);
+    showToast(`User ${saved.name} saved successfully.`);
   }
 
   async function remove(u) {

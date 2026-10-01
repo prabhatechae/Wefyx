@@ -28,7 +28,8 @@ public class VendorQuotation {
     @Column(length = 4000) private String reviewNotes;
     private Long approvedByStaffId;
     @Column(length = 3000) private String notes;
-    @Enumerated(EnumType.STRING) private VendorQuotationStatus status = VendorQuotationStatus.INVITED;
+    @Enumerated(EnumType.STRING) @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
+    @Column(length = 50) private VendorQuotationStatus status = VendorQuotationStatus.INVITED;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime submittedAt;

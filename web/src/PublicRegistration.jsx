@@ -155,16 +155,17 @@ export default function PublicRegistration({ initialView = "login" }) {
 
   // Login Form (Unified simple login for ALL roles without any role selector tabs)
   const [loginForm, setLoginForm] = useState({
-    identifier: "admin@wefyx.pro",
-    password: "admin@123",
+    identifier: "",
+    password: "",
     rememberMe: true,
   });
 
   // Registration Multi-Step Form (Screen 1 to 5)
   const [form, setForm] = useState({
-    phone: "50 123 4567",
-    fullPhone: "+971 50 123 4567",
-    otp: ["4", "8", "2", "1", "6", "3"],
+    phone: "",
+    dialCode: "+971",
+    fullPhone: "",
+    otp: Array(6).fill(""),
     companyName: "Acme Trading LLC",
     tradeLicense: "1234567",
     industry: "Trading & Distribution",
@@ -172,7 +173,7 @@ export default function PublicRegistration({ initialView = "login" }) {
     contactPerson: "Ahmed Khan",
     jobTitle: "IT Manager",
     website: "www.acmeuae.com",
-    password: "Password@123",
+    password: "",
     country: "United Arab Emirates",
     emirate: "Dubai",
     address: "Office 1204, Business Bay, Dubai, UAE",
@@ -184,7 +185,9 @@ export default function PublicRegistration({ initialView = "login" }) {
   });
 
   // Forgot Password Form
-  const [forgotPhone, setForgotPhone] = useState("+971 50 123 4567");
+  const [forgotPhone, setForgotPhone] = useState("");
+  const [forgotDialCode, setForgotDialCode] = useState("+971");
+  const [forgotOtp, setForgotOtp] = useState("");
   const [forgotStep, setForgotStep] = useState(0);
   const [newPassword, setNewPassword] = useState("");
 
@@ -212,7 +215,7 @@ export default function PublicRegistration({ initialView = "login" }) {
 
   // OTP inputs handling
   function handleOtpChange(index, val) {
-    const char = val.slice(-1);
+    const char = val.replace(/\D/g, "").slice(-1);
     const nextOtp = [...form.otp];
     nextOtp[index] = char;
     setForm((curr) => ({ ...curr, otp: nextOtp }));
@@ -245,14 +248,18 @@ export default function PublicRegistration({ initialView = "login" }) {
     event.preventDefault();
     setError("");
     setSuccess("");
-    const cleanPhone = form.phone.trim();
+    const cleanPhone = form.phone.trim().replace(/[\s()-]/g, "");
     if (!cleanPhone) return setError("Please enter your mobile number.");
-    const full = cleanPhone.startsWith("+") ? cleanPhone : `+971 ${cleanPhone}`;
+    const full = cleanPhone.startsWith("+") ? cleanPhone : `${form.dialCode}${cleanPhone.replace(/^0/, "")}`;
+    if (!/^\+9715[024568][0-9]{7}$/.test(full)) return setError("Enter a valid UAE mobile number with country code +971, for example +971501234567.");
+    if (form.password.length < 8 || new TextEncoder().encode(form.password).length > 72) return setError("Password must be at least 8 characters and no more than 72 bytes.");
     setForm((curr) => ({ ...curr, fullPhone: full }));
     setBusy(true);
     try {
-      await sendPublic("/auth/send-otp", "POST", { phone: full });
-      setTimer(25);
+      const result = await sendPublic("/auth/send-otp", "POST", { phone: full, purpose: "registration" });
+      setForm((curr) => ({ ...curr, fullPhone: result.phone, otp: Array(6).fill("") }));
+      setSuccess(result.message);
+      setTimer(30);
       setView("otp");
     } catch (err) {
       setError(err.message || "Failed to send OTP. Please try again.");
@@ -323,7 +330,7 @@ export default function PublicRegistration({ initialView = "login" }) {
         country: form.country,
         emirate: form.emirate,
         address: form.address.trim(),
-        password: form.password || "Password@123",
+        password: form.password,
         role: "CUSTOMER", // Default role
       };
       const res = await sendPublic("/auth/register", "POST", payload);
@@ -335,28 +342,7 @@ export default function PublicRegistration({ initialView = "login" }) {
       }
       setView("success");
     } catch (err) {
-      if (err.status === 409 || String(err.message).toLowerCase().includes("already exists")) {
-        try {
-          const loginRes = await sendPublic("/auth/login", "POST", {
-            email: form.companyEmail.trim(),
-            phone: form.fullPhone.trim(),
-            password: form.password || "Password@123",
-          });
-          if (loginRes.token) {
-            localStorage.setItem("wefyx-token", loginRes.token);
-            localStorage.setItem("wefyx-auth", "true");
-            localStorage.setItem("wefyx-user", JSON.stringify(loginRes.user));
-            localStorage.setItem("wefyx-account-type", "customer");
-            setView("success");
-            return;
-          }
-        } catch {
-          // continue
-        }
-        setError("An account with this email address already exists. Please sign in with your password.");
-      } else {
-        setError(err.message || "Failed to create account. Please try again.");
-      }
+      setError(err.message || "Failed to create account. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -401,13 +387,17 @@ export default function PublicRegistration({ initialView = "login" }) {
     setBusy(true);
     try {
       if (forgotStep === 0) {
-        await sendPublic("/auth/send-otp", "POST", { phone: forgotPhone });
+        const full = forgotPhone.startsWith("+") ? forgotPhone : `${forgotDialCode}${forgotPhone.replace(/^0/, "")}`;
+        const result = await sendPublic("/auth/send-otp", "POST", { phone: full });
+        setForgotPhone(result.phone);
+        setForgotOtp("");
         setForgotStep(1);
-        setSuccess("OTP sent to " + forgotPhone + ". Enter your new password below.");
+        setSuccess(result.message + " Enter the code and your new password below.");
       } else {
         await sendPublic("/auth/reset-password", "POST", {
           phone: forgotPhone,
           password: newPassword,
+          otp: forgotOtp,
         });
         setSuccess("Password reset successfully! Redirecting to login...");
         setTimeout(() => {
@@ -535,21 +525,34 @@ export default function PublicRegistration({ initialView = "login" }) {
                   </label>
                   <div className="wf-phone-wrapper">
                     <div className="wf-flag-badge">
-                      <UaeFlag width={24} height={15} />
-                      <span className="wf-prefix-text">+971</span>
+                      <select aria-label="Mobile country code" value={form.dialCode} onChange={update("dialCode")}><option value="+971">UAE +971</option></select>
                     </div>
                     <input
                       type="tel"
-                      value={form.phone.replace(/^\+971\s*/, "")}
+                      value={form.phone}
                       onChange={(e) => setForm((c) => ({ ...c, phone: e.target.value }))}
-                      placeholder="50 123 4567"
+                      placeholder="Mobile number"
                       required
                     />
                   </div>
                   <span className="wf-helper">We&apos;ll send you a 6-digit OTP to verify your number.</span>
                 </div>
 
-                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+                <div className="wf-form-group">
+                  <label className="wf-form-label" htmlFor="registration-password">Password<i>*</i></label>
+                  <div className="wf-input-with-icon">
+                    <span className="wf-input-icon"><Lock size={17} /></span>
+                    <input id="registration-password" type={showPassword ? "text" : "password"}
+                      autoComplete="new-password" value={form.password} onChange={update("password")}
+                      placeholder="Create a password" minLength={8} maxLength={72} required />
+                    <button type="button" className="wf-input-toggle" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
+                  <span className="wf-helper">Use at least 8 characters. You will use this password to log in.</span>
+                </div>
+
+                {error && <div role="alert" className="wf-alert wf-alert-error">{error}</div>}
 
                 <button type="submit" disabled={busy} className="wf-primary-btn">
                   {busy ? "Sending OTP…" : "Send OTP"} <ArrowRight size={17} />
@@ -582,7 +585,7 @@ export default function PublicRegistration({ initialView = "login" }) {
 
               <h2 className="text-2xl font-bold text-slate-900">Verify Your Mobile Number</h2>
               <p className="mt-1 text-sm text-slate-500">
-                We have sent a 6-digit OTP to <strong>{form.fullPhone}</strong>{" "}
+                {success || "Enter the 6-digit OTP for"} <strong>{form.fullPhone}</strong>{" "}
                 <button type="button" onClick={() => setView("signup")} className="text-emerald-600 font-semibold underline">
                   Edit ✎
                 </button>
@@ -613,13 +616,13 @@ export default function PublicRegistration({ initialView = "login" }) {
                       Didn&apos;t receive the code? <strong>Resend OTP in 00:{timer < 10 ? `0${timer}` : timer}</strong>
                     </>
                   ) : (
-                    <button type="button" onClick={handleSendOtp} className="wf-resend-btn">
+                    <button type="button" onClick={handleSendOtp} disabled={busy} className="wf-resend-btn">
                       Resend OTP now
                     </button>
                   )}
                 </div>
 
-                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+                {error && <div role="alert" className="wf-alert wf-alert-error">{error}</div>}
 
                 <button type="submit" disabled={busy} className="wf-primary-btn">
                   {busy ? "Verifying…" : "Verify & Continue"} <ArrowRight size={17} />
@@ -780,7 +783,7 @@ export default function PublicRegistration({ initialView = "login" }) {
                   </div>
                 </div>
 
-                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+                {error && <div role="alert" className="wf-alert wf-alert-error">{error}</div>}
 
                 <button type="submit" className="wf-primary-btn mt-2">
                   Next: Address Details <ArrowRight size={17} />
@@ -906,7 +909,7 @@ export default function PublicRegistration({ initialView = "login" }) {
                   </div>
                 </div>
 
-                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+                {error && <div role="alert" className="wf-alert wf-alert-error">{error}</div>}
 
                 <button type="submit" className="wf-primary-btn mt-2">
                   Next: Complete Registration <ArrowRight size={17} />
@@ -1004,7 +1007,7 @@ export default function PublicRegistration({ initialView = "login" }) {
                   </label>
                 </div>
 
-                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+                {error && <div role="alert" className="wf-alert wf-alert-error">{error}</div>}
 
                 <button type="submit" disabled={busy} className="wf-primary-btn">
                   {busy ? "Creating Account…" : "Create My Account"} <ArrowRight size={17} />
@@ -1174,7 +1177,7 @@ export default function PublicRegistration({ initialView = "login" }) {
                   </span>
                 </div>
 
-                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+                {error && <div role="alert" className="wf-alert wf-alert-error">{error}</div>}
 
                 <button type="submit" disabled={busy} className="wf-primary-btn">
                   {busy ? "Logging In…" : "Login"} <ArrowRight size={17} />
@@ -1240,20 +1243,21 @@ export default function PublicRegistration({ initialView = "login" }) {
                     </label>
                     <div className="wf-phone-wrapper">
                       <div className="wf-flag-badge">
-                        <UaeFlag width={24} height={15} />
-                        <span className="wf-prefix-text">+971</span>
+                        <select aria-label="Recovery country code" value={forgotDialCode} onChange={(e) => setForgotDialCode(e.target.value)}><option value="+971">UAE +971</option></select>
                       </div>
                       <input
                         type="tel"
-                        value={forgotPhone.replace(/^\+971\s*/, "")}
-                        onChange={(e) => setForgotPhone(`+971 ${e.target.value}`)}
-                        placeholder="50 123 4567"
+                        value={forgotPhone}
+                        onChange={(e) => setForgotPhone(e.target.value)}
+                        placeholder="Mobile number"
                         required
                       />
                     </div>
                   </div>
                 ) : (
                   <div className="wf-form-group">
+                    <label className="wf-form-label">SMS verification code</label>
+                    <input aria-label="SMS verification code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required value={forgotOtp} onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ""))} />
                     <label className="wf-form-label">
                       New Password<i>*</i>
                     </label>
@@ -1273,7 +1277,7 @@ export default function PublicRegistration({ initialView = "login" }) {
                   </div>
                 )}
 
-                {error && <div className="wf-alert wf-alert-error">{error}</div>}
+                {error && <div role="alert" className="wf-alert wf-alert-error">{error}</div>}
                 {success && <div className="wf-alert wf-alert-success">{success}</div>}
 
                 <button type="submit" disabled={busy} className="wf-primary-btn mt-2">

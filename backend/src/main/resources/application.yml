@@ -29,6 +29,10 @@ spring:
 server:
   port: ${PORT:8080}
 wefyx:
+  otp:
+    account-sid: ${TWILIO_ACCOUNT_SID:}
+    auth-token: ${TWILIO_AUTH_TOKEN:}
+    service-sid: ${TWILIO_VERIFY_SERVICE_SID:}
   mail:
     enabled: ${MAIL_ENABLED:false}
     from: ${MAIL_FROM:support@wefyx.pro}

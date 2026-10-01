@@ -42,7 +42,7 @@ const label = (v) =>
     .replace(/\b\w/g, (x) => x.toUpperCase());
 
 const current = (rows) =>
-  [...(rows || [])].sort((a, b) => (b.version || 1) - (a.version || 1))[0];
+  [...(rows || [])].sort((a, b) => (b.version || 1) - (a.version || 1) || b.id - a.id)[0];
 
 const styles = {
   INVITED: "bg-amber-50 text-amber-700 border border-amber-200",
@@ -83,7 +83,6 @@ export default function VendorPortal({ user, onLogout }) {
 
   async function load() {
     try {
-      setError("");
       const requirements = await get("/requirements?view=vendor");
       const rows = await Promise.all(
         (Array.isArray(requirements) ? requirements : []).map(async (r) => ({
@@ -154,8 +153,8 @@ export default function VendorPortal({ user, onLogout }) {
   }
 
   async function decide(accepted) {
-    if (!selected) return;
-    if (!accepted && !reason) {
+    if (!selected || busy) return;
+    if (!accepted && !reason.trim()) {
       setError("Select a reason for declining this requirement.");
       return;
     }
@@ -184,7 +183,12 @@ export default function VendorPortal({ user, onLogout }) {
   }
 
   async function submitQuote() {
-    if (!selected || !Number(amount) || !Number(days)) {
+    if (busy) return;
+    if (!["ACCEPTED", "REVISION_REQUESTED"].includes(quote?.status)) {
+      setError("Accept the requirement before submitting. Submitted quotations can only be changed when a revision is requested.");
+      return;
+    }
+    if (!selected || !Number.isFinite(Number(amount)) || Number(amount) <= 0 || !Number.isInteger(Number(days)) || Number(days) <= 0) {
       setError("Please enter a valid quotation amount and delivery lead time.");
       return;
     }
@@ -247,6 +251,7 @@ export default function VendorPortal({ user, onLogout }) {
   }, [activeTab, activeOrders, historyOrders, searchQuery]);
 
   const state = quote?.status || selected?.vendorQuote?.status || "INVITED";
+  const canSubmitQuote = ["ACCEPTED", "REVISION_REQUESTED"].includes(quote?.status);
 
   return (
     <div className="flex min-h-screen bg-[#f8fcfa] text-slate-900 font-sans">
@@ -647,8 +652,25 @@ export default function VendorPortal({ user, onLogout }) {
               <div className="space-y-5">
                 <div className="rounded-2xl border border-slate-200 p-5">
                   <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                    Submit / Update Quotation
+                    Vendor Quotation
                   </h4>
+                  <p className="mt-2 text-xs text-slate-600">Status: {label(state)}</p>
+                  {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
+                  {state === "INVITED" && (
+                    <div className="mt-3">
+                      <p className="text-xs text-slate-600">Accept this requirement to prepare and submit your quotation.</p>
+                      <button type="button" disabled={busy || detailLoading || !quote} onClick={() => decide(true)} className="mt-2 rounded-lg bg-[#00a86b] px-4 py-2 text-xs font-bold text-white disabled:opacity-50">Accept Requirement</button>
+                      <button type="button" disabled={busy || detailLoading || !quote} onClick={() => setDeclining(true)} className="ml-2 mt-2 rounded-lg border border-red-200 px-4 py-2 text-xs font-bold text-red-700 disabled:opacity-50">Reject Invite</button>
+                      {declining && <div className="mt-3">
+                        <label htmlFor="vendor-rejection-reason" className="text-xs font-semibold">Reason for rejection</label>
+                        <textarea id="vendor-rejection-reason" value={reason} onChange={e => setReason(e.target.value)} maxLength={3000} className="mt-1 w-full rounded-lg border border-slate-200 p-2 text-sm" />
+                        <button type="button" disabled={busy || !reason.trim()} onClick={() => decide(false)} className="rounded-lg bg-red-700 px-4 py-2 text-xs font-bold text-white disabled:opacity-50">Confirm Rejection</button>
+                        <button type="button" disabled={busy} onClick={() => setDeclining(false)} className="ml-3 text-xs">Cancel</button>
+                      </div>}
+                    </div>
+                  )}
+                  {!canSubmitQuote && state !== "INVITED" && <p className="mt-3 text-xs text-slate-600">{state === "SUBMITTED" ? "Quotation submitted. Waiting for review." : "This quotation is not open for editing."}</p>}
+                  <fieldset disabled={busy || !canSubmitQuote}>
                   <div className="mt-3 grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-[10px] font-bold text-slate-500">Amount (AED)</label>
@@ -675,6 +697,7 @@ export default function VendorPortal({ user, onLogout }) {
                     <label className="text-[10px] font-bold text-slate-500">Terms / Scope</label>
                     <textarea
                       rows={2}
+                      maxLength={3000}
                       value={terms}
                       onChange={(e) => setTerms(e.target.value)}
                       placeholder="Scope, warranty, delivery terms..."
@@ -683,12 +706,13 @@ export default function VendorPortal({ user, onLogout }) {
                   </div>
                   <button
                     type="button"
-                    disabled={busy}
+                    disabled={busy || !canSubmitQuote}
                     onClick={submitQuote}
                     className="mt-3 w-full rounded-xl bg-[#00a86b] py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#008c59] disabled:opacity-50"
                   >
                     {busy ? "Submitting…" : "Send Quotation"}
                   </button>
+                  </fieldset>
                 </div>
 
                 {/* Chat */}

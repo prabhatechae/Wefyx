@@ -39,6 +39,30 @@ input,select,textarea{min-width:0;accent-color:var(--wf-green)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
 .wf-auth>section{min-width:0}.wf-auth>section>div{min-width:0;width:100%}.wf-auth input:not([type=checkbox]):not([type=radio]){width:100%;min-width:0}.wf-auth input[type=checkbox]{width:16px;height:16px;flex:none;accent-color:var(--wf-green)}.wf-stepper li{min-width:0}.wf-stepper b{overflow-wrap:anywhere}
+.wf-support aside ol,.wf-support aside>p{color:var(--wf-muted)}
+.wf-support aside>svg{color:var(--wf-green)}
+.wf-support aside>p{border-color:var(--wf-line)}
+.services-reference.requirement-page{min-height:100vh;background:#f4fcf9;color:var(--wf-navy)}
+.services-reference.requirement-page main{padding:40px 20px}
+.services-reference.requirement-page .sr-forms.sr-single-form{width:100%;max-width:960px;margin:0 auto;display:block}
+.services-reference.requirement-page .sr-forms>form{padding:32px;border:1px solid var(--wf-line);border-radius:24px;background:#fff;box-shadow:0 1px 2px #073b2e0d;scroll-margin-top:140px}
+.services-reference.requirement-page .sr-forms header{gap:16px;margin-bottom:28px;padding-bottom:0;border:0}
+.services-reference.requirement-page .sr-forms header>svg{width:48px;height:48px;flex-shrink:0;border-radius:16px;background:#eefaf5;color:var(--wf-green)}
+.services-reference.requirement-page .sr-forms h2{font-size:24px;font-weight:700;color:var(--wf-navy)}
+.services-reference.requirement-page .sr-forms header p{font-size:14px;line-height:1.7;color:var(--wf-muted)}
+.services-reference.requirement-page .sr-requirement{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.services-reference.requirement-page .sr-fields label{font-size:12px;color:var(--wf-muted)}
+.services-reference.requirement-page .sr-fields input,.services-reference.requirement-page .sr-fields select,.services-reference.requirement-page .sr-fields textarea{border:1px solid var(--wf-line);border-radius:12px;background:white;font-size:14px;color:var(--wf-navy);box-shadow:none}
+.services-reference.requirement-page .sr-fields input,.services-reference.requirement-page .sr-fields select{height:48px}
+.services-reference.requirement-page .sr-fields textarea{min-height:120px}
+.services-reference.requirement-page .sr-fields input::placeholder,.services-reference.requirement-page .sr-fields textarea::placeholder{color:var(--wf-muted)}
+.services-reference.requirement-page .sr-submit{border-radius:12px}
+@media(max-width:600px){
+ .services-reference.requirement-page main{padding:24px 16px}
+ .services-reference.requirement-page .sr-forms>form{padding:24px 20px}
+ .services-reference.requirement-page .sr-requirement{grid-template-columns:minmax(0,1fr)}
+ .services-reference.requirement-page .sr-requirement label:has(textarea[name="details"]){grid-column:1/-1}
+}
 .services-reference,.wf-support{--rblue:var(--wf-green)}
 .services-reference .rp-start,.wf-support .rp-start{background:var(--wf-green)}
 

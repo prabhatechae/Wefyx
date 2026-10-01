@@ -11,6 +11,18 @@ const generic = {"data-center":["DATA CENTER SOLUTIONS","Design. Build. Operate.
 export default function InfoPage({type="services"}) { return type === "services" ? <ServicesPage/> : <Generic type={type}/>; }
 
 function ServicesPage(){
+  const [requirementOnly,setRequirementOnly]=useState(()=>window.location.hash==="#requirement");
+  useEffect(()=>{
+    const updateView=()=>{
+      const isRequirement=window.location.hash==="#requirement";
+      setRequirementOnly(isRequirement);
+      if(!isRequirement)window.location.replace(`/book-support${window.location.search}`);
+    };
+    updateView();
+    window.addEventListener("hashchange",updateView);
+    return()=>window.removeEventListener("hashchange",updateView);
+  },[]);
+
   const [notice,setNotice]=useState("");
   const [success,setSuccess]=useState(false);
   const [busy,setBusy]=useState(false);
@@ -33,8 +45,9 @@ function ServicesPage(){
       setReference(requirement.reference);setSuccess(true);setNotice("Requirement submitted successfully.");setTimeout(goToPortal,2600);
     }catch(error){setNotice(error.message||"Unable to submit your requirement.")}finally{setBusy(false)}
   };
-  return <div className="services-reference"><PublicHeader/><main>
-    <section className="sr-hero support-services-hero">
+  if(!requirementOnly)return null;
+  return <div className={`services-reference${requirementOnly?" requirement-page":""}`}><PublicHeader/><main>
+    {!requirementOnly&&<><section className="sr-hero support-services-hero">
       <div className="sr-hero-media">
         <img src="/images/home-support-hero.png" alt="Wefyx IT engineer providing office support" className="sr-hero-img"/>
         <div className="sr-hero-fade"/>
@@ -61,10 +74,11 @@ function ServicesPage(){
         </aside>
       </div>
     </section>
-    <SupportOverview /><section className="sr-shell sr-forms sr-single-form"><CompactRequirementForm done={submit} busy={busy}/></section>
-    <section className="sr-shell sr-core"><h2>Our Core IT Services</h2><p>End-to-end IT solutions to keep your business running, secure and future-ready.</p><div>{services.map(([I,t,items])=><article key={t}><I/><h3>{t}</h3><ul>{items.map(x=><li key={x}>{x}</li>)}</ul><a href="#requirement">Learn More <ArrowRight/></a></article>)}</div></section>
+    <SupportOverview /></>}<section className="sr-shell sr-forms sr-single-form"><CompactRequirementForm done={submit} busy={busy}/></section>
+    {!requirementOnly&&<><section className="sr-shell sr-core"><h2>Our Core IT Services</h2><p>End-to-end IT solutions to keep your business running, secure and future-ready.</p><div>{services.map(([I,t,items])=><article key={t}><I/><h3>{t}</h3><ul>{items.map(x=><li key={x}>{x}</li>)}</ul><a href="#requirement">Learn More <ArrowRight/></a></article>)}</div></section>
     <section className="sr-shell sr-process"><h2>Our Simple Process</h2><p>From request to resolution — a seamless experience.</p><div className="sr-steps">{[[FileText,"Submit Requirement","Share your needs and attachments"],[FileText,"Review & Proposal","Our employee reviews and prepares the proposal"],[Check,"Accept & Confirm Deal","Approve the proposal and confirm the engagement"],[CalendarDays,"Site Visit & Execution","We schedule the visit and deliver the service"]].map(([I,t,d],i)=><article key={t}><b>{i+1}</b><I/><span><strong>{t}</strong><small>{d}</small></span>{i<3&&<ArrowRight/>}</article>)}</div><div className="sr-quick">{[[Headphones,"24/7","Support Available"],[Zap,"SLA","Response Time"],[UsersRound,"Certified","Engineers"],[MapPin,"UAE","Nationwide Coverage"],[Building2,"250+","Business Clients"]].map(([I,n,l])=><span key={n}><I/><b>{n}<small>{l}</small></b></span>)}</div></section>
     <section className="sr-shell sr-support"><Headphones/><div><h2>Need Immediate IT Assistance?</h2><p>Submit your requirement first. After proposal acceptance and deal confirmation, our team will schedule the site visit.</p></div><a href="#requirement">Submit Requirement <ArrowRight/></a><a href="tel:+97141234567"><Phone/>Talk to Support</a></section>
+    </>}
   </main><PublicFooter/>{success&&<div className="sr-success-blast" role="status" aria-live="polite"><div className="sr-flower-burst">{Array.from({length:24},(_,i)=><i key={i} style={{"--petal":i}}/>)}</div><div className="sr-success-card"><div className="sr-success-flower">✿</div><Check/><h2>Requirement Submitted!</h2><p>{reference} was created successfully. Opening your customer workspace.</p><div className="sr-success-progress"/></div></div>}{notice&&!success&&<div className="sr-notice"><Check/>{notice}</div>}</div>;
 }
 function VisitForm({done}){return <form id="site-visit" onSubmit={e=>done(e,"Site visit booking")}><header><CalendarDays/><div><h2>Book an Engineer for Site Visit</h2><p>Get professional on-site IT support from our certified engineers.<br/>We’ll visit your location, assess your requirements and provide the right solution.</p></div></header><div className="sr-booking"><div className="sr-fields"><Field label="Full Name" req/><Field label="Company Name"/><Field label="Email Address" req type="email"/><Field label="Mobile Number" req placeholder="+971 50 123 4567"/><Select label="Emirate / Location" items={["Select emirate","Dubai","Abu Dhabi","Sharjah"]}/><Select label="Service Type" items={["Select service type","IT Support","Network Setup","Cybersecurity"]}/><Field label="Preferred Date" req type="date"/><Field label="Preferred Time" req type="time"/><Text label="Requirement Details" req/><UploadBox/></div><aside className="sr-summary"><h3>Site Visit Summary</h3><p>Regular Price <s className="sr-old-price">AED 105</s></p><strong>Current Price <b className="sr-free">FREE</b></strong><button>Confirm Free Booking <ArrowRight/></button><small><ShieldCheck/>Your information is safe with us.</small></aside></div></form>}

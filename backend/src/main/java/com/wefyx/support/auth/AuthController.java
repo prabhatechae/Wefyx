@@ -12,12 +12,16 @@ import com.wefyx.support.user.SupportUser;
 import org.springframework.web.server.ResponseStatusException;
 import com.wefyx.support.user.UserRepository;
 import com.wefyx.support.user.UserStatus;
+import com.wefyx.support.user.UserIdentity;
+import com.wefyx.support.user.UserIdentityService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.core.Authentication;
 
 @RestController @RequestMapping("/api/auth")
 public class AuthController {
     private final JwtService jwt;
+    private final OtpService otpService;
+    private final UserIdentityService identities;
     private final String adminEmail, adminPassword, vendorEmail, vendorPassword, vendorName;
     private final UserRepository users;
     private final BCryptPasswordEncoder passwords=new BCryptPasswordEncoder();
@@ -27,42 +31,34 @@ public class AuthController {
                           @Value("${wefyx.auth.vendor-email}") String vendorEmail,
                           @Value("${wefyx.auth.vendor-password}") String vendorPassword,
                           @Value("${wefyx.auth.vendor-name}") String vendorName,
-                          UserRepository users) {
+                          UserRepository users, OtpService otpService, UserIdentityService identities) {
         this.jwt=jwt; this.adminEmail=email; this.adminPassword=password;
         this.vendorEmail=vendorEmail; this.vendorPassword=vendorPassword; this.vendorName=vendorName;
-        this.users=users;
+        this.users=users; this.otpService=otpService; this.identities=identities;
     }
 
     @PostMapping("/send-otp")
     public Map<String, Object> sendOtp(@RequestBody Map<String, String> body) {
-        String phone = body.getOrDefault("phone", body.getOrDefault("mobile", "")).trim();
-        if (phone.isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mobile number is required");
-        return Map.of(
-            "success", true,
-            "message", "We have sent a 6-digit OTP to " + phone,
-            "phone", phone,
-            "otp", "482163"
-        );
+        String phone = OtpService.normalize(body.getOrDefault("phone", body.getOrDefault("mobile", "")));
+        if ("registration".equals(body.get("purpose")) && users.existsByPhone(phone))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Mobile number is already registered. Please sign in or use a different number.");
+        phone = otpService.send(phone);
+        return Map.of("success", true, "message", otpService.isLocal() ? "Development OTP is in the backend terminal. No SMS was sent." : "OTP requested for " + phone, "phone", phone, "delivery", otpService.isLocal() ? "console" : "sms");
     }
 
     @PostMapping("/verify-otp")
     public Map<String, Object> verifyOtp(@RequestBody Map<String, String> body) {
-        String phone = body.getOrDefault("phone", "").trim();
-        String otp = body.getOrDefault("otp", "").trim();
-        if (otp.length() != 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please enter a valid 6-digit OTP");
-        return Map.of(
-            "valid", true,
-            "message", "Mobile number verified successfully",
-            "phone", phone
-        );
+        String phone = otpService.verify(body.get("phone"), body.get("otp"));
+        return Map.of("valid", true, "message", "Mobile number verified successfully", "phone", phone);
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
-        String phone = body.getOrDefault("phone", "").trim();
+        String phone = OtpService.normalize(body.get("phone"));
         String password = body.getOrDefault("password", "");
         if (password.length() < 8) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must be at least 8 characters");
         var user = users.findByPhone(phone).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No account associated with this mobile number"));
+        otpService.verify(phone, body.get("otp"));
         user.setPasswordHash(passwords.encode(password));
         users.save(user);
         return ResponseEntity.ok(Map.of("message", "Password reset successfully. You can now login with your new password."));
@@ -73,42 +69,24 @@ public class AuthController {
         String identifier=String.valueOf(request.email()!=null?request.email():request.phone()!=null?request.phone():"").trim();
         String suppliedPassword=String.valueOf(request.password());
 
-        // 1. Super Admin Authentication
-        if(matches(adminEmail,adminPassword,identifier,suppliedPassword)
-            || matches("admin@wefyx.pro","admin@123",identifier,suppliedPassword)
-            || matches("admin@wefyx.pro","admin123",identifier,suppliedPassword))
+        if (request.password() == null || request.password().isBlank())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Email/mobile and password are required."));
+        if(matches(adminEmail,adminPassword,identifier,suppliedPassword))
             return session(adminEmail,"System Administrator","SUPER_ADMIN");
+        if(!vendorEmail.isBlank() && !vendorPassword.isBlank() && matches(vendorEmail,vendorPassword,identifier,suppliedPassword))
+            return session(vendorEmail,vendorName,"VENDOR");
 
-        // 2. Vendor Authentication
-        if((!vendorEmail.isBlank() && !vendorPassword.isBlank() && matches(vendorEmail,vendorPassword,identifier,suppliedPassword))
-            || matches("vendor@wefyx.pro","vendor@123",identifier,suppliedPassword)
-            || matches("sara.ali@techsolutions.ae","vendor@123",identifier,suppliedPassword)
-            || matches("sara.ali@techsolutions.ae","Password@123",identifier,suppliedPassword))
-            return session("sara.ali@techsolutions.ae","Sara Ali (TechSolutions)","VENDOR");
-
-        // 3. Customer Authentication
-        if(matches("customer@wefyx.pro","customer@123",identifier,suppliedPassword)
-            || matches("info@acmeuae.com","customer@123",identifier,suppliedPassword)
-            || matches("info@acmeuae.com","Password@123",identifier,suppliedPassword)
-            || matches("+971 50 123 4567","Password@123",identifier,suppliedPassword)
-            || matches("50 123 4567","Password@123",identifier,suppliedPassword))
-            return session("info@acmeuae.com","Ahmed Khan (Acme Trading)","CUSTOMER");
-
-        // 4. Employee / Technician Authentication
-        if(matches("employee@wefyx.pro","employee@123",identifier,suppliedPassword)
-            || matches("ahmed.khan@wefyx.pro","employee@123",identifier,suppliedPassword)
-            || matches("ahmed.khan@wefyx.pro","Password@123",identifier,suppliedPassword))
-            return session("ahmed.khan@wefyx.pro","Ahmed Khan (L2 Field Engineer)","EMPLOYEE");
-
-        // 5. Database User Authentication
-        var user=users.findByEmailIgnoreCase(identifier).or(() -> users.findByPhone(identifier)).orElse(null);
-        if(user!=null) {
-            boolean validPassword = false;
-            if(user.getPasswordHash()!=null && passwords.matches(suppliedPassword,user.getPasswordHash())) {
-                validPassword = true;
-            } else if ("Password@123".equals(suppliedPassword) || "admin@123".equals(suppliedPassword) || "vendor@123".equals(suppliedPassword) || "employee@123".equals(suppliedPassword) || "customer@123".equals(suppliedPassword)) {
-                validPassword = true;
+        String normalizedIdentifier = identifier;
+        if (!identifier.contains("@")) {
+            try { normalizedIdentifier = OtpService.normalize(identifier); }
+            catch (ResponseStatusException ex) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid email/mobile or password."));
             }
+        }
+        var user = identifier.contains("@") ? users.findByEmailIgnoreCase(identifier).orElse(null)
+            : users.findByPhone(normalizedIdentifier).orElse(null);
+        if(user!=null) {
+            boolean validPassword = user.getPasswordHash()!=null && passwords.matches(suppliedPassword,user.getPasswordHash());
             if(validPassword) {
                 if(user.getStatus()==UserStatus.PENDING) {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message","Your "+loginRole(user.getRole()).toLowerCase()+" registration is pending admin approval."));
@@ -130,7 +108,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegistrationRequest request){
-        String email=request.email().trim().toLowerCase();
+        if (request.password().getBytes(StandardCharsets.UTF_8).length > 72)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Password must be no more than 72 bytes");
+        String email=UserIdentity.email(request.email());
         String role=request.role()!=null?request.role():"CUSTOMER";
         if(!java.util.Set.of("CUSTOMER","VENDOR","EMPLOYEE").contains(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid registration role");
@@ -141,44 +121,9 @@ public class AuthController {
         boolean pending=java.util.Set.of("EMPLOYEE","VENDOR").contains(role);
         String org = request.organization() != null && !request.organization().isBlank() ? request.organization().trim() : request.companyName() != null ? request.companyName().trim() : "Business Client";
         String loc = request.address() != null ? request.address().trim() : "";
-        String phoneStr = request.phone() == null ? "" : request.phone().trim();
+        String phoneStr = UserIdentity.phone(request.phone(), true);
+        identities.check(email, phoneStr, null);
 
-        SupportUser existing = users.findByEmailIgnoreCase(email)
-            .or(() -> !phoneStr.isBlank() ? users.findByPhone(phoneStr) : java.util.Optional.empty())
-            .orElse(null);
-
-        if (existing != null) {
-            if ("CUSTOMER".equalsIgnoreCase(existing.getRole()) || "CUSTOMER".equalsIgnoreCase(role)) {
-                if (request.name() != null && !request.name().isBlank()) existing.setName(request.name().trim());
-                if (!org.isBlank()) existing.setOrganization(org);
-                if (!phoneStr.isBlank()) existing.setPhone(phoneStr);
-                if (request.tradeLicense() != null) existing.setTradeLicense(request.tradeLicense().trim());
-                if (request.industry() != null) existing.setIndustry(request.industry().trim());
-                if (request.jobTitle() != null) existing.setJobTitle(request.jobTitle().trim());
-                if (request.website() != null) existing.setWebsite(request.website().trim());
-                if (request.emirate() != null) existing.setEmirate(request.emirate().trim());
-                if (!loc.isBlank()) { existing.setAddress(loc); existing.setLocation(loc); }
-                if (request.country() != null) existing.setCountry(request.country().trim());
-                if (request.password() != null && !request.password().isBlank()) existing.setPasswordHash(passwords.encode(request.password()));
-                existing.setStatus(UserStatus.ACTIVE);
-                existing.setRole("CUSTOMER");
-                SupportUser saved = users.save(existing);
-                
-                String issuedRole = loginRole(saved.getRole());
-                Map<String, Object> profile = userProfile(saved, issuedRole);
-                return ResponseEntity.status(HttpStatus.OK).body(Map.of(
-                    "message", "Account verified and updated successfully.",
-                    "token", jwt.issue(saved.getEmail(), issuedRole),
-                    "user", profile,
-                    "email", saved.getEmail(),
-                    "role", "CUSTOMER",
-                    "status", "ACTIVE"
-                ));
-            } else {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "An account already exists with this email address or mobile number. Please sign in.");
-            }
-        }
-        
         var user=new SupportUser(request.name().trim(),email,role,org,loc,pending?UserStatus.PENDING:UserStatus.ACTIVE,null,now);
         user.setPhone(phoneStr);
         user.setTradeLicense(request.tradeLicense()==null?"":request.tradeLicense().trim());
@@ -266,7 +211,7 @@ public class AuthController {
         @NotBlank @Size(min=8,max=72) String password,
         String organization,
         String companyName,
-        @Size(max=25) String phone,
+        @NotBlank @Size(max=25) String phone,
         String role,
         String tradeLicense,
         String industry,
@@ -275,6 +220,10 @@ public class AuthController {
         String emirate,
         String address,
         String country
-    ){}
+    ){
+        public RegistrationRequest {
+            email = email == null ? null : email.trim();
+        }
+    }
 }
 

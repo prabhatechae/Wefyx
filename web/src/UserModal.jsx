@@ -32,6 +32,8 @@ export default function UserModal({ user, availableRoles = DEFAULT_ROLES, onClos
       password: "",
     },
   );
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
   const set = (k, v) => setForm({ ...form, [k]: v });
 
   const roleList = availableRoles && availableRoles.length > 0 ? availableRoles : DEFAULT_ROLES;
@@ -44,9 +46,11 @@ export default function UserModal({ user, availableRoles = DEFAULT_ROLES, onClos
         className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"
       />
       <form
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          onSave(form);
+          if (busy) return;
+          setBusy(true); setError("");
+          try { await onSave(form); } catch (err) { setError(err.message || "Unable to save user."); } finally { setBusy(false); }
         }}
         className="relative w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95"
       >
@@ -72,14 +76,15 @@ export default function UserModal({ user, availableRoles = DEFAULT_ROLES, onClos
           {[
             ["Full name", "name", "e.g. John Smith"],
             ["Email address", "email", "e.g. user@company.com"],
+            ["Mobile number", "phone", "+91 or +971 mobile number"],
             ["Location", "location", "Dubai, UAE"],
           ].map(([l, k, p]) => (
             <label key={k} className="text-xs font-semibold text-slate-700">
               {l}
               <input
-                required
-                type={k === "email" ? "email" : "text"}
-                value={form[k]}
+                required={k !== "phone" || !user || Boolean(user.phone)}
+                type={k === "email" ? "email" : k === "phone" ? "tel" : "text"}
+                value={form[k] || ""}
                 onChange={(e) => set(k, e.target.value)}
                 placeholder={p}
                 className="mt-2 h-11 w-full rounded-lg border border-slate-200 px-3 font-normal outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition"
@@ -147,6 +152,7 @@ export default function UserModal({ user, availableRoles = DEFAULT_ROLES, onClos
           </label>
         </div>
 
+        {error && <p role="alert" className="mt-4 text-sm text-red-600">{error}</p>}
         <div className="mt-7 flex justify-end gap-3">
           <button
             type="button"
@@ -157,6 +163,7 @@ export default function UserModal({ user, availableRoles = DEFAULT_ROLES, onClos
           </button>
           <button
             type="submit"
+            disabled={busy}
             className="h-10 rounded-lg bg-brand px-5 text-xs font-semibold text-white shadow-sm hover:opacity-90 transition"
           >
             {user ? "Save Changes" : "Create User"}

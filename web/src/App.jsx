@@ -732,28 +732,9 @@ function UsersPage() {
   if (selected)
     return <UserDetailsPage user={selected} onBack={() => setSelected(null)} />;
   async function save(form) {
-    if (editing?.id) {
-      const optimistic = { ...editing, ...form };
-      setUsers((v) => v.map((u) => (u.id === editing.id ? optimistic : u)));
-      setEditing(undefined);
-      try {
-        const saved = await send(`/users/${editing.id}`, "PUT", optimistic);
-        setUsers((v) => v.map((u) => (u.id === saved.id ? saved : u)));
-      } catch { }
-    } else {
-      const optimistic = {
-        ...form,
-        id: Date.now(),
-        joinedOn: new Date().toISOString(),
-        lastLogin: null,
-      };
-      setUsers((v) => [optimistic, ...v]);
-      setEditing(undefined);
-      try {
-        const saved = await send("/users", "POST", form);
-        setUsers((v) => v.map((u) => (u.id === optimistic.id ? saved : u)));
-      } catch { }
-    }
+    const saved = await send(editing?.id ? `/users/${editing.id}` : "/users", editing?.id ? "PUT" : "POST", form);
+    setUsers((rows) => editing?.id ? rows.map((row) => row.id === saved.id ? saved : row) : [saved, ...rows]);
+    setEditing(undefined);
   }
   async function remove(u) {
     if (!confirm(`Delete ${u.name}?`)) return;
