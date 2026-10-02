@@ -421,7 +421,7 @@ export default function PublicRegistration({ initialView = "login" }) {
         {/* SCREEN 1: SIGN UP (JOIN WEFYX)                           */}
         {/* ======================================================== */}
         {view === "signup" && (
-          <div className="wf-auth-wrapper wf-auth-split">
+          <div className="wf-auth-wrapper wf-auth-split wf-signup-reference">
             <section className="wf-brand-side">
               <div className="wf-brand-intro">
                 <h1 className="wf-brand-title">
@@ -470,29 +470,13 @@ export default function PublicRegistration({ initialView = "login" }) {
                   </li>
                 </ul>
 
-                <div className="wf-brand-slogan-wrap">
-                  <p className="wf-skyline-slogan">
-                    Smarter IT<br />
-                    <span className="wf-slogan-script">for a Better</span><br />
-                    Tomorrow
-                  </p>
-                </div>
               </div>
 
-              {/* Dubai Skyline Illustration */}
-              <div className="wf-skyline-backdrop">
-                <svg
-                  className="wf-skyline-graphic"
-                  viewBox="0 0 1000 320"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  preserveAspectRatio="xMidYMax meet"
-                >
-                  <path d="M0 320L1000 320L1000 295L940 295L940 250L910 250L910 230L890 230L890 200L860 200L860 240L830 240L830 180L800 180L800 150L780 150L780 110L765 70L750 110L750 220L720 220L720 180L690 180L690 250L640 250L640 190L610 190L610 140L585 90L560 140L560 210L520 210L520 20L500 0L480 20L480 260L430 260L430 170L390 170L390 130L360 130L360 220L310 220L310 190L270 190L270 150L240 150L240 240L190 240L190 210L140 210L140 270L80 270L80 230L30 230L30 300L0 300Z" fill="#1e8a5d" opacity="0.12" />
-                  <path d="M40 320L980 320L980 280L930 280L930 235L880 235L880 215L840 215L840 190L790 190L790 230L740 230L740 160L710 160L710 240L660 240L660 175L620 175L620 120L590 120L590 205L540 205L540 80L515 45L490 80L490 250L450 250L450 185L410 185L410 210L360 210L360 145L320 145L320 235L260 235L260 170L210 170L210 255L160 255L160 195L110 195L110 265L60 265L60 305L40 305Z" fill="#008553" opacity="0.18" />
-                  <path d="M100 320L920 320L920 260L870 260L870 210L820 210L820 240L760 240L760 180L720 180L720 220L670 220L670 150L630 150L630 230L570 230L570 130L530 130L530 100L507 70L485 100L485 240L440 240L440 195L380 195L380 230L330 230L330 165L280 165L280 220L230 220L230 270L170 270L170 240L120 240L120 290L100 290Z" fill="#00a86b" opacity="0.22" />
-                </svg>
-              </div>
+              <p className="wf-skyline-slogan">
+                Smarter IT<br />
+                for a Better<br />
+                Tomorrow
+              </p>
             </section>
 
             <section className="wf-auth-card">
