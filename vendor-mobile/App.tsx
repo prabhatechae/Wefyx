@@ -48,8 +48,8 @@ import {
   saveSessionToken,
   setUnauthorizedHandler,
 } from "./src/api";
-const purple = "#5B45F5",
-  navy = "#071B35";
+const purple = "#008553",
+  navy = "#073B2E";
 LogBox.ignoreAllLogs(true);
 type Tab = "Home" | "Orders" | "Products" | "Profile";
 type User = { name: string; email: string; role: string };
@@ -125,9 +125,9 @@ function Status({ value }: { value: string }) {
   let k = value.toLowerCase(),
     c =
       k.includes("deliver") || k.includes("active")
-        ? "#059669"
+        ? "#008553"
         : k.includes("ship")
-        ? "#2563EB"
+        ? "#008553"
         : k.includes("cancel")
         ? "#DC2626"
         : "#D97706";
@@ -140,7 +140,7 @@ function Status({ value }: { value: string }) {
 function Empty({ text }: { text: string }) {
   return (
     <View style={s.empty}>
-      <Box color="#9AA6B7" size={36} />
+      <Box color="#8A9F93" size={36} />
       <Text style={s.emptyTitle}>{text}</Text>
       <Text style={s.muted}>New records will appear here automatically.</Text>
     </View>
@@ -189,8 +189,8 @@ function HomePage({
         {[
           ["Total orders", orders.length, purple],
           ["Pending", orders.length - delivered, "#F59E0B"],
-          ["Delivered", delivered, "#10B981"],
-          ["Products", products.length, "#3B82F6"],
+          ["Delivered", delivered, "#00A86B"],
+          ["Products", products.length, "#00A86B"],
         ].map(([a, b, c]) => (
           <View
             style={[s.stat, { borderTopColor: c as string }]}
@@ -510,7 +510,7 @@ function ProfilePage({ user, logout }: { user: User; logout: () => void }) {
             ]}
           >
             {online ? (
-              <Wifi size={18} color="#059669" />
+              <Wifi size={18} color="#008553" />
             ) : (
               <WifiOff size={18} color="#DC2626" />
             )}
@@ -562,7 +562,7 @@ function ProfilePage({ user, logout }: { user: User; logout: () => void }) {
         ].map((x) => (
           <Pressable style={s.menu} key={x}>
             <Text style={s.cardTitle}>{x}</Text>
-            <ChevronRight size={19} color="#9AA5B5" />
+            <ChevronRight size={19} color="#8A9F93" />
           </Pressable>
         ))}
       </View>
@@ -670,7 +670,12 @@ function Login({ done }: { done: (u: User) => void }) {
           )}
         </Pressable>
         <Pressable style={{paddingVertical:12}} onPress={() => Linking.openURL('https://wefyx.pro/forgot-password').catch(() => Alert.alert('Unable to open recovery', 'Please try again.'))}><Text style={s.link}>Forgot password? Open website</Text></Pressable>
-        <Pressable onPress={()=>setRegistering(true)} style={{alignItems:'center',marginTop:18}}><Text style={{color:'#0443A4',fontWeight:'600'}}>New vendor? Create account</Text></Pressable>
+        <View style={s.registerSection}>
+          <Text style={s.registerPrompt}>Want to partner with Wefyx?</Text>
+          <Pressable onPress={()=>setRegistering(true)} style={s.registerButton}>
+            <Text style={s.registerButtonText}>Create vendor account</Text>
+          </Pressable>
+        </View>
         <Text style={s.secure}>
           Secure access for approved Wefyx vendor partners
         </Text>
@@ -811,7 +816,7 @@ function VendorApp() {
             <Pressable style={s.tab} key={name} onPress={() => setTab(name)}>
               <I
                 size={23}
-                color={tab === name ? purple : "#7A8799"}
+                color={tab === name ? purple : "#63796C"}
                 strokeWidth={tab === name ? 2.6 : 2}
               />
               <Text style={[s.tabT, tab === name && { color: purple }]}>
@@ -833,13 +838,13 @@ export default function App() {
   );
 }
 const s = StyleSheet.create({
-  page: { flex: 1, backgroundColor: "#F5F7FB" },
-  center: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#F6F8FC" },
+  page: { flex: 1, backgroundColor: "#F7FAF8" },
+  center: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#F7FAF8" },
   wefyxLoader: {
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 3,
-    borderColor: "#DDD8FF",
+    borderColor: "#B8E7CF",
     borderTopColor: purple,
     backgroundColor: "white",
     shadowColor: purple,
@@ -847,8 +852,8 @@ const s = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
-  wefyxLoaderText: { fontFamily: "Poppins-Bold", color: purple },
-  loadingText: { marginTop: 16, fontFamily: "Poppins-Medium", fontSize: 12, color: "#64748B" },
+  wefyxLoaderText: { fontFamily: "Poppins-ExtraBold", color: navy, letterSpacing: -2 },
+  loadingText: { marginTop: 16, fontFamily: "Poppins-Medium", fontSize: 12, color: "#63796C" },
   loadingOverlay: {
     position: "absolute",
     top: 0,
@@ -858,7 +863,7 @@ const s = StyleSheet.create({
     zIndex: 50,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(246,248,252,0.88)",
+    backgroundColor: "rgba(247,250,248,0.90)",
   },
   header: {
     height: 94,
@@ -873,18 +878,18 @@ const s = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 11,
-    backgroundColor: purple,
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
-  logoT: { fontFamily: "Poppins-ExtraBold", fontSize: 24, color: "white" },
+  logoT: { fontFamily: "Poppins-ExtraBold", fontSize: 25, color: navy, letterSpacing: -2 },
   headTitle: { fontFamily: "Poppins-SemiBold", fontSize: 18, color: "white" },
-  headSub: { fontFamily: "Poppins-Regular", fontSize: 11, color: "#B8C6D8" },
+  headSub: { fontFamily: "Poppins-Regular", fontSize: 11, color: "#B8E7CF" },
   iconBtn: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: "#17304E",
+    backgroundColor: "#075438",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -917,7 +922,7 @@ const s = StyleSheet.create({
   muted: {
     fontFamily: "Poppins-Regular",
     fontSize: 11,
-    color: "#718096",
+    color: "#63796C",
     marginTop: 3,
   },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 16 },
@@ -941,7 +946,7 @@ const s = StyleSheet.create({
     padding: 18,
     marginTop: 14,
   },
-  revenueL: { fontFamily: "Poppins-Medium", fontSize: 10, color: "#E4E0FF" },
+  revenueL: { fontFamily: "Poppins-Medium", fontSize: 10, color: "#DCF3E7" },
   revenueV: {
     fontFamily: "Poppins-Bold",
     fontSize: 24,
@@ -964,7 +969,7 @@ const s = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#E6EBF1",
+    borderColor: "#DCE6E0",
   },
   row: {
     flexDirection: "row",
@@ -980,7 +985,7 @@ const s = StyleSheet.create({
     marginTop: 11,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: "#EDF1F5",
+    borderTopColor: "#E7EFEA",
   },
   amount: { fontFamily: "Poppins-SemiBold", fontSize: 14, color: navy },
   pill: { borderRadius: 10, paddingHorizontal: 9, paddingVertical: 4 },
@@ -1009,7 +1014,7 @@ const s = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 13,
     borderWidth: 1,
-    borderColor: "#E0E6ED",
+    borderColor: "#DCE6E0",
     paddingHorizontal: 14,
     flexDirection: "row",
     alignItems: "center",
@@ -1022,7 +1027,7 @@ const s = StyleSheet.create({
     color: navy,
   },
   list: { padding: 16, paddingBottom: 26 },
-  shade: { flex: 1, backgroundColor: "#071B3570", justifyContent: "flex-end" },
+  shade: { flex: 1, backgroundColor: "#073B2E70", justifyContent: "flex-end" },
   sheet: {
     backgroundColor: "white",
     padding: 22,
@@ -1035,7 +1040,7 @@ const s = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     fontSize: 12,
     lineHeight: 20,
-    color: "#66758A",
+    color: "#52675B",
     marginVertical: 14,
   },
   label: {
@@ -1048,7 +1053,7 @@ const s = StyleSheet.create({
   actions: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 7 },
   outline: {
     borderWidth: 1,
-    borderColor: "#D9DFE7",
+    borderColor: "#DCE6E0",
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 9,
@@ -1077,21 +1082,21 @@ const s = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     borderWidth: 1,
-    borderColor: "#E6EBF1",
+    borderColor: "#DCE6E0",
   },
   productIcon: {
     width: 54,
     height: 54,
     borderRadius: 13,
-    backgroundColor: "#EEEBFF",
+    backgroundColor: "#EFFAF5",
     alignItems: "center",
     justifyContent: "center",
   },
-  sku: { fontFamily: "Poppins-Regular", fontSize: 9, color: "#9AA4B4" },
+  sku: { fontFamily: "Poppins-Regular", fontSize: 9, color: "#8A9F93" },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#DCE2EA",
+    borderColor: "#DCE6E0",
     borderRadius: 12,
     paddingHorizontal: 14,
     fontFamily: "Poppins-Regular",
@@ -1117,7 +1122,7 @@ const s = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: "#EAE6FF",
+    backgroundColor: "#DCF3E7",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1155,13 +1160,13 @@ const s = StyleSheet.create({
     gap: 11,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#EDF1F5",
+    borderBottomColor: "#E7EFEA",
   },
   connectionIcon: {
     width: 38,
     height: 38,
     borderRadius: 11,
-    backgroundColor: "#EEEBFF",
+    backgroundColor: "#EFFAF5",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1170,9 +1175,9 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#EDF1F5",
+    borderBottomColor: "#E7EFEA",
   },
-  infoL: { fontFamily: "Poppins-Regular", fontSize: 11, color: "#7B8798" },
+  infoL: { fontFamily: "Poppins-Regular", fontSize: 11, color: "#63796C" },
   infoV: {
     fontFamily: "Poppins-Medium",
     fontSize: 11,
@@ -1185,7 +1190,7 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: "#EDF1F5",
+    borderBottomColor: "#E7EFEA",
   },
   logout: {
     height: 52,
@@ -1219,7 +1224,7 @@ const s = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: "#EEEBFF",
+    backgroundColor: "#EFFAF5",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1227,13 +1232,13 @@ const s = StyleSheet.create({
     height: 82,
     backgroundColor: "white",
     borderTopWidth: 1,
-    borderTopColor: "#E5EAF0",
+    borderTopColor: "#DCE6E0",
     flexDirection: "row",
     paddingTop: 5,
     paddingBottom: 9,
   },
   tab: { flex: 1, alignItems: "center", justifyContent: "center", gap: 3 },
-  tabT: { fontFamily: "Poppins-Medium", fontSize: 10, color: "#7A8799" },
+  tabT: { fontFamily: "Poppins-Medium", fontSize: 10, color: "#63796C" },
   login: {
     flex: 1,
     backgroundColor: navy,
@@ -1245,25 +1250,27 @@ const s = StyleSheet.create({
     width: 66,
     height: 66,
     borderRadius: 19,
-    backgroundColor: purple,
+    backgroundColor: "white",
+    borderWidth: 2,
+    borderColor: "#B8E7CF",
     alignItems: "center",
     justifyContent: "center",
   },
-  loginLogoT: { fontFamily: "Poppins-ExtraBold", fontSize: 41, color: "white" },
+  loginLogoT: { fontFamily: "Poppins-ExtraBold", fontSize: 43, color: navy, letterSpacing: -3 },
   loginName: {
     fontFamily: "Poppins-Bold",
     fontSize: 25,
     color: "white",
     marginTop: 9,
   },
-  loginTag: { fontFamily: "Poppins-Regular", fontSize: 12, color: "#B8C7D9" },
+  loginTag: { fontFamily: "Poppins-Regular", fontSize: 12, color: "#B8E7CF" },
   loginCard: { backgroundColor: "white", borderRadius: 23, padding: 22 },
   loginTitle: { fontFamily: "Poppins-Bold", fontSize: 23, color: navy },
   loginSub: {
     fontFamily: "Poppins-Regular",
     fontSize: 12,
     lineHeight: 19,
-    color: "#728096",
+    color: "#63796C",
     marginTop: 3,
   },
   error: {
@@ -1278,8 +1285,35 @@ const s = StyleSheet.create({
   secure: {
     fontFamily: "Poppins-Regular",
     fontSize: 10,
-    color: "#8793A5",
+    color: "#8A9F93",
     textAlign: "center",
     marginTop: 15,
+  },
+  registerSection: {
+    borderTopWidth: 1,
+    borderTopColor: "#E2E8E5",
+    marginTop: 10,
+    paddingTop: 18,
+  },
+  registerPrompt: {
+    fontFamily: "Poppins-Medium",
+    fontSize: 11,
+    color: "#63796C",
+    textAlign: "center",
+  },
+  registerButton: {
+    height: 52,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: "#008553",
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  registerButtonText: {
+    fontFamily: "Poppins-Bold",
+    fontSize: 14,
+    color: "#008553",
   },
 });

@@ -18,18 +18,22 @@ public class OtpService {
     private final RestClient client;
     private final String serviceSid;
     private final boolean configured;
+    private final boolean registrationDemoBypass;
     private LocalOtpStore local;
 
     @org.springframework.beans.factory.annotation.Autowired(required=false)
     void useLocalStore(LocalOtpStore local) { this.local = local; }
 
     public boolean isLocal() { return local != null; }
+    public boolean isRegistrationDemo() { return registrationDemoBypass; }
 
     @org.springframework.beans.factory.annotation.Autowired
     public OtpService(@Value("${wefyx.otp.account-sid:}") String accountSid,
                       @Value("${wefyx.otp.auth-token:}") String authToken,
-                      @Value("${wefyx.otp.service-sid:}") String serviceSid) {
+                      @Value("${wefyx.otp.service-sid:}") String serviceSid,
+                      @Value("${wefyx.otp.registration-demo-bypass:false}") boolean registrationDemoBypass) {
         this.serviceSid = serviceSid;
+        this.registrationDemoBypass = registrationDemoBypass;
         configured = !accountSid.isBlank() && !authToken.isBlank() && !serviceSid.isBlank();
         var factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(Duration.ofSeconds(5));
@@ -38,10 +42,15 @@ public class OtpService {
             .requestFactory(factory).defaultHeaders(h -> h.setBasicAuth(accountSid, authToken)).build();
     }
 
+    OtpService(String accountSid, String authToken, String serviceSid) {
+        this(accountSid, authToken, serviceSid, false);
+    }
+
     OtpService(RestClient client) {
         this.client = client;
         this.serviceSid = "test-service";
         this.configured = true;
+        this.registrationDemoBypass = false;
     }
 
     public static String normalize(String raw) {
@@ -62,6 +71,12 @@ public class OtpService {
         return phone;
     }
 
+    public String sendRegistration(String raw) {
+        String phone = normalize(raw);
+        if (registrationDemoBypass) return phone;
+        return send(phone);
+    }
+
     public String verify(String raw, String code) {
         String phone = normalize(raw);
         if (code == null || !code.matches("[0-9]{6}"))
@@ -71,6 +86,14 @@ public class OtpService {
         if (!"approved".equals(response.get("status")))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid or expired OTP");
         return phone;
+    }
+
+    public String verifyRegistration(String raw, String code) {
+        String phone = normalize(raw);
+        if (code == null || !code.matches("[0-9]{6}"))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please enter a valid 6-digit OTP");
+        if (registrationDemoBypass) return phone;
+        return verify(phone, code);
     }
 
     private Map<?, ?> request(String operation, String phone, String key, String value) {

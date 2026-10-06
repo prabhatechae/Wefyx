@@ -21,9 +21,10 @@ export async function clearSessionToken() {
   await Keychain.resetGenericPassword({ service: SESSION_SERVICE });
 }
 
-export const API_BASE = __DEV__
-  ? `http://${Platform.OS === 'android' ? '10.0.2.2' : 'localhost'}:8080/api`
-  : 'https://wefyx.pro/api';
+export const API_ORIGIN = __DEV__
+  ? `http://${Platform.OS === 'android' ? '10.0.2.2' : 'localhost'}:8080`
+  : 'https://wefyx.pro';
+export const API_BASE = `${API_ORIGIN}/api`;
 
 let unauthorizedHandler: (() => void) | undefined;
 

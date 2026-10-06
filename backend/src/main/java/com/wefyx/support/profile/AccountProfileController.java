@@ -9,6 +9,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.LinkedHashMap;
+import com.wefyx.support.user.UserRepository;
+import com.wefyx.support.user.UserIdentity;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -16,7 +19,24 @@ public class AccountProfileController {
     private static final long MAX_SIZE=3L*1024*1024;
     private static final Set<String> TYPES=Set.of("image/jpeg","image/png","image/webp");
     private final AccountProfilePhotoRepository photos;
-    public AccountProfileController(AccountProfilePhotoRepository photos){this.photos=photos;}
+    private final UserRepository users;
+    public AccountProfileController(AccountProfilePhotoRepository photos,UserRepository users){this.photos=photos;this.users=users;}
+
+    @GetMapping
+    public Map<String,Object> profile(Authentication auth){return view(account(auth));}
+
+    @PutMapping
+    public Map<String,Object> update(@RequestBody Map<String,String> body,Authentication auth){
+        var user=account(auth);
+        String name=required(body.get("name"),"Name");
+        String organization=required(body.get("organization"),"Company / organization");
+        String phone=UserIdentity.phone(body.get("phone"),true);
+        if(users.existsByPhoneAndIdNot(phone,user.getId()))throw new ResponseStatusException(HttpStatus.CONFLICT,"This mobile number is already registered");
+        user.setName(name);user.setOrganization(organization);user.setPhone(phone);
+        user.setJobTitle(clean(body.get("jobTitle")));user.setWebsite(clean(body.get("website")));user.setEmirate(clean(body.get("emirate")));
+        user.setAddress(clean(body.get("address")));user.setCountry(clean(body.get("country")));user.setLocation(clean(body.get("address")));
+        return view(users.save(user));
+    }
 
     @GetMapping("/photo")
     public ResponseEntity<byte[]> photo(Authentication auth){
@@ -37,4 +57,9 @@ public class AccountProfileController {
 
     @DeleteMapping("/photo") @ResponseStatus(HttpStatus.NO_CONTENT) @Transactional
     public void remove(Authentication auth){photos.deleteByEmailIgnoreCase(auth.getName());}
+
+    private com.wefyx.support.user.SupportUser account(Authentication auth){return users.findByEmailIgnoreCase(auth.getName()).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Account not found"));}
+    private Map<String,Object> view(com.wefyx.support.user.SupportUser user){Map<String,Object> result=new LinkedHashMap<>();result.put("name",user.getName());result.put("email",user.getEmail());result.put("organization",user.getOrganization());result.put("phone",clean(user.getPhone()));result.put("jobTitle",clean(user.getJobTitle()));result.put("website",clean(user.getWebsite()));result.put("emirate",clean(user.getEmirate()));result.put("address",clean(user.getAddress()));result.put("country",clean(user.getCountry()));result.put("role",user.getRole());return result;}
+    private static String required(String value,String label){if(value==null||value.isBlank())throw new ResponseStatusException(HttpStatus.BAD_REQUEST,label+" is required");return value.trim();}
+    private static String clean(String value){return value==null?"":value.trim();}
 }

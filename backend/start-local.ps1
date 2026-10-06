@@ -11,7 +11,8 @@ if ($env:DATABASE_URL -and -not $env:DATABASE_URL.StartsWith("jdbc:")) {
 if ($RealSms) {
     & $maven '-q' 'spring-boot:run'
 } else {
-    Write-Host 'Free local OTP mode: codes appear in this terminal. No SMS is sent.'
+    $env:OTP_DEMO_BYPASS = 'true'
+    Write-Host 'Client demo mode: any numeric 6-digit registration code is accepted. No SMS is sent.'
     & $maven '-q' 'spring-boot:run' '-Dspring-boot.run.profiles=local-otp'
 }
 exit $LASTEXITCODE

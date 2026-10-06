@@ -22,7 +22,10 @@ import {
   Building2,
   Lock,
   Boxes,
-  FileText
+  FileText,
+  ClipboardList,
+  LogOut,
+  UserRound
 } from "lucide-react";
 import AIQuotationModal from "./AIQuotationModal";
 import SiteVisitModal from "./SiteVisitModal";
@@ -37,17 +40,47 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
   const [showAiModal, setShowAiModal] = useState(false);
   const [showVisitModal, setShowVisitModal] = useState(false);
   const [liveCartCount, setLiveCartCount] = useState(cartCount ?? 0);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [sessionUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("wefyx-user") || "null"); } catch { return null; }
+  });
+  const [profilePhoto, setProfilePhoto] = useState("");
 
   const searchInputRef = useRef(null);
 
   useEffect(() => {
     try {
-      const savedCart = JSON.parse(localStorage.getItem("wefyx-saved-cart") || "[]");
+      const savedCart = JSON.parse(localStorage.getItem("wefyx-customer-cart") || "[]");
       if (typeof cartCount !== "number" && savedCart.length > 0) {
-        setLiveCartCount(savedCart.length);
+        setLiveCartCount(savedCart.reduce((sum, item) => sum + Number(item.quantity || 1), 0));
       }
     } catch {}
   }, [cartCount]);
+
+  useEffect(() => {
+    const refresh = () => {
+      try {
+        const items = JSON.parse(localStorage.getItem("wefyx-customer-cart") || "[]");
+        if (typeof cartCount !== "number") setLiveCartCount(Array.isArray(items) ? items.reduce((sum, item) => sum + Number(item.quantity || 1), 0) : 0);
+      } catch { setLiveCartCount(0); }
+    };
+    window.addEventListener("wefyx-cart-changed", refresh);
+    return () => window.removeEventListener("wefyx-cart-changed", refresh);
+  }, [cartCount]);
+
+  useEffect(() => {
+    if (!sessionUser || sessionUser.role !== "CUSTOMER") return;
+    const token = localStorage.getItem("wefyx-token");
+    fetch("/api/profile/photo", { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+      .then((response) => response.ok ? response.blob() : null)
+      .then((blob) => blob && setProfilePhoto(URL.createObjectURL(blob)))
+      .catch(() => {});
+  }, [sessionUser?.email]);
+
+  const signOut = () => {
+    ["wefyx-token", "wefyx-auth", "wefyx-user", "wefyx-account-type"].forEach((key) => localStorage.removeItem(key));
+    window.location.assign("/");
+  };
 
   useEffect(() => {
     if (searchOpen) {
@@ -69,7 +102,7 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
     { title: "Book an On-Site Engineer (AED 105)", cat: "Booking", href: "/book-support", desc: "Certified engineer visits your office/site in UAE" },
     { title: "Business Solutions", cat: "Solution", href: "/solutions", desc: "Tailored IT stacks for Corporate, Healthcare, Hospitality" },
     { title: "Industries We Support", cat: "Industry", href: "/industries", desc: "12+ enterprise industry compliance solutions" },
-    { title: "Customer & Admin Portal", cat: "Portal", href: "/portal", desc: "Access tickets, assets, quotations, and monitoring" }
+    { title: "Customer Account", cat: "Account", href: "/account", desc: "Access orders, requirements, support tickets, and profile" }
   ];
 
   const searchResults = allSearchable.filter(item =>
@@ -354,23 +387,23 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
               )}
             </a>
 
-            {/* Sign In / Customer Portal */}
-            <a
-              href="/login"
-              className="hidden items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 sm:flex"
-            >
-              <UsersRound size={14} className="text-slate-500" />
-              <span>Sign In</span>
-            </a>
-
-            {/* Get Started Button (Matches Reference Screenshot) */}
-            <a
-              href="/register"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#00a86b] px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#008c59] hover:shadow"
-            >
-              <span>Get Started</span>
-              <ArrowRight size={14} />
-            </a>
+            {sessionUser?.role === "CUSTOMER" ? <div className="relative">
+              <button type="button" onClick={() => setAccountOpen(!accountOpen)} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 hover:border-emerald-300">
+                <span className="grid h-7 w-7 overflow-hidden place-items-center rounded-lg bg-emerald-100 text-emerald-800">{profilePhoto ? <img src={profilePhoto} alt="" className="h-full w-full object-cover"/> : sessionUser.name?.[0]?.toUpperCase()}</span>
+                <span className="hidden max-w-28 truncate sm:block">{sessionUser.name}</span><ChevronDown size={13}/>
+              </button>
+              {accountOpen && <div className="absolute right-0 top-11 z-50 w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
+                <div className="border-b px-3 py-2"><b className="block truncate text-xs">{sessionUser.name}</b><small className="block truncate text-[10px] text-slate-500">{sessionUser.email}</small></div>
+                <a href="/account" className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold hover:bg-slate-50"><UserRound size={14}/>My account</a>
+                <a href="/account/orders" className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold hover:bg-slate-50"><ShoppingCart size={14}/>Orders</a>
+                <a href="/account/requirements" className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold hover:bg-slate-50"><ClipboardList size={14}/>Requirements</a>
+                <a href="/account/tickets" className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold hover:bg-slate-50"><Headphones size={14}/>Support</a>
+                <button type="button" onClick={signOut} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50"><LogOut size={14}/>Sign out</button>
+              </div>}
+            </div> : sessionUser ? <a href="/portal" className="hidden items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 sm:flex"><UsersRound size={14}/>Portal</a> : <>
+              <a href="/login" className="hidden items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 sm:flex"><UsersRound size={14}/><span>Sign In</span></a>
+              <a href="/register" className="inline-flex items-center gap-1.5 rounded-xl bg-[#00a86b] px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#008c59] hover:shadow"><span>Get Started</span><ArrowRight size={14}/></a>
+            </>}
 
             {/* Mobile Hamburger Menu Toggle */}
             <button
@@ -551,7 +584,7 @@ export default function UnifiedHeader({ cartCount, onOpenQuote, onOpenVisit }) {
             {/* Mobile Footer Links */}
             <div className="mt-6 border-t border-slate-100 pt-4">
               <div className="flex items-center justify-between text-xs text-slate-600">
-                <a href="/portal" className="font-bold text-slate-900">Sign In to Portal</a>
+                <a href={sessionUser?.role === "CUSTOMER" ? "/account" : sessionUser ? "/portal" : "/login"} className="font-bold text-slate-900">{sessionUser?.role === "CUSTOMER" ? "My Account" : sessionUser ? "Open Portal" : "Sign In"}</a>
                 <a href="tel:+97141234567" className="font-bold text-emerald-700">+971 4 123 4567</a>
               </div>
             </div>

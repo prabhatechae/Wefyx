@@ -369,7 +369,9 @@ export default function PublicRegistration({ initialView = "login" }) {
         localStorage.setItem("wefyx-auth", "true");
         localStorage.setItem("wefyx-user", JSON.stringify(res.user));
         localStorage.setItem("wefyx-account-type", (res.user.role || "customer").toLowerCase());
-        window.location.assign("/portal");
+        const returnTo = new URLSearchParams(window.location.search).get("returnTo");
+        const customerDestination = returnTo && /^\/(account|cart|shop|rent|services|book-support|my-tickets)(\/|\?|$)/.test(returnTo) && !returnTo.includes("\\") ? returnTo : "/account";
+        window.location.assign(res.user.role === "CUSTOMER" ? customerDestination : "/portal");
       }
     } catch (err) {
       setError(err.message || "Invalid credentials. Please check your email/mobile and password.");
@@ -1025,7 +1027,7 @@ export default function PublicRegistration({ initialView = "login" }) {
 
               <button
                 type="button"
-                onClick={() => window.location.assign("/portal")}
+                onClick={() => window.location.assign("/account")}
                 className="wf-primary-btn"
               >
                 Go to Dashboard <ArrowRight size={17} />
@@ -1034,7 +1036,7 @@ export default function PublicRegistration({ initialView = "login" }) {
               <div className="wf-whats-next-box">
                 <h4>What&apos;s Next?</h4>
                 <div className="wf-whats-next-grid">
-                  <a href="/portal" className="wf-next-item">
+                  <a href="/account/tickets" className="wf-next-item">
                     <CheckCircle2 size={16} />
                     <span>Raise a support ticket</span>
                   </a>

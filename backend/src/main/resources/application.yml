@@ -33,6 +33,8 @@ wefyx:
     account-sid: ${TWILIO_ACCOUNT_SID:}
     auth-token: ${TWILIO_AUTH_TOKEN:}
     service-sid: ${TWILIO_VERIFY_SERVICE_SID:}
+    # Opt-in client demo only; keep false in normal production.
+    registration-demo-bypass: ${OTP_DEMO_BYPASS:false}
   mail:
     enabled: ${MAIL_ENABLED:false}
     from: ${MAIL_FROM:support@wefyx.pro}

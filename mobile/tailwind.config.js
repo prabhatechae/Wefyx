@@ -5,12 +5,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primaryDark: '#003078', primary: '#0443A4', primaryLight: '#0568DF',
-        accent: '#0152F9', brand: '#0443A4', background: '#F7F9FC',
-        surface: '#FFFFFF', inputBg: '#F3F6FB', border: '#E4E9F2',
-        ink: '#0A0E3D', canvas: '#F7F9FC', textPrimary: '#0A0E3D',
-        textSecondary: '#696D79', textPlaceholder: '#828692',
-        textMuted: '#A1A4A9', iconMuted: '#123674', danger: '#DC2626',
+        primaryDark: '#073B2E', primary: '#008553', primaryLight: '#00A86B',
+        accent: '#00A86B', brand: '#008553', background: '#F7FAF8',
+        surface: '#FFFFFF', inputBg: '#EEF3F0', border: '#DCE6E0',
+        ink: '#14291F', canvas: '#F7FAF8', textPrimary: '#14291F',
+        textSecondary: '#52675B', textPlaceholder: '#8A9F93',
+        textMuted: '#8A9F93', iconMuted: '#075438', danger: '#DC2626',
         dangerBg: '#FCE9E9',
       },
       fontFamily: {

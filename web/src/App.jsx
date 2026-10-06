@@ -83,7 +83,7 @@ import EmployeePortal from "./EmployeePortal";
 import EmployeeApprovals from './EmployeeApprovals';
 import VendorPortal from "./VendorPortal";
 import PublicRegistration, { CareersPage, VendorRegistrationPage } from "./PublicRegistration";
-import CustomerPortal from "./CustomerPortal";
+import CustomerAccount from "./CustomerAccount";
 import RequirementsPage from "./RequirementsPage";
 import ServiceWebsite from "./ServiceWebsite";
 import { CartPage, RentalCatalog, RentalDetail } from "./RentalPages";
@@ -94,6 +94,7 @@ import AMCPage from "./AMCPage";
 import SolutionsPage from "./SolutionsPage";
 import IndustriesPage from "./IndustriesPage";
 import ShopPage from "./ShopPage";
+import ProductManagementPage from "./ProductManagementPage";
 const sections = [
   ["MAIN NAVIGATION", [["Dashboard", LayoutDashboard]]],
   [
@@ -2355,7 +2356,7 @@ function AuthenticatedApp({ initialRegister = false }) {
   const signedInUser = JSON.parse(localStorage.getItem("wefyx-user") || "null");
   if (signedInUser?.role === "EMPLOYEE") return <EmployeePortal user={signedInUser} onLogout={logout} />;
   if (signedInUser?.role === "VENDOR") return <VendorPortal user={signedInUser} onLogout={logout} />;
-  if (signedInUser?.role === "CUSTOMER") return <CustomerPortal user={signedInUser} onLogout={logout} />;
+  if (signedInUser?.role === "CUSTOMER") { window.location.assign("/account"); return null; }
   if (signedInUser?.role !== "SUPER_ADMIN") { logout(); return null; }
   let content =
     page === "Dashboard" ? (
@@ -2380,6 +2381,8 @@ function AuthenticatedApp({ initialRegister = false }) {
       <MessagesPage />
     ) : page === "Requirements & Quotes" ? (
       <RequirementsPage />
+    ) : page === "Products & Services" ? (
+      <ProductManagementPage />
     ) : page === "My Profile" ? (
       <AdminProfilePage onBack={() => setPage(previousPage)} />
     ) : (
@@ -2430,6 +2433,7 @@ export default function App() {
   if (path.startsWith("/support-updates/")) return <ServiceTickets notification />;
   if (path === "/privacy-policy") return <PrivacyPolicyPage />;
   if (path === "/portal") return <AuthenticatedApp />;
+  if (path === "/account" || path.startsWith("/account/")) return <CustomerAccount />;
   if (path === "/register" || path === "/signup" || path === "/join") return <PublicRegistration initialView="signup" />;
   if (path === "/login" || path === "/signin") return <PublicRegistration initialView="login" />;
   if (path === "/forgot-password" || path === "/reset-password") return <PublicRegistration initialView="forgot" />;

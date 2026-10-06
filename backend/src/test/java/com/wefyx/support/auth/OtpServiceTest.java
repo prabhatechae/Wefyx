@@ -24,6 +24,16 @@ class OtpServiceTest {
         assertEquals(HttpStatus.SERVICE_UNAVAILABLE, ex.getStatusCode());
     }
 
+    @Test void registrationDemoAcceptsAnySixDigitCodeButDoesNotBypassPasswordResetOtp() {
+        var service = new OtpService("", "", "", true);
+        assertEquals("+971502234560", service.sendRegistration("+971502234560"));
+        assertEquals("+971502234560", service.verifyRegistration("+971502234560", "987654"));
+        assertThrows(ResponseStatusException.class,
+            () -> service.verifyRegistration("+971502234560", "12345"));
+        assertThrows(ResponseStatusException.class,
+            () -> service.send("+971502234560"));
+    }
+
     @Test void sendsAndChecksUaeNumbersWithoutReturningCode() {
         for (String phone : new String[]{"+971502234560", "+971501234567"}) {
             var builder = RestClient.builder().baseUrl("https://verify.twilio.com/v2");

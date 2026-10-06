@@ -30,12 +30,12 @@ export async function openWebsite(path: string) {
 export default function WebServices({navigation}: {navigation: {goBack: () => void}}) {
   return <SafeAreaView style={{flex:1, backgroundColor:'#fff'}}>
     <ScrollView contentContainerStyle={{padding:20, gap:12}}>
-      <Pressable accessibilityRole="button" onPress={() => navigation.goBack()}><Text style={{color:'#0443A4', paddingVertical:12}}>Back</Text></Pressable>
-      <Text style={{fontSize:24, fontWeight:'700', color:'#071B35'}}>Explore Wefyx</Text>
-      <Text style={{color:'#64748B'}}>These pages open on the Wefyx website in your browser. Sign in there to view your bookings and account.</Text>
-      {pages.map(([label, path]) => <Pressable key={path} accessibilityRole="link" onPress={() => openWebsite(path)} style={{padding:16, borderWidth:1, borderColor:'#E2E8F0', borderRadius:12}}>
-        <Text style={{fontWeight:'600', color:'#0443A4'}}>{label}</Text>
-        <Text style={{color:'#64748B', marginTop:4}}>Open website</Text>
+      <Pressable accessibilityRole="button" onPress={() => navigation.goBack()}><Text style={{color:'#008553', paddingVertical:12}}>Back</Text></Pressable>
+      <Text style={{fontSize:24, fontWeight:'700', color:'#073B2E'}}>Explore Wefyx</Text>
+      <Text style={{color:'#63796C'}}>These pages open on the Wefyx website in your browser. Sign in there to view your bookings and account.</Text>
+      {pages.map(([label, path]) => <Pressable key={path} accessibilityRole="link" onPress={() => openWebsite(path)} style={{padding:16, borderWidth:1, borderColor:'#DCE6E0', borderRadius:12}}>
+        <Text style={{fontWeight:'600', color:'#008553'}}>{label}</Text>
+        <Text style={{color:'#63796C', marginTop:4}}>Open website</Text>
       </Pressable>)}
     </ScrollView>
   </SafeAreaView>;

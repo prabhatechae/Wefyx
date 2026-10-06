@@ -40,15 +40,21 @@ public class AuthController {
     @PostMapping("/send-otp")
     public Map<String, Object> sendOtp(@RequestBody Map<String, String> body) {
         String phone = OtpService.normalize(body.getOrDefault("phone", body.getOrDefault("mobile", "")));
-        if ("registration".equals(body.get("purpose")) && users.existsByPhone(phone))
+        boolean registration = "registration".equals(body.get("purpose"));
+        if (registration && users.existsByPhone(phone))
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Mobile number is already registered. Please sign in or use a different number.");
-        phone = otpService.send(phone);
-        return Map.of("success", true, "message", otpService.isLocal() ? "Development OTP is in the backend terminal. No SMS was sent." : "OTP requested for " + phone, "phone", phone, "delivery", otpService.isLocal() ? "console" : "sms");
+        phone = registration ? otpService.sendRegistration(phone) : otpService.send(phone);
+        boolean demo = registration && otpService.isRegistrationDemo();
+        String message = demo ? "Demo verification enabled. Enter any 6-digit code to continue."
+            : otpService.isLocal() ? "Development OTP is in the backend terminal. No SMS was sent."
+            : "OTP requested for " + phone;
+        return Map.of("success", true, "message", message, "phone", phone,
+            "delivery", demo ? "demo" : otpService.isLocal() ? "console" : "sms");
     }
 
     @PostMapping("/verify-otp")
     public Map<String, Object> verifyOtp(@RequestBody Map<String, String> body) {
-        String phone = otpService.verify(body.get("phone"), body.get("otp"));
+        String phone = otpService.verifyRegistration(body.get("phone"), body.get("otp"));
         return Map.of("valid", true, "message", "Mobile number verified successfully", "phone", phone);
     }
 

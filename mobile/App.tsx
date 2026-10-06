@@ -1,6 +1,7 @@
 import './global.css';
 import Registration from './src/Registration';
 import WebServices, {openWebsite} from './src/WebServices';
+import {CartScreen, CatalogScreen, OrdersScreen} from './src/Commerce';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -57,6 +58,7 @@ import {
   Phone,
   Search,
   ShieldCheck,
+  ShoppingCart,
   Ticket as TicketIcon,
   Wifi,
   Wrench,
@@ -133,10 +135,12 @@ type RootStack = {
   ContractDetails: undefined;
   Notifications: undefined;
   Help: undefined;
+  Cart: undefined;
+  Orders: undefined;
 };
 const Stack = createNativeStackNavigator<RootStack>(),
   Tabs = createBottomTabNavigator(),
-  purple = '#0443A4',
+  purple = '#008553',
   muted = '#7C8498';
 
 function WefyxLoader({
@@ -184,16 +188,17 @@ function WefyxLoader({
           height: size,
           borderRadius: size / 2,
           borderWidth: 3,
-          borderColor: light ? 'rgba(255,255,255,0.35)' : '#D8E6FA',
+          borderColor: light ? 'rgba(255,255,255,0.35)' : '#B8E7CF',
           borderTopColor: light ? '#FFFFFF' : purple,
           transform: [{ rotate: spin }],
         }}
       />
       <Text
         style={{
-          fontFamily: 'Poppins-Bold',
-          fontSize: size * 0.42,
-          color: light ? '#FFFFFF' : purple,
+          fontFamily: 'Poppins-ExtraBold',
+          fontSize: size * 0.46,
+          letterSpacing: -2,
+          color: light ? '#FFFFFF' : '#073B2E',
         }}
       >
         W
@@ -279,7 +284,7 @@ function TabHero({ title, subtitle, icon: Icon, right }: { title: string; subtit
         </View>
         {right || (Icon && (
           <View className="h-10 w-10 items-center justify-center rounded-xl bg-inputBg">
-            <Icon size={20} color="#0443A4" />
+            <Icon size={20} color="#008553" />
           </View>
         ))}
       </View>
@@ -290,14 +295,14 @@ function TabHero({ title, subtitle, icon: Icon, right }: { title: string; subtit
 function BrandMark() {
   return (
     <View className="h-20 w-20 items-center justify-center rounded-[24px] bg-white shadow-lg">
-      <Text className="font-extrabold text-4xl text-primary">W</Text>
+      <Text style={{fontFamily:'Poppins-ExtraBold',fontSize:42,lineHeight:50,letterSpacing:-3,color:'#073B2E'}}>W</Text>
     </View>
   );
 }
 function Splash() {
   return (
     <SafeAreaView className="flex-1 items-center justify-center bg-primary">
-      <StatusBar barStyle="light-content" backgroundColor="#003078" />
+      <StatusBar barStyle="light-content" backgroundColor="#073B2E" />
       <WefyxLoader size={80} />
       <Text className="font-extrabold mt-5 text-4xl text-white">
         wefyx.pro
@@ -354,7 +359,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
   return (
     <SafeAreaView className="flex-1 bg-primary">
       <Pressable onPress={() => openWebsite('/')} className="px-5 py-3"><Text className="font-bold text-white">Explore Wefyx website</Text></Pressable>
-      <StatusBar barStyle="light-content" backgroundColor="#003078" />
+      <StatusBar barStyle="light-content" backgroundColor="#073B2E" />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1"
@@ -395,7 +400,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
                     WORK EMAIL
                   </Text>
                   <View className="h-14 flex-row items-center rounded-2xl bg-inputBg px-4">
-                    <Mail size={18} color="#123674" />
+                    <Mail size={18} color="#075438" />
                     <TextInput
                       value={email}
                       onChangeText={setEmail}
@@ -404,7 +409,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
                       textContentType="none"
                       keyboardType="email-address"
                       placeholder="name@company.com"
-                      placeholderTextColor="#828692"
+                      placeholderTextColor="#8A9F93"
                       className="font-regular ml-3 h-12 flex-1 text-textPrimary"
                     />
                   </View>
@@ -424,7 +429,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
                     </Pressable>
                   </View>
                   <View className="h-14 flex-row items-center rounded-2xl bg-inputBg px-4">
-                    <KeyRound size={18} color="#123674" />
+                    <KeyRound size={18} color="#075438" />
                     <TextInput
                       value={password}
                       onChangeText={setPassword}
@@ -432,14 +437,14 @@ function Login({ onLogin }: { onLogin: () => void }) {
                       textContentType="none"
                       secureTextEntry={!showPassword}
                       placeholder="Enter your password"
-                      placeholderTextColor="#828692"
+                      placeholderTextColor="#8A9F93"
                       className="font-regular ml-3 h-12 flex-1 text-textPrimary"
                     />
                     <Pressable onPress={() => setShowPassword(value => !value)}>
                       {showPassword ? (
-                        <EyeOff size={19} color="#64748B" />
+                        <EyeOff size={19} color="#63796C" />
                       ) : (
-                        <Eye size={19} color="#64748B" />
+                        <Eye size={19} color="#63796C" />
                       )}
                     </Pressable>
                   </View>
@@ -466,11 +471,23 @@ function Login({ onLogin }: { onLogin: () => void }) {
                       Use your Wefyx customer account
                     </Text>
                   </View>
+                  <View className="mt-6 border-t border-slate-200 pt-5">
+                    <Text className="text-center text-xs font-medium text-slate-500">
+                      New to Wefyx?
+                    </Text>
+                    <Pressable
+                      onPress={() => setRegistering(true)}
+                      className="mt-3 h-14 items-center justify-center rounded-2xl border-2 border-primary bg-white"
+                    >
+                      <Text className="text-base font-bold text-primary">
+                        Create customer account
+                      </Text>
+                    </Pressable>
+                  </View>
                 </>
               )}
             </View>
           </View>
-          <Pressable onPress={()=>setRegistering(true)} className="mt-5 items-center"><Text className="text-sm font-semibold text-white">New to Wefyx? Create customer account</Text></Pressable>
           <View className="mt-8 items-center">
             <Text className="font-regular text-xs text-white/70">
               Protected by enterprise-grade security
@@ -513,7 +530,7 @@ function CustomerHome() {
   ];
   return (
     <SafeAreaView className="flex-1 bg-primary" edges={['top']}>
-      <StatusBar barStyle="light-content" backgroundColor="#0443A4" />
+      <StatusBar barStyle="light-content" backgroundColor="#008553" />
       <ScrollView
         className="bg-background"
         refreshControl={
@@ -545,14 +562,14 @@ function CustomerHome() {
             </View>
           </View>
           <View className="mt-5 h-12 flex-row items-center rounded-2xl bg-white px-4">
-            <Search size={18} color="#696D79" />
+            <Search size={18} color="#52675B" />
             <Text className="font-regular ml-3 text-sm text-textPlaceholder">
               Search services...
             </Text>
           </View>
         </View>
         <View className="px-5 pt-5">
-          <Pressable onPress={() => navigation.navigate('WebServices')} className="mb-3 rounded-2xl border border-primary bg-white p-4"><Text className="font-bold text-primary">Explore services, shop and rentals</Text><Text className="mt-1 text-xs text-slate-500">Browse the Wefyx website and book support</Text></Pressable>
+          <Pressable onPress={() => navigation.navigate('Shop')} className="mb-3 rounded-2xl border border-primary bg-white p-4"><Text className="font-bold text-primary">Explore products and rentals</Text><Text className="mt-1 text-xs text-slate-500">Buy or rent live inventory directly in the Wefyx app</Text></Pressable>
           <Pressable
             onPress={() => navigation.navigate('BookSupport')}
             className="h-14 flex-row items-center justify-between rounded-2xl bg-primary px-5"
@@ -570,18 +587,18 @@ function CustomerHome() {
             className="mt-3 h-14 flex-row items-center justify-between rounded-2xl border border-primary bg-white px-5"
           >
             <View className="flex-row items-center">
-              <Box size={21} color="#0443A4" />
+              <Box size={21} color="#008553" />
               <Text className="font-semibold ml-3 text-base text-primary">
                 Rent an Asset
               </Text>
             </View>
-            <ChevronRight size={20} color="#0443A4" />
+            <ChevronRight size={20} color="#008553" />
           </Pressable>
           <View className="mt-5 flex-row gap-3">
             {[
               ['Open', tickets.filter(x => ['SUBMITTED', 'UNDER_REVIEW'].includes(x.status)).length, '#F59E0B'],
-              ['In progress', tickets.filter(x => ['IN_PROGRESS', 'ACCEPTED', 'SENT_TO_VENDOR'].includes(x.status)).length, '#2563EB'],
-              ['Resolved', tickets.filter(x => ['RESOLVED', 'CLOSED'].includes(x.status)).length, '#16A34A'],
+              ['In progress', tickets.filter(x => ['IN_PROGRESS', 'ACCEPTED', 'SENT_TO_VENDOR'].includes(x.status)).length, '#008553'],
+              ['Resolved', tickets.filter(x => ['RESOLVED', 'CLOSED'].includes(x.status)).length, '#008553'],
             ].map(([label, value, color]: any) => (
               <View key={label} className="flex-1 rounded-2xl border border-border bg-white p-3">
                 <Text className="font-black text-xl" style={{ color }}>{value}</Text>
@@ -603,7 +620,7 @@ function CustomerHome() {
                 className="w-[23%] items-center"
               >
                 <View className="h-14 w-14 items-center justify-center rounded-2xl bg-inputBg">
-                  <Icon size={22} color="#0443A4" />
+                  <Icon size={22} color="#008553" />
                 </View>
                 <Text className="font-medium mt-2 text-center text-[10px] text-textPrimary">
                   {label}
@@ -646,7 +663,7 @@ function CustomerHome() {
           {!loading && tickets.length === 0 && (
             <View className="mt-3 items-center rounded-2xl border border-dashed border-blue-200 bg-blue-50 px-5 py-6">
               <View className="h-11 w-11 items-center justify-center rounded-full bg-white">
-                <CheckCircle2 size={22} color="#16A34A" />
+                <CheckCircle2 size={22} color="#008553" />
               </View>
               <Text className="font-bold mt-3 text-sm text-textPrimary">Everything is running smoothly</Text>
               <Text className="font-regular mt-1 text-center text-xs leading-5 text-textSecondary">No active support requests. Our team is ready whenever you need help.</Text>
@@ -665,7 +682,7 @@ function CustomerHome() {
               onPress={() => navigation.navigate('TrackTechnician')}
               className="flex-1 rounded-2xl bg-white p-4"
             >
-              <MapPin size={22} color="#0443A4" />
+              <MapPin size={22} color="#008553" />
               <Text className="font-semibold mt-3 text-sm text-textPrimary">
                 Track Technician
               </Text>
@@ -674,7 +691,7 @@ function CustomerHome() {
               onPress={() => navigation.navigate('ContractDetails')}
               className="flex-1 rounded-2xl bg-white p-4"
             >
-              <FileText size={22} color="#0443A4" />
+              <FileText size={22} color="#008553" />
               <Text className="font-semibold mt-3 text-sm text-textPrimary">
                 My Contract
               </Text>
@@ -747,7 +764,7 @@ function BookSupport({ navigation }: any) {
           onPress={() => navigation.goBack()}
           className="mb-5 flex-row items-center"
         >
-          <ArrowLeft size={20} color="#0A0E3D" />
+          <ArrowLeft size={20} color="#14291F" />
           <Text className="font-semibold ml-3 text-lg text-textPrimary">
             Submit a Requirement
           </Text>
@@ -769,7 +786,7 @@ function BookSupport({ navigation }: any) {
                   : 'border-border bg-white'
               }`}
             >
-              <Wrench size={21} color="#0443A4" />
+              <Wrench size={21} color="#008553" />
               <Text className="font-medium mt-2 text-xs text-textPrimary">
                 {item}
               </Text>
@@ -807,15 +824,15 @@ function BookSupport({ navigation }: any) {
           onPress={() => setPreferredDate(value => new Date(value.getTime() + 24 * 60 * 60 * 1000))}
           className="mt-3 flex-row items-center rounded-2xl bg-white p-4"
         >
-          <CalendarDays size={20} color="#0443A4" />
+          <CalendarDays size={20} color="#008553" />
           <Text className="font-regular ml-3 flex-1 text-sm text-textPrimary">
             {preferredDate.toLocaleString()}
           </Text>
-          <ChevronRight size={18} color="#828692" />
+          <ChevronRight size={18} color="#8A9F93" />
         </Pressable>
         <Text className="font-bold mt-7 text-base text-textPrimary">Attachments</Text>
         <Pressable onPress={addImages} className="mt-3 items-center justify-center rounded-2xl border border-dashed border-blue-300 bg-white px-4 py-5">
-          <Plus size={22} color="#0443A4" />
+          <Plus size={22} color="#008553" />
           <Text className="mt-2 text-sm font-semibold text-primary">Add images from gallery</Text>
           <Text className="mt-1 text-xs text-textSecondary">Up to 5 photos</Text>
         </Pressable>
@@ -869,7 +886,7 @@ function TrackTechnician({ navigation, route }: any) {
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-row items-center bg-white px-5 py-4">
         <Pressable onPress={() => navigation.goBack()}>
-          <ArrowLeft size={21} color="#0A0E3D" />
+          <ArrowLeft size={21} color="#14291F" />
         </Pressable>
         <Text className="font-semibold ml-3 text-lg text-textPrimary">
           Track Technician
@@ -878,7 +895,7 @@ function TrackTechnician({ navigation, route }: any) {
       <ScrollView className="flex-1 bg-blue-50 px-5" contentContainerClassName="pb-10 pt-6">
         <View className="items-center rounded-3xl border border-blue-100 bg-white px-6 py-10">
           <View className="h-20 w-20 items-center justify-center rounded-full bg-blue-50">
-            <MapPin size={34} color="#0443A4" />
+            <MapPin size={34} color="#008553" />
           </View>
           <Text className="mt-5 text-xl font-bold text-textPrimary">
             {ticket ? (assigned ? 'Technician assigned' : 'Awaiting assignment') : 'No active tracking request'}
@@ -897,7 +914,7 @@ function TrackTechnician({ navigation, route }: any) {
           )}
           {['granted', 'limited'].includes(locationPermission) && (
             <View className="mt-5 flex-row items-center rounded-full bg-emerald-50 px-4 py-2">
-              <MapPin size={15} color="#059669" />
+              <MapPin size={15} color="#008553" />
               <Text className="ml-2 text-xs font-semibold text-emerald-700">Location access enabled</Text>
             </View>
           )}
@@ -1040,7 +1057,7 @@ function AsanaDashboard() {
             </View>
           </View>
           <Pressable className="mt-5 h-12 flex-row items-center rounded-2xl bg-inputBg px-4">
-            <Search size={18} color="#696D79" />
+            <Search size={18} color="#52675B" />
             <Text className="font-regular ml-3 text-sm text-textPlaceholder">
               Search tickets, people, or projects
             </Text>
@@ -1056,8 +1073,8 @@ function AsanaDashboard() {
           <View className="mt-4 flex-row rounded-2xl border border-border bg-white p-4">
             {[
               [open.length, 'Open', '#F59E0B'],
-              [working.length, 'In progress', '#0152F9'],
-              [complete.length, 'Completed', '#16A34A'],
+              [working.length, 'In progress', '#00A86B'],
+              [complete.length, 'Completed', '#008553'],
             ].map(([value, label, color], index) => (
               <View
                 key={String(label)}
@@ -1081,7 +1098,7 @@ function AsanaDashboard() {
         <View className="py-5">
           <View className="flex-row items-center justify-between px-5">
             <Text className="font-bold text-xl text-textPrimary">Projects</Text>
-            <MoreHorizontal size={22} color="#696D79" />
+            <MoreHorizontal size={22} color="#52675B" />
           </View>
           <ScrollView
             horizontal
@@ -1093,9 +1110,9 @@ function AsanaDashboard() {
                 ticket => ticket.category === category,
               ).length;
               const colors = [
-                '#0443A4',
-                '#7C3AED',
-                '#0F9F6E',
+                '#008553',
+                '#42BB88',
+                '#008553',
                 '#E05D44',
                 '#D97706',
               ];
@@ -1161,12 +1178,12 @@ function AsanaDashboard() {
                     {ticket.reference} · {ticket.category}
                   </Text>
                 </View>
-                <ChevronRight size={18} color="#A1A4A9" />
+                <ChevronRight size={18} color="#8A9F93" />
               </Pressable>
             ))}
             {!loading && tickets.length === 0 && (
               <View className="items-center px-5 py-10">
-                <CheckCircle2 size={34} color="#16A34A" />
+                <CheckCircle2 size={34} color="#008553" />
                 <Text className="font-semibold mt-3 text-sm text-textPrimary">
                   You are all caught up
                 </Text>
@@ -1348,8 +1365,8 @@ function TicketsScreen() {
         <View className="mb-4 flex-row gap-3">
           {[
             ['Open', items.filter(x => ['SUBMITTED', 'UNDER_REVIEW'].includes(x.status)).length, '#F59E0B'],
-            ['Working', items.filter(x => ['IN_PROGRESS', 'ACCEPTED', 'SENT_TO_VENDOR'].includes(x.status)).length, '#2563EB'],
-            ['Completed', items.filter(x => ['RESOLVED', 'CLOSED'].includes(x.status)).length, '#16A34A'],
+            ['Working', items.filter(x => ['IN_PROGRESS', 'ACCEPTED', 'SENT_TO_VENDOR'].includes(x.status)).length, '#008553'],
+            ['Completed', items.filter(x => ['RESOLVED', 'CLOSED'].includes(x.status)).length, '#008553'],
           ].map(([label, value, color]: any) => (
             <View key={label} className="flex-1 rounded-2xl border border-border bg-white p-3">
               <Text className="text-xl font-black" style={{ color }}>{value}</Text>
@@ -1653,7 +1670,7 @@ function Help({ navigation }: any) {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       <View className="h-16 flex-row items-center border-b border-border bg-white px-5">
         <Pressable onPress={() => navigation.goBack()} className="h-10 w-10 items-center justify-center rounded-full bg-inputBg">
-          <ArrowLeft size={20} color="#0A0E3D" />
+          <ArrowLeft size={20} color="#14291F" />
         </Pressable>
         <View className="ml-3"><Text className="text-lg font-bold text-textPrimary">Help & Support</Text><Text className="text-xs text-textSecondary">How can we help you?</Text></View>
       </View>
@@ -1666,9 +1683,9 @@ function Help({ navigation }: any) {
         <Text className="mb-3 mt-6 text-base font-bold text-textPrimary">Quick help</Text>
         {topics.map(([Icon, title, detail, route]: any) => (
           <Pressable key={title} onPress={() => route === 'BookSupport' ? navigation.navigate(route) : navigation.navigate('Main', { screen: route })} className="mb-3 flex-row items-center rounded-2xl border border-border bg-white p-4">
-            <View className="h-11 w-11 items-center justify-center rounded-xl bg-inputBg"><Icon size={20} color="#0443A4" /></View>
+            <View className="h-11 w-11 items-center justify-center rounded-xl bg-inputBg"><Icon size={20} color="#008553" /></View>
             <View className="ml-3 flex-1"><Text className="text-sm font-semibold text-textPrimary">{title}</Text><Text className="mt-1 text-xs leading-5 text-textSecondary">{detail}</Text></View>
-            <ChevronRight size={18} color="#828692" />
+            <ChevronRight size={18} color="#8A9F93" />
           </Pressable>
         ))}
         <Pressable onPress={() => navigation.navigate('BookSupport')} className="mb-4 mt-4 h-14 flex-row items-center justify-center rounded-2xl bg-primary px-5">
@@ -1787,7 +1804,7 @@ function Profile({ onLogout }: { onLogout: () => void }) {
           <Text className="text-base font-bold text-ink">Recent account activity</Text>
           {activity.map(item => (
             <View key={item.id} className="flex-row items-center border-b border-slate-100 py-3">
-              <CheckCircle2 size={17} color="#16A34A" />
+              <CheckCircle2 size={17} color="#008553" />
               <View className="ml-3 flex-1"><Text className="text-sm font-semibold text-ink">{item.name}</Text><Text className="mt-1 text-xs leading-5 text-slate-500">{item.details || item.status} · {item.createdAt ? new Date(item.createdAt).toLocaleString() : ''}</Text></View>
             </View>
           ))}
@@ -1814,11 +1831,11 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: purple,
-        tabBarInactiveTintColor: '#8A94A8',
+        tabBarInactiveTintColor: '#8A9F93',
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
           borderTopWidth: 1,
-          borderTopColor: '#E4E9F2',
+          borderTopColor: '#DCE6E0',
           elevation: 8,
           height: 64 + insets.bottom,
           paddingTop: 7,
@@ -1838,8 +1855,8 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
               ? TicketIcon
               : route.name === 'Assets'
               ? Box
-              : route.name === 'Contracts'
-              ? FileText
+              : route.name === 'Shop'
+              ? ShoppingCart
               : CircleUserRound;
           return (
             <View
@@ -1849,7 +1866,7 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
                 borderRadius: 12,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: focused ? '#EAF2FF' : 'transparent',
+                backgroundColor: focused ? '#EFFAF5' : 'transparent',
               }}
             >
               <Icon
@@ -1866,7 +1883,7 @@ function MainTabs({ onLogout }: { onLogout: () => void }) {
       <Tabs.Screen name="Home" component={CustomerHome} />
       <Tabs.Screen name="Tickets" component={TicketsScreen} />
       <Tabs.Screen name="Assets" component={Assets} />
-      <Tabs.Screen name="Contracts" component={ContractDetails} />
+      <Tabs.Screen name="Shop" component={CatalogScreen} />
       <Tabs.Screen name="Profile">
         {() => <Profile onLogout={onLogout} />}
       </Tabs.Screen>
@@ -1958,6 +1975,8 @@ export default function App() {
                 <Stack.Screen name="ContractDetails" component={ContractDetails} />
                 <Stack.Screen name="Notifications" component={Notifications} />
                 <Stack.Screen name="Help" component={Help} />
+                <Stack.Screen name="Cart" component={CartScreen} />
+                <Stack.Screen name="Orders" component={OrdersScreen} />
               </Stack.Navigator>
             </NavigationContainer>
           </>

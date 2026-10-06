@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   Boxes,
@@ -30,12 +30,24 @@ import {
 import UnifiedHeader from "./UnifiedHeader";
 import { PublicFooter } from "./RentalPages";
 import AIQuotationModal from "./AIQuotationModal";
+import { addToCart } from "./cart";
+import { get } from "./api";
+
+const shopIds = {
+  "Dell Latitude 5550 Business Laptop": "dell-latitude-5550", "Lenovo ThinkPad T14 Gen 4": "thinkpad-t14",
+  "Apple MacBook Air 13” M3": "macbook-air-m3", "HP Pro Tower 400 G9 Desktop": "hp-pro-tower-400-g9",
+  "Dell 27” QHD USB-C Hub Monitor – P2723DE": "dell-monitor-p2723d", "Cisco Catalyst 2960X Gigabit Switch": "cisco-2960x",
+  "Ubiquiti UniFi 6 Pro Access Point": "unifi-6-pro", "Hikvision 4MP DarkFighter Turret IP Camera": "hikvision-4mp",
+  "Synology DiskStation DS923+ 4-Bay NAS": "synology-ds923", "APC Smart-UPS 1500VA LCD 230V": "apc-ups-1500",
+  "Canon imageCLASS MF446dw All-in-One Printer": "canon-mf446dw", "Epson EB-FH52 Full HD Wireless Projector": "epson-fh52"
+};
 
 export default function ShopPage() {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [showQuoteModal, setShowQuoteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [liveProducts, setLiveProducts] = useState(null);
 
   const products = [
     {
@@ -159,6 +171,8 @@ export default function ShopPage() {
       stock: "In Stock"
     }
   ];
+  useEffect(() => { const categories={Laptops:"Laptop",Desktops:"Desktop",Monitors:"Monitor",Printers:"Printer",Projectors:"AV",Power:"UPS"};get("/catalog/products").then(rows => setLiveProducts(rows.filter(x => x.purchasable).map(x => ({ code:x.code,name:x.name,category:categories[x.category]||x.category,brand:x.brand,specs:x.specification,price:Number(x.buyPrice),image:x.imageUrl,warranty:"Wefyx business warranty",stock:x.stockQuantity>0?`${x.stockQuantity} available`:"Out of stock",stockQuantity:x.stockQuantity })))).catch(() => {}); }, []);
+  const catalogProducts = liveProducts || products;
 
   const categories = [
     { name: "All", label: "All Products" },
@@ -174,7 +188,7 @@ export default function ShopPage() {
   ];
 
   const filtered = useMemo(() => {
-    return products.filter((p) => {
+    return catalogProducts.filter((p) => {
       const matchCat = filter === "All" || p.category === filter;
       const matchSearch =
         p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -182,10 +196,17 @@ export default function ShopPage() {
         p.brand.toLowerCase().includes(search.toLowerCase());
       return matchCat && matchSearch;
     });
-  }, [filter, search]);
+  }, [filter, search, catalogProducts]);
 
   const money = (v) =>
     `AED ${v.toLocaleString("en-AE", { minimumFractionDigits: 0 })}`;
+
+  const addProduct = (product) => {
+    const code = product.code || shopIds[product.name];
+    addToCart({ id: code, productId: code, name: product.name, spec: product.specs, image: product.image, price: product.price, mode: "BUY", lockedMode: true, quantity: 1, months: 1 });
+    setSelectedProduct(product.name);
+    setTimeout(() => setSelectedProduct(null), 2500);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
@@ -310,13 +331,15 @@ export default function ShopPage() {
                   </div>
 
                   <div className="mt-4 flex gap-2">
-                    <a
-                      href="/services#requirement"
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-white shadow transition hover:bg-slate-800"
+                    <button
+                      type="button"
+                      disabled={prod.stockQuantity === 0}
+                      onClick={() => addProduct(prod)}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-white shadow transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
                     >
                       <ShoppingCart size={14} />
-                      <span>Buy / Quote</span>
-                    </a>
+                      <span>{prod.stockQuantity === 0 ? "Out of stock" : selectedProduct === prod.name ? "Added to cart" : "Add to cart"}</span>
+                    </button>
                     <a
                       href="/rent"
                       className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50"
